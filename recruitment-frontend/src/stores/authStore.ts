@@ -10,18 +10,6 @@
 import { defineStore } from "pinia";
 import { login } from "@/api/authApi";
 
-interface User {
-  id: number;
-  username: string;
-  role: "APPLICANT" | "RECRUITER";
-}
-
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  error: string | null;
-}
-
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
     user: null as any,
