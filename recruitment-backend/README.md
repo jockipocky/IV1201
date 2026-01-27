@@ -7,4 +7,5 @@ It is built with **Node.js** and **Express** and exposes a REST API that the fro
 
 ## Run (Will change later)
 
-node src/server.js
+1. npm install
+2. node src/server.js
