@@ -1,23 +1,13 @@
 <template>
   <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="500" rounded="lg">
-    <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.registerBoxTitle}}</div>
+    <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.upgradeAccountInfo}}
+    </div>
 
-    <form @submit.prevent="handleRegister">
-      <v-text-field
-        v-model="state.firstName"
-        :label="t.firstNameLabel"
-        required
-      ></v-text-field>
-
-      <v-text-field
-        v-model="state.lastName"
-        :label="t.lastNameLabel"
-        required
-      ></v-text-field>
-
+    <form @submit.prevent="handleUpgrade">
       <v-text-field
         v-model="state.email"
-        :label="t.emailLabel"
+        :placeholder="t.emailLabel"
+        :label="t.upgradeAccountEmailPlaceholder"
         type="email"
         required
       ></v-text-field>
@@ -29,14 +19,21 @@
       ></v-text-field>
 
       <v-text-field
+        v-model="state.upgradeCode"
+        :label="t.upgradeAccountUpgradeCodePlaceholder"
+        :placeholder="t.upgradeCodeLabel"
+        required
+      ></v-text-field>
+
+      <v-text-field
         v-model="state.username"
-        :label="t.usernameLabel"
+        :label="t.newUsernameLabel"
         required
       ></v-text-field>
 
       <v-text-field
         v-model="state.password"
-        :label="t.passwordLabel"
+        :label="t.newPasswordLabel"
         :type="visible ? 'text' : 'password'"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         @click:append-inner="visible = !visible"
@@ -47,8 +44,8 @@
         {{ error }}
       </v-alert>
 
-      <v-btn class="mt-6 mb-4" color="blue" block @click="handleRegister">
-        {{t.registerButtonLabel}}
+      <v-btn class="mt-6 mb-4" color="blue" block @click="handleUpgrade">
+        {{t.upgradeButtonLabel}}
       </v-btn>
     </form>
   </v-card>
@@ -56,17 +53,16 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive } from "vue";
-import { useRegisterStore } from "@/stores/registerStore"; // Or create a separate register store
+import { useUpgradeStore } from "@/stores/upgradeStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
 
 export default defineComponent({
-  name: "RegisterNewAccountBox",
+  name: "UpgradeAccountBox",
   setup() {
     const state = reactive({
-      firstName: "",
-      lastName: "",
       email: "",
       personNumber: "",
+      upgradeCode: "",
       username: "",
       password: "",
     });
@@ -74,12 +70,12 @@ export default defineComponent({
     const t = inject<any>('t') //this is our dictionary
     const visible = ref(false);
     const error = ref<string | null>(null);
-    const registerStore = useRegisterStore(); // reuse auth store or create register store
+    const upgradeStore = useUpgradeStore(); // reuse auth store or create register store
 
-    const handleRegister = async () => {
+    const handleUpgrade = async () => {
       try {
         // Optionally, add basic validation here
-        await registerStore.register(state.firstName, state.lastName, state.email, state.personNumber, state.username, state.password); // implement a register action in your store
+        await upgradeStore.upgrade(state.email, state.personNumber, state.upgradeCode, state.username, state.password); // implement a register action in your store
         error.value = null;
         // optionally redirect after successful registration
       } catch (err: any) {
@@ -92,7 +88,7 @@ export default defineComponent({
       state,
       visible,
       error,
-      handleRegister,
+      handleUpgrade,
     };
   },
 });
