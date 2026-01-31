@@ -20,3 +20,13 @@ export const register = async (firstName: string, lastName: string, email: strin
     password,
   });
 };
+
+export const upgradeAccount = async (email: string, personalNumber: string, upgradeCode: string, username: string, password: string) => {
+  return apiClient.post("/auth/upgrade", {
+    email,
+    personalNumber,
+    upgradeCode,
+    username,
+    password,
+  });
+};
