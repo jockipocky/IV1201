@@ -27,7 +27,7 @@ const vuetify = createVuetify({
 const app = createApp(App)
 
 //set up the default language (en) so its available everywhere as a global object
-const currentLanguage = ref<Language>('sv')
+const currentLanguage = ref<Language>('en')
 const t = ref(getDictionary(currentLanguage.value))
 
 //function to switch language
