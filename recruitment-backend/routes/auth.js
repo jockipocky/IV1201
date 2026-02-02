@@ -1,5 +1,5 @@
 /**
- * User-related routes
+ * Auth-related routes
  * Handles authentcation endpoints.
  */
 
@@ -9,7 +9,7 @@ var router = express.Router();
 const authService = require("../services/authService");
 const { requireAuth } = require("../middleware/authMiddleware");
 
-// POST /users/login
+// POST /auth/login
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body ?? {};
@@ -37,12 +37,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET /users/me (protected)
-router.get("/me", requireAuth, (req, res) => {
-  return res.json({ ok: true, user: req.user });
-});
 
-// POST /users/logout
+// POST /auth/logout
 router.post("/logout", (req, res) => {
   res.clearCookie("auth");
   return res.json({ ok: true });
@@ -52,7 +48,7 @@ router.get("/me", requireAuth, (req, res) => {
   // req.user is the decoded JWT payload
   return res.json({
     ok: true,
-    user: { username: req.user.username },
+    user: { username: req.user.username,  },
   });
 });
 module.exports = router;

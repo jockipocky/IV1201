@@ -14,7 +14,7 @@ const jwt = require("jsonwebtoken");
  */
 async function login(username, password) {
   const result = await db.query(
-    "SELECT username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
+    "SELECT person_id, username, name, surname, email, role_id, username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
     [username, password]
   );
 
@@ -22,15 +22,29 @@ async function login(username, password) {
 
   const user = result.rows[0];
 
+
+  // You can keep JWT minimal OR include everything.
+  // Minimal (recommended even for school):
   const token = jwt.sign(
-    { username: user.username },
+    {
+      person_id: user.person_id
+    },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || "1h" }
+    { expiresIn: "7d" }
   );
+
 
   return {
     token,
-    user: { username: user.username },
+    user: {
+      person_id: user.person_id,
+      username: user.username,
+      name: user.name,
+      surname: user.surname,
+      pnr: user.pnr,
+      email: user.email,
+      role_id: user.role_id,
+    },
   };
 }
 
