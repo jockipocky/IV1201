@@ -1,6 +1,5 @@
 require("dotenv").config();
 
-
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -17,6 +16,16 @@ const bodyParser = require('body-parser');
 var usersRouter = require('./src/routes/auth');
 
 var app = express();
+
+
+
+const cors = require("cors");
+
+app.use(cors({
+  origin: "http://localhost:5173", // <-- put your frontend URL/port here
+  credentials: true
+}));
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
