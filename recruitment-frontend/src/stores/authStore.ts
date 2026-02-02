@@ -13,7 +13,7 @@ import { login, fetchUser } from "@/api/authApi";
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
     user: null as any,
-    error: null,
+    error: "",
   }),
 
   actions: { //actions we can perform on the values in our store

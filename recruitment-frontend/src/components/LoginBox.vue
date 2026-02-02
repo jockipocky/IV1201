@@ -87,17 +87,32 @@ export default defineComponent({
     const visible = ref(false);
     const authStore = useAuthStore();
     const router = useRouter();
-
     const t = inject<any>('t') //this is our dictionary
+    const error = ref<string | null>(null);
 
     const handleLogin = async () => {
-      await authStore.login(username.value, password.value);
+      error.value = null;
+      try{
+        await authStore.login(username.value, password.value);
+        if (!authStore.user) {
+          // login failed
+          error.value = t.value.loginError;
+          return;
+      }
+
       if (authStore.user) {
-        if (authStore.user.role === "RECRUITER") {
+        if (authStore.user.role_id === 1) {
           router.push("/applications");
-        } else {
+        } else if(authStore.user.role_id === 2){
           router.push("/apply");
+        } else{
+          error.value = t.value.loginError;
+        return;
         }
+      }
+      }catch(err){
+        //to handle unexpected errors
+        error.value = t.value.loginError;
       }
     };
 
@@ -107,7 +122,7 @@ export default defineComponent({
       password,
       visible,
       handleLogin,
-      error: authStore.error,
+      error,
       mdiEmail,
       mdiLock,
       mdiEyeOff,
