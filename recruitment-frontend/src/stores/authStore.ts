@@ -8,12 +8,11 @@
 
 
 import { defineStore } from "pinia";
-import { login } from "@/api/authApi";
+import { login, fetchUser } from "@/api/authApi";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
     user: null as any,
-    token: null as string | null,
     error: null,
   }),
 
@@ -21,16 +20,23 @@ export const useAuthStore = defineStore("auth", {
     async login(username: string, password: string) {
       try{
         const response = await login(username, password);
-        this.token = response.data.token;
         this.user = response.data.user;
       } catch(err: any){
         this.error = err.response?.data?.message || "Login failed, sorry";
       }
     }, //end of async login
 
+    async fetchUser() {
+      try {
+        const response = await fetchUser();
+        this.user = response.data.user;
+      } catch {
+        this.user = null;
+      }
+    },//end of fetchUser. this is called on refresh to autologin using cookie
+
     logout() {
       this.user = null;
-      this.token = null;
       localStorage.removeItem("token");
     },
   },
