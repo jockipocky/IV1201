@@ -1,20 +1,16 @@
 const express = require('express')
 const app = express()
 var cors = require('cors')
-const port = 3000
 
 // Adds headers: Access-Control-Allow-Origin: *
 // CORS enabled for all orgins and requests for now
-app.use(cors())
+app.use(cors());
 // Parse JSON bodies
-app.use(express.json)
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
 
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+module.exports = app;
