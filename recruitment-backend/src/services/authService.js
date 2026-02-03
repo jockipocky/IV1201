@@ -1,6 +1,6 @@
 /**
  * Authentication service.
- * Contains business logic for logging in users and creating JWTs
+ * Create a JWT with person_id and also send a json with the token with all information of the user, password excluded. 
  */
 const db = require("../db/db");
 const jwt = require("jsonwebtoken");
@@ -24,7 +24,6 @@ async function login(username, password) {
 
 
   // You can keep JWT minimal OR include everything.
-  // Minimal (recommended even for school):
   const token = jwt.sign(
     {
       person_id: user.person_id
