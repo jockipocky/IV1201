@@ -7,7 +7,7 @@ var express = require("express");
 var router = express.Router();
 
 const authService = require("../services/authService");
-const { requireAuth } = require("../middleware/authMiddleware");
+//const { requireAuth } = require("../middleware/authMiddleware");
 
 // POST /auth/login
 router.post("/login", async (req, res) => {
@@ -44,11 +44,11 @@ router.post("/logout", (req, res) => {
   return res.json({ ok: true });
 });
 
-router.get("/me", requireAuth, (req, res) => {
+/*router.get("/me", requireAuth, (req, res) => {
   // req.user is the decoded JWT payload
   return res.json({
     ok: true,
     user: { username: req.user.username,  },
   });
-});
+});*/
 module.exports = router;
