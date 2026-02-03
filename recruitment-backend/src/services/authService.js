@@ -29,7 +29,7 @@ async function login(username, password) {
       person_id: user.person_id
     },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "1h" }
   );
 
 
