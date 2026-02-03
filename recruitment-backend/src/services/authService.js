@@ -23,7 +23,7 @@ async function login(username, password) {
   const user = result.rows[0];
 
 
-  // You can keep JWT minimal OR include everything.
+  // JWT minimal
   const token = jwt.sign(
     {
       person_id: user.person_id
