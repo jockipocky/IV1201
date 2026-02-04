@@ -2,9 +2,8 @@
  * Authentication service.
  * Create a JWT with person_id and also send a json with the token with all information of the user, password excluded. 
  */
-const db = require("../db/db");
 const jwt = require("jsonwebtoken");
-
+const authSearch = require("../reposoitory/authQuery")
 /**
  * Attempts to authenticate a user.
  * 
@@ -13,14 +12,11 @@ const jwt = require("jsonwebtoken");
  * @returns - returns the JWT and also json with person information.
  */
 async function login(username, password) {
-  const result = await db.query(
-    "SELECT person_id, username, name, surname, email, role_id, username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
-    [username, password]
-  );
 
-  if (result.rows.length === 0) return null;
 
-  const user = result.rows[0];
+
+  const user = await authSearch.searchForUser(username, password);
+  if (!user) return null;
 
 
   // JWT minimal
