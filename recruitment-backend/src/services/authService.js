@@ -3,7 +3,7 @@
  * Create a JWT with person_id and also send a json with the token with all information of the user, password excluded. 
  */
 const jwt = require("jsonwebtoken");
-const authSearch = require("../reposoitory/authQuery")
+const authSearch = require("../repository/authQuery")
 /**
  * Attempts to authenticate a user.
  * 
