@@ -65,6 +65,26 @@
 </template>
 
 <script lang="ts">
+/**
+ * LoginBox component
+ *
+ * Displays a login form with username and password fields.
+ * Sends user authentication to the authStore and redirects
+ * the user based on role after successful login.
+ *
+ * Includes:
+ * - Username and password input fields
+ * - Show/hide password functionality
+ * - Error display for failed login attempts
+ * - Login button triggering authentication
+ * - Links for account upgrade and registration
+ *
+ * Dependencies:
+ * - Uses the authStore Pinia store for authentication actions
+ * - Uses vue-router for redirection
+ * - Injects a translation dictionary 't' for UI strings
+ */
+
 import { defineComponent, ref } from "vue";
 import { inject } from 'vue' //for dictionary
 import { useAuthStore } from "@/stores/authStore";
@@ -90,6 +110,18 @@ export default defineComponent({
     const t = inject<any>('t') //this is our dictionary
     const error = ref<string | null>(null);
 
+    /**
+    * Handles the login process when the user clicks the login button.
+    *
+    * Does:
+    * 1. Clears any previous local error message
+    * 2. Calls the authStore.login action with the entered credentials
+    * 3. Checks if login was successful and redirects the user based on role
+    * 4. Displays an error if login failed or an unexpected error occurs
+    *
+    * @async
+    * @returns {Promise<void>} which resolves once login flow completes
+    */
     const handleLogin = async () => {
       error.value = null;
       try{
@@ -114,7 +146,7 @@ export default defineComponent({
         //to handle unexpected errors
         error.value = t.value.loginError;
       }
-    };
+    }; //end of handleLogin
 
     return {
       t,

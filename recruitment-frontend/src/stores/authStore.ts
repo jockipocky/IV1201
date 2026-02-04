@@ -1,10 +1,13 @@
-//to use this store we call import { useAuthStore} from "@/stores/authStore.ts" 
-//then we can call on values in the store and modify them directly (not recommended i think)
-//like:
-// const store = useAuthStore();
-// store.user = "this guy"
-// but we can also call its actions
-// store.login(username, password);
+/**
+ * Our authentication store (Pinia).
+ *
+ * Acts as the view-model for authentication-related states and actions.
+ * Responsible for managing the authenticated user, authentication errors,
+ * and coordinating with the authentication API layer.
+ *
+ * This store is used by UI components that need access to authentication state
+ * and triggering of authentication actions (like login).
+ */
 
 
 import { defineStore } from "pinia";
@@ -13,18 +16,29 @@ import { login, fetchUser } from "@/api/authApi";
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
     user: null as any,
-    error: "",
   }),
 
-  actions: { //actions we can perform on the values in our store
+  //actions we can perform on the values in our store, as i understand it equivalent to mutations + actions in vuex
+  actions: {
+
+    /**
+     * Logs in a user using their credentials and updates the user state with the response.
+     *
+     * Calls the login function in authApi.ts to verify credentials. On success, stores
+     * the authenticated user in state. On failure prints the error to the console.
+     * The error is also caught separately in the view for now which might have to be changed.
+     *
+     * @param username - The user's username used for authentication.
+     * @param password - The user's plaintext password.
+     */
     async login(username: string, password: string) {
       try{
         const response = await login(username, password);
         this.user = response.data.user;
       } catch(err: any){
-        this.error = err.response?.data?.message || "Login failed, sorry";
+        console.log(err);
       }
-    }, //end of async login
+    }, //end of login
 
     async fetchUser() {
       try {
