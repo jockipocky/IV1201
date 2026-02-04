@@ -21,5 +21,7 @@ export default {
   upgradeAccountEmailPlaceholder: "E-postadressen du registrerade dig med",
   upgradeAccountUpgradeCodePlaceholder: "Uppgraderingskoden vi skickade till din e-post",
   upgradeButtonLabel: "Uppgradera nu",
-  loginError: "Ett fel skedde vid inloggning. Vänligen försök igen."
+  loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
+  competenceProfile:  "Arbetslivserfarenheter",
+  competence: "Erfarenhet"
 };

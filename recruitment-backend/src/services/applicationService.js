@@ -1,7 +1,7 @@
 
 /**
  * 
- * Denna klas hanterar och sorterar applications i listor
+ * Denna klass hanterar och sorterar applications i listor
  */
 class applicationService{
     constructor(){

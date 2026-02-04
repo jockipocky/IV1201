@@ -20,5 +20,8 @@ export default {
   upgradeAccountEmailPlaceholder: "The email you signed up with",
   upgradeAccountUpgradeCodePlaceholder: "The upgrade code we sent to your email",
   upgradeButtonLabel: "Request upgrade",
-  loginError: "Error when attempting to log in. Please try again."
+  loginError: "Error when attempting to log in. Please try again.",
+  competenceProfile: "Work Experience",
+  applicationFormTitle: "Application",
+  competence: "Competence"
 };
