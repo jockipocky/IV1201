@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken");
  * 
  * @param {string} username - The user's username
  * @param {string} password - The user's password
- * @returns 
+ * @returns - returns the JWT and also json with person information.
  */
 async function login(username, password) {
   const result = await db.query(
