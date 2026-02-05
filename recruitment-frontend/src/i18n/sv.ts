@@ -23,5 +23,6 @@ export default {
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
   competenceProfile:  "Arbetslivserfarenheter",
-  competence: "Erfarenhet"
+  competence: "Erfarenhet",
+  availabilityRange: "Tillgänglighet"
 };

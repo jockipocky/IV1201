@@ -23,5 +23,6 @@ export default {
   loginError: "Error when attempting to log in. Please try again.",
   competenceProfile: "Work Experience",
   applicationFormTitle: "Application",
-  competence: "Competence"
+  competence: "Competence",
+  availabilityRange: "Availability Range"
 };
