@@ -4,7 +4,7 @@
  */
 
 const authService = require("../services/authService");
-
+const UserDTO = require("../domain/UserDTO");
 /**
  * 
  * @param {*} username - inputed username
@@ -20,7 +20,15 @@ async function login(username, password) {
   if (!result) {
     return { ok: false, status: 401, error: "Invalid username or password" };
   }
+  const userRow = result.user;
 
+  const userDto = new UserDTO({
+    username: userRow.username,
+    password: null,
+    firstName: userRow.firstName,
+    lastName: userRow.lastName,
+    email: userRow.email,
+  });
   return {
     ok: true,
     status: 200,
@@ -34,8 +42,40 @@ async function login(username, password) {
         maxAge: 60 * 60 * 1000, // 1 hour
       },
     },
-    user: result.user,
+    user: userDto,
   };
 }
 
-module.exports = { login };
+async function upgradeAccount(data) {
+  const { email, personalNumber, upgradeCode, username, password, firstName, lastName } = data;
+
+
+  if (![email, personalNumber, upgradeCode, username, password].every(v => typeof v === "string")) {
+    return { ok: false, status: 400, error: "All fields are required" };
+  }
+  const userDto = new UserDTO({
+    username,
+    password,
+    firstName: data.firstName ?? "",
+    lastName: data.lastName ?? "",
+    email,
+  });
+  const result = await authService.upgradeAccount(
+    userDto,
+    data.personalNumber,
+    data.upgradeCode
+  );
+
+  if (!result.ok) {
+    return result;
+  }
+
+  return {
+    ok: true,
+    status: 200,
+    user: result.user,
+    cookie: result.cookie,
+  };
+}
+
+module.exports = { login, upgradeAccount };

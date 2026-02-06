@@ -31,16 +31,63 @@ async function login(username, password) {
 
   return {
     token,
-    user: {
-      person_id: user.person_id,
-      username: user.username,
-      name: user.name,
-      surname: user.surname,
-      pnr: user.pnr,
-      email: user.email,
-      role_id: user.role_id,
+    user
+  };
+}
+
+async function upgradeAccount(email, personalNumber, upgradeCode, username, password) {
+  const person = await authSearch.findPersonForUpgrade(email, personalNumber);
+
+  if (!person) {
+    return { ok: false, status: 404, error: "User not found" };
+  }
+
+  if (person.person_id < 11 || person.person_id > 900) {
+    return { ok: false, status: 403, error: "Not a legacy user" };
+  }
+
+  const validCode = await authSearch.verifyUpgradeCode(
+    person.person_id,
+    upgradeCode
+  );
+
+  if (!validCode) {
+    return { ok: false, status: 401, error: "Invalid upgrade code" };
+  }
+
+  const usernameTaken = await authSearch.usernameExists(username);
+  if (usernameTaken) {
+    return { ok: false, status: 409, error: "Username already taken" };
+  }
+
+
+  await authSearch.upgradePersonAccount(
+    person.person_id,
+    username,
+    password
+  );
+
+  const token = jwt.sign(
+    { personId: person.person_id },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  return {
+    ok: true,
+    user: { person_id: person.person_id, username },
+    cookie: {
+      name: "auth",
+      value: token,
+      options: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 1000,
+      },
     },
   };
 }
 
-module.exports = { login };
+
+module.exports = { login, upgradeAccount };

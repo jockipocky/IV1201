@@ -6,7 +6,7 @@
 var express = require("express");
 var router = express.Router();
 
-const { login } = require("../controllers/authController");
+const { login, upgradeAccount } = require("../controllers/authController");
 
 router.post("/login", async function (req, res) {
   try {
@@ -25,5 +25,20 @@ router.post("/login", async function (req, res) {
     return res.status(500).json({ ok: false, error: "Server error" });
   }
 });
+
+router.post("/upgrade", async function (req, res) {
+  try {
+    const result = await upgradeAccount(req.body);
+
+    if (!result.ok) {
+      return res.status(result.status).json({ ok: false, error: result.error });
+    }
+
+    return res.status(result.status).json(result.user);
+  } catch (err) {
+    console.error("LOGIN ERROR:", err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+})
 
 module.exports = router;
