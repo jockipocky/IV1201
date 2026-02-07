@@ -27,6 +27,14 @@ async function findPersonForUpgrade(email, personalNumber) {
      WHERE email = $1 AND pnr = $2`,
     [email, personalNumber]
   );
+  console.log("UPGRADE LOOKUP:", { email, personalNumber });
+
+const debug = await db.query(
+  "SELECT person_id, email, pnr FROM person WHERE email = $1",
+  [email]
+);
+console.log("MATCH BY EMAIL:", debug.rows);
+
   return res.rows[0];
 }
 

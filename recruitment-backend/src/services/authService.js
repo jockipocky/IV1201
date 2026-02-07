@@ -35,8 +35,8 @@ async function login(username, password) {
   };
 }
 
-async function upgradeAccount(email, personalNumber, upgradeCode, username, password) {
-  const person = await authSearch.findPersonForUpgrade(email, personalNumber);
+async function upgradeAccount(userDto, personalNumber, upgradeCode) {
+  const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
 
   if (!person) {
     return { ok: false, status: 404, error: "User not found" };
@@ -55,7 +55,7 @@ async function upgradeAccount(email, personalNumber, upgradeCode, username, pass
     return { ok: false, status: 401, error: "Invalid upgrade code" };
   }
 
-  const usernameTaken = await authSearch.usernameExists(username);
+  const usernameTaken = await authSearch.usernameExists(userDto.username);
   if (usernameTaken) {
     return { ok: false, status: 409, error: "Username already taken" };
   }
@@ -63,8 +63,8 @@ async function upgradeAccount(email, personalNumber, upgradeCode, username, pass
 
   await authSearch.upgradePersonAccount(
     person.person_id,
-    username,
-    password
+    userDto.username,
+    userDto.password
   );
 
   const token = jwt.sign(
@@ -75,7 +75,7 @@ async function upgradeAccount(email, personalNumber, upgradeCode, username, pass
 
   return {
     ok: true,
-    user: { person_id: person.person_id, username },
+    user: { person_id: person.person_id, username: userDto.username },
     cookie: {
       name: "auth",
       value: token,
