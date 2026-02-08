@@ -6,7 +6,9 @@
 import apiClient from "./http";
 
 export const getApplications = async () => {
-  return apiClient.get("/applications");
+  const resp = await apiClient.get("/applications/all");
+  console.log("Response for applications fetch: ", resp);
+  return resp;
 };
 
 export const submitApplication = async (data: any) => {

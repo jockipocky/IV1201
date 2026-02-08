@@ -12,7 +12,7 @@ var logger = require('morgan');
 const bodyParser = require('body-parser');
 
 
-
+var applicationsRouter = require('./src/routes/applications');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./src/routes/auth');
 
@@ -32,7 +32,7 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/auth', usersRouter);
-
+app.use('/applications', applicationsRouter);
 
 
 // catch 404 and forward to error handler
