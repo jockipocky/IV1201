@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height" fluid>
     <v-row justify="center" align="center">
-      <v-col cols="12" sm="6" md="4">
+      <v-col cols="12" md="10">
         <!-- Application list component -->
         <ApplicationList />
       </v-col>
