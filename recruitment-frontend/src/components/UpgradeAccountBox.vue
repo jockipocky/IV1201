@@ -44,7 +44,11 @@
         {{ error }}
       </v-alert>
 
-      <v-btn class="mt-6 mb-4" color="blue" block @click="handleUpgrade">
+      <v-alert v-if="success" type="success" class="mt-4" dense>
+        {{ success }}
+      </v-alert>
+
+      <v-btn class="mt-6 mb-4" color="blue" block type="submit" :loading="loading" :disabled="loading">
         {{t.upgradeButtonLabel}}
       </v-btn>
     </form>
@@ -67,21 +71,59 @@ export default defineComponent({
       password: "",
     });
 
+    const success = ref<string | null>(null);
+    const loading = ref(false);
+
+
     const t = inject<any>('t') //this is our dictionary
     const visible = ref(false);
     const error = ref<string | null>(null);
     const upgradeStore = useUpgradeStore(); // reuse auth store or create register store
 
+    const isNonEmpty = function (v: string) {
+      return typeof v === "string" && v.trim().length > 0;
+    };
+
     const handleUpgrade = async () => {
+
+      error.value = null;
+      success.value = null;
+      // Frontend validation (matches your backend "string required" check, but also blocks empty strings)
+      if (
+        !isNonEmpty(state.email) ||
+        !isNonEmpty(state.personNumber) ||
+        !isNonEmpty(state.upgradeCode) ||
+        !isNonEmpty(state.username) ||
+        !isNonEmpty(state.password)
+      ) {
+        error.value = "All fields are required";
+        return;
+      }
+
       try {
-        // Optionally, add basic validation here
-        await upgradeStore.upgrade(state.email, state.personNumber, state.upgradeCode, state.username, state.password); // implement a register action in your store
+
         error.value = null;
-        // optionally redirect after successful registration
+        loading.value = true;
+
+        await upgradeStore.upgrade(
+          state.email.trim(),
+          state.personNumber.trim(),
+          state.upgradeCode.trim(),
+          state.username.trim(),
+          state.password // usually don't trim passwords
+        );
+        success.value = "Account successfully upgraded";
+        // optional: clear fields on success
+        // state.email = ""; state.personNumber = ""; state.upgradeCode = ""; state.username = ""; state.password = "";
       } catch (err: any) {
-        error.value = err.response?.data?.message || "Registration failed";
+        // Your backend returns { ok:false, error:"..." } (not "message"), so handle both
+        error.value = err.response?.data?.error || err.response?.data?.message || "Upgrade failed";
+        
+      } finally {
+        loading.value = false;
       }
     };
+
 
     return {
       t,
@@ -89,6 +131,8 @@ export default defineComponent({
       visible,
       error,
       handleUpgrade,
+      success,
+      loading
     };
   },
 });

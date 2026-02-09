@@ -22,7 +22,7 @@ async function searchForUser(username, password) {
 
 async function findPersonForUpgrade(email, personalNumber) {
   const res = await db.query(
-    `SELECT person_id
+    `SELECT person_id, username, password
      FROM person
      WHERE email = $1 AND pnr = $2`,
     [email, personalNumber]
@@ -64,6 +64,7 @@ async function upgradePersonAccount(personId, username, password) {
     [username, password, personId]
   );
 }
+
 
 module.exports = {
   findPersonForUpgrade,

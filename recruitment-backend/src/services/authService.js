@@ -38,6 +38,13 @@ async function login(username, password) {
 async function upgradeAccount(userDto, personalNumber, upgradeCode) {
   const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
 
+  const hasUsername = typeof person.username === "string" && person.username.trim() !== "";
+  const hasPassword = typeof person.password === "string" && person.password.trim() !== "";
+
+  if (hasUsername || hasPassword) {
+    return { ok: false, status: 409, error: "Account already upgraded" };
+  }
+
   if (!person) {
     return { ok: false, status: 404, error: "User not found" };
   }
