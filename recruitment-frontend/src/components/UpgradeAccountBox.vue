@@ -48,6 +48,11 @@
         {{ success }}
       </v-alert>
 
+      <v-btn class="mt-3" variant="tonal" block type="button" @click="goToLogin">
+        {{ t.backToLogin}}
+      </v-btn>
+
+
       <v-btn class="mt-6 mb-4" color="blue" block type="submit" :loading="loading" :disabled="loading">
         {{t.upgradeButtonLabel}}
       </v-btn>
@@ -59,6 +64,7 @@
 import { defineComponent, ref, reactive } from "vue";
 import { useUpgradeStore } from "@/stores/upgradeStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "UpgradeAccountBox",
@@ -74,6 +80,11 @@ export default defineComponent({
     const success = ref<string | null>(null);
     const loading = ref(false);
 
+    const router = useRouter();
+
+    const goToLogin = () => {
+      router.push("/login"); // change if needed
+    };
 
     const t = inject<any>('t') //this is our dictionary
     const visible = ref(false);
@@ -132,7 +143,8 @@ export default defineComponent({
       error,
       handleUpgrade,
       success,
-      loading
+      loading,
+      goToLogin,
     };
   },
 });
