@@ -51,7 +51,9 @@
 
     <div>
         <v-btn
-        color="#2196F3">
+        color="#2196F3"
+        @click="onApply"
+        >
             {{t.apply}}
         </v-btn>
     </div>
@@ -110,6 +112,15 @@ import { submitApplication } from "@/api/applicationApi"; //måste skapas
             applicationStore.addEmptyAvailability()
         } else{
             applicationStore.removeAvailability(index);
+        }
+    };
+
+
+    const onApply = async() =>{
+        try {
+            await applicationStore.submitApplicationForm();
+        } catch (e) {
+            error.value = t.genericError
         }
     };
     //överväg lägg till funktionallitet så att vi skapar en ny competence ifall vi trycker på enter

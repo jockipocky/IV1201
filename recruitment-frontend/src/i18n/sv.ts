@@ -25,5 +25,7 @@ export default {
   competenceProfile:  "Arbetslivserfarenheter",
   competence: "Erfarenhet",
   availabilityRange: "Tillgänglighet",
-  apply: "Ansök"
+  apply: "Ansök",
+  personalInfoLabel: "Personlig Information",
+  genericError: "ett fel uppstod"
 };

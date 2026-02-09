@@ -25,5 +25,7 @@ export default {
   applicationFormTitle: "Application",
   competence: "Competence",
   availabilityRange: "Availability Range",
-  apply: "apply"
+  apply: "apply",
+  personalInfoLabel: "Personal Info",
+  genericError: "An error occurred"
 };

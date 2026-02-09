@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
-import type { submitApplication } from "@/api/applicationApi";
+import { submitApplication } from "@/api/applicationApi";
 
 const handlingState ={
     UNHANDLED: "unhandled",
@@ -26,7 +26,7 @@ interface availability{
 interface ApplicationState{
     competences: string[];
     availability: availability[];
-    personalInfo: personalInfo | null;
+    personalInfo: personalInfo;
     handlingState: string;
     error:string | null;
 }
@@ -35,7 +35,12 @@ export const useApplicationStore = defineStore("applicationForm", {
     state: () : ApplicationState=> ({ //actual initial state of the values in our store (MODEL)
         competences: [],
         availability: [],
-        personalInfo: null,
+        personalInfo: {
+        firstName: "",
+        lastname: "",
+        email: "",
+        personalNumber: "",
+        },
         handlingState: handlingState.UNHANDLED,
         error: null as string |null,
     }),
@@ -112,14 +117,19 @@ export const useApplicationStore = defineStore("applicationForm", {
             
         },
 
+        submitApplicationForm(){
+            return submitApplication({
+                personalInfo: this.personalInfo,
+                competences: this.competences,
+                availability: this.availability,
+            })
+        },
 
-        async submitApplication(){
-            try{
-                console.log("testi");
-        }     catch(err: any){
-            this.error = err.response?.data?.message || "Registering failed, sorry";
-        }
-  },
+
+
+
+
+  
 
   },
 });
