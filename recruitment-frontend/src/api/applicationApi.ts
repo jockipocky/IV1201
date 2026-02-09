@@ -1,14 +1,40 @@
-//this is not yet finished just putting this here so we can work on it later
-//like authApi.ts, this uses the axios object for the api client in http.ts
-//and sends a get or post request for applications. we'll have to figure out
-//the data payload later.
+  //this is not yet finished just putting this here so we can work on it later
+  //like authApi.ts, this uses the axios object for the api client in http.ts
+  //and sends a get or post request for applications. we'll have to figure out
+  //the data payload later.
 
-import apiClient from "./http";
+  import apiClient from "./http";
 
-export const getApplications = async () => {
-  return apiClient.get("/applications");
-};
+  const handlingState ={
+      UNHANDLED: "unhandled",
+      REJECTED: "rejected",
+      ACCEPTED: "accepted"
+      
+  }
 
-export const submitApplication = async (data: any) => {
-  return apiClient.post("/applications", data);
-};
+  interface personalInfo{
+      firstName: string;
+      lastname: string;
+      email:string;
+      personalNumber: string;
+  }
+
+  interface availability{
+      from: string | null;
+      to: string | null;
+  }
+
+  interface SubmitApplicationPayload{
+    personalInfo: personalInfo;
+    competences: string[];
+    availability: availability[];
+    handlingState: string;
+  }
+
+  export const getApplications = async () => {
+    return apiClient.get("/applications");
+  };
+
+  export const submitApplication = async (data: SubmitApplicationPayload) => {
+    return apiClient.post("/applications", data);
+  };

@@ -117,13 +117,14 @@ export const useApplicationStore = defineStore("applicationForm", {
             
         },
 
-        submitApplicationForm(){
-            return submitApplication({
-                personalInfo: this.personalInfo,
-                competences: this.competences,
-                availability: this.availability,
-            })
-        },
+            submitApplicationForm(){
+                return submitApplication({
+                    personalInfo: this.personalInfo,
+                    competences: this.competences,
+                    availability: this.availability,
+                    handlingState: this.handlingState,
+                })
+            },
 
 
 

@@ -1,6 +1,5 @@
 class ApplicationDTO{
-    constructor({applicationID, personalInfo, competenceProfile, availability, handlingStat}){
-        this.applicationID = applicationID
+    constructor({ personalInfo, competenceProfile, availability, handlingStat}){
         this.personalInfo = personalInfo
         this.competenceProfile = competenceProfile
         this.availability = availability

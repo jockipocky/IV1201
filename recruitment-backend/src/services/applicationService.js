@@ -1,26 +1,54 @@
+const { randomUUID } = require("crypto")
+
+const applicationStat = {
+    UNHANDLED: "unhandled",
+    ACCEPTED: "accepted", 
+    REJECTED: "rejected"
+}
+
+
 
 /**
+ * hur application hanteras och sätts styrs härifrån
  * 
- * Denna klass hanterar och sorterar applications i listor
+ * spontant känns det som att vi inte behöver veta alltför mycket 
+ * personlig info, mer bara meta data kring ansökningen
+ * 
  */
-class applicationService{
-    constructor(){
-        this.applications = []
+class Application{
+
+    constructor(applicationDTO){
+        this.competenceProfile = applicationDTO.competenceProfile
+        this.availability = applicationDTO.availability
+        this.handlingStat=applicationStat.UNHANDLED
+        this.applicationID = randomUUID() //inte bästa sättet att ta skapa id. man borde göra en funktion som sätter id, sen låta repository layer ta hand om det när den skapar application instansen i db
+
+    }
+
+    /**
+     * sätter hanldingStat till accepterad
+     */
+    accept(){
+        this.handlingStat=applicationStat.ACCEPTED
     }
 
 
     /**
-     * tar emot application dto som ska skapas någonstans (vet ej vart)
-     * skapar en ny application, och lägger det i listan av applications
-     * @param applicationDTO: data objekt med metadata om application
-     * @returns objektet application
-     * 
+     * sätter handlingStat till rejected
      */
-
-    createApplication(applicationDTO){
-        const applicationDTO = new application(applicationDTO)
-        this.applications.push(application)
-        return application
+    reject(){
+        this.handlingStat = applicationStat.REJECTED
     }
 
+    applicationSubmission(applicationDTO){
+        /**
+         * skicka dton till databasen och 
+         * besvara på korrekt sätt
+         */
+    }
 }
+
+
+
+
+module.exports = application
