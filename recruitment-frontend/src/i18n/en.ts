@@ -24,5 +24,6 @@ export default {
   competenceProfile: "Work Experience",
   applicationFormTitle: "Application",
   competence: "Competence",
-  availabilityRange: "Availability Range"
+  availabilityRange: "Availability Range",
+  apply: "apply"
 };

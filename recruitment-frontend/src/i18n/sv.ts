@@ -24,5 +24,6 @@ export default {
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
   competenceProfile:  "Arbetslivserfarenheter",
   competence: "Erfarenhet",
-  availabilityRange: "Tillgänglighet"
+  availabilityRange: "Tillgänglighet",
+  apply: "Ansök"
 };
