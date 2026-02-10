@@ -36,8 +36,17 @@ async function login(username, password) {
 }
 
 async function upgradeAccount(userDto, personalNumber, upgradeCode) {
+    if (
+    !userDto ||
+    typeof userDto.username !== "string" ||
+    typeof userDto.email !== "string"
+  ) {
+    return { ok: false, status: 400, error: "Invalid request data" };
+  }
   const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
-
+  if (!person) {
+    return { ok: false, status: 404, error: "User not found" };
+  }
   const hasUsername = typeof person.username === "string" && person.username.trim() !== "";
   const hasPassword = typeof person.password === "string" && person.password.trim() !== "";
 
@@ -45,9 +54,7 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
     return { ok: false, status: 409, error: "Account already upgraded" };
   }
 
-  if (!person) {
-    return { ok: false, status: 404, error: "User not found" };
-  }
+
 
   if (person.person_id < 11 || person.person_id > 900) {
     return { ok: false, status: 403, error: "Not a legacy user" };

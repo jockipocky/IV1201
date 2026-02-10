@@ -45,14 +45,16 @@ async function login(username, password) {
     user: userDto,
   };
 }
-
+function isNonEmptyString(v) {
+  return typeof v === "string" && v.trim().length > 0;
+}
 async function upgradeAccount(data) {
   const { email, personalNumber, upgradeCode, username, password, firstName, lastName } = data;
 
 
-  if (![email, personalNumber, upgradeCode, username, password].every(v => typeof v === "string")) {
-    return { ok: false, status: 400, error: "All fields are required" };
-  }
+if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptyString)) {
+  return { ok: false, status: 400, error: "All fields are required" };
+}
   const userDto = new UserDTO({
     username,
     password,

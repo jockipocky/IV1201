@@ -21,5 +21,8 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "The upgrade code we sent to your email",
   upgradeButtonLabel: "Request upgrade",
   loginError: "Error when attempting to log in. Please try again.",
-  backToLogin: "Return to login"
+  backToLogin: "Return to login",
+  allFieldsRequired: "All fields are required",
+  upgradeSuccess: "Account successfully upgraded",
+  upgradeFailed: "Upgrade failed",
 };

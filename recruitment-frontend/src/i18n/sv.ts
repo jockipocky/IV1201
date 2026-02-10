@@ -23,4 +23,7 @@ export default {
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
   backToLogin: "Gå tillbaka till login",
+  allFieldsRequired: "Alla fält måste fyllas i",
+  upgradeSuccess: "Kontot har uppgraderats",
+  upgradeFailed: "Uppgraderingen misslyckades",
 };

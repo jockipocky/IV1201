@@ -3,32 +3,32 @@
     <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.upgradeAccountInfo}}
     </div>
 
-    <form @submit.prevent="handleUpgrade">
+    <v-form ref="formRef" @submit.prevent="handleUpgrade" novalidate>
       <v-text-field
         v-model="state.email"
         :placeholder="t.emailLabel"
         :label="t.upgradeAccountEmailPlaceholder"
         type="email"
-        required
+        :rules="[requiredRule]"
       ></v-text-field>
 
       <v-text-field
         v-model="state.personNumber"
         :label="t.personalNumberLabel"
-        required
+        :rules="[requiredRule]"
       ></v-text-field>
 
       <v-text-field
         v-model="state.upgradeCode"
         :label="t.upgradeAccountUpgradeCodePlaceholder"
         :placeholder="t.upgradeCodeLabel"
-        required
+        :rules="[requiredRule]"
       ></v-text-field>
 
       <v-text-field
         v-model="state.username"
         :label="t.newUsernameLabel"
-        required
+        :rules="[requiredRule]"
       ></v-text-field>
 
       <v-text-field
@@ -37,7 +37,7 @@
         :type="visible ? 'text' : 'password'"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         @click:append-inner="visible = !visible"
-        required
+        :rules="[requiredRule]"
       ></v-text-field>
 
       <v-alert v-if="error" type="error" class="mt-4" dense>
@@ -56,7 +56,7 @@
       <v-btn class="mt-6 mb-4" color="blue" block type="submit" :loading="loading" :disabled="loading">
         {{t.upgradeButtonLabel}}
       </v-btn>
-    </form>
+    </v-form>
   </v-card>
 </template>
 
@@ -76,9 +76,12 @@ export default defineComponent({
       username: "",
       password: "",
     });
+    const formRef = ref<any>(null);
 
     const success = ref<string | null>(null);
     const loading = ref(false);
+
+
 
     const router = useRouter();
 
@@ -91,29 +94,21 @@ export default defineComponent({
     const error = ref<string | null>(null);
     const upgradeStore = useUpgradeStore(); // reuse auth store or create register store
 
-    const isNonEmpty = function (v: string) {
-      return typeof v === "string" && v.trim().length > 0;
-    };
+
+    const requiredRule = (v: string) =>
+  (typeof v === "string" && v.trim().length > 0) || (t?.allFieldsRequired ?? "All fields are required");
 
     const handleUpgrade = async () => {
-
       error.value = null;
       success.value = null;
-      // Frontend validation (matches your backend "string required" check, but also blocks empty strings)
-      if (
-        !isNonEmpty(state.email) ||
-        !isNonEmpty(state.personNumber) ||
-        !isNonEmpty(state.upgradeCode) ||
-        !isNonEmpty(state.username) ||
-        !isNonEmpty(state.password)
-      ) {
-        error.value = "All fields are required";
+
+      const result = await formRef.value?.validate();
+      if (!result?.valid) {
+        error.value = t?.allFieldsRequired ?? "All fields are required";
         return;
       }
 
       try {
-
-        error.value = null;
         loading.value = true;
 
         await upgradeStore.upgrade(
@@ -121,19 +116,17 @@ export default defineComponent({
           state.personNumber.trim(),
           state.upgradeCode.trim(),
           state.username.trim(),
-          state.password // usually don't trim passwords
+          state.password
         );
-        success.value = "Account successfully upgraded";
-        // optional: clear fields on success
-        // state.email = ""; state.personNumber = ""; state.upgradeCode = ""; state.username = ""; state.password = "";
+
+        success.value = t?.upgradeSuccess ?? "Account successfully upgraded";
       } catch (err: any) {
-        // Your backend returns { ok:false, error:"..." } (not "message"), so handle both
-        error.value = err.response?.data?.error || err.response?.data?.message || "Upgrade failed";
-        
+        error.value = err.response?.data?.error || err.response?.data?.message || (t?.upgradeFailed ?? "Upgrade failed");
       } finally {
         loading.value = false;
       }
     };
+
 
 
     return {
@@ -145,6 +138,8 @@ export default defineComponent({
       success,
       loading,
       goToLogin,
+      requiredRule,
+      formRef,
     };
   },
 });
