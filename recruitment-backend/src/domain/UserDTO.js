@@ -1,5 +1,5 @@
 class UserDTO {
-  constructor({ username, password, firstName, lastName, email}) {
+  constructor({ username, password = null, firstName, lastName, email}) {
     this.username = username
     this.password = password
     this.firstName = firstName
