@@ -18,6 +18,10 @@
       email:string;
       personalNumber: string;
   }
+  interface competence{
+      competenceType: string;
+      competenceTime: string;
+  }
 
   interface availability{
       from: string | null;
@@ -25,8 +29,7 @@
   }
 
   interface SubmitApplicationPayload{
-    personalInfo: personalInfo;
-    competences: string[];
+    competences: competence[];
     availability: availability[];
     handlingState: string;
   }

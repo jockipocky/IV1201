@@ -6,12 +6,25 @@
     <div 
         v-for="(competence ,index) in applicationStore.competences"
         :key="index">
-        
-        <v-text-field
-            :model-value="competence"
-            @update:model-value="applicationStore.updateCompetence(index, $event)"
-            :label="t.competence"
+        <v-select
+          :label="t.competence"
+          :items="[t.ticketSalesLabel, t.rollerCoasterOperatorLabel, t.lotteriesLabel]"
+          :model-value="competence.competenceType"
+          @update:model-value=" 
+          applicationStore.updateCompetence(index, {competenceType: $event})"
+          variant="outlined"
+          density="compact"
+          class="mb-6"
+        />     
 
+        <v-text-field
+            type="number"
+            step="0.1"
+            inpuutmode="decimal"  
+            pattern="[0-9]*"
+            @update:model-value="applicationStore.updateCompetence(index, {competenceTime: $event})"
+            :label="t.yearsOfExperienceLabel"
+            :model-value="competence.competenceTime"
             :append-inner-icon="
             index === applicationStore.competences.length - 1
             ? mdiPlus
@@ -19,7 +32,7 @@
             "
             @click:append-inner="handleCompIconClick(index)"
             class="mb-2"/>
-        
+ 
         
     
     

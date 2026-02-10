@@ -27,5 +27,11 @@ export default {
   availabilityRange: "Tillgänglighet",
   apply: "Ansök",
   personalInfoLabel: "Personlig Information",
-  genericError: "ett fel uppstod"
+  genericError: "ett fel uppstod",
+  yearsOfExperience: "år av erfarenhet",
+  ticketSalesLabel: "Biljett Försäljare",
+  rollerCoasterOperatorLabel:"Attraktionsvärd" ,
+    lotteriesLabel:"brush vettefan vad man ska översätta det här till"
+
+
 };

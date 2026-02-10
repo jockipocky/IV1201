@@ -27,5 +27,9 @@ export default {
   availabilityRange: "Availability Range",
   apply: "apply",
   personalInfoLabel: "Personal Info",
-  genericError: "An error occurred"
+  genericError: "An error occurred",
+  yearsOfExperienceLabel:"Years of Experience",
+  ticketSalesLabel: "Ticket Sales",
+  rollerCoasterOperatorLabel:"Roller Coaster Operator" ,
+  lotteriesLabel:"Lotteries"
 };

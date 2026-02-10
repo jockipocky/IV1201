@@ -2,12 +2,18 @@
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
 import { submitApplication } from "@/api/applicationApi";
+import { renderToString } from "vue/server-renderer";
 
 const handlingState ={
     UNHANDLED: "unhandled",
     REJECTED: "rejected",
     ACCEPTED: "accepted"
     
+}
+const competenceType={
+    TICKETSALEs: "ticket sales",
+    ROLLERCOASTEROPS: "roller coaster operator",
+    LOTTERIES: "lotteries"
 }
 
 interface personalInfo{
@@ -22,9 +28,14 @@ interface availability{
     to: string | null;
 }
 
+interface competence{
+    competenceType: string;
+    competenceTime: string;
+}
+
 
 interface ApplicationState{
-    competences: string[];
+    competences: competence[];
     availability: availability[];
     personalInfo: personalInfo;
     handlingState: string;
@@ -63,7 +74,12 @@ export const useApplicationStore = defineStore("applicationForm", {
          * this function adds another element to the competences array
          */
         addEmptyCompetence(){
-            this.competences.push("");
+            if(this.competences.length >=3) return
+
+            this.competences.push({
+                competenceTime: "",
+                competenceType: ""
+            });
             console.log("addEmptyCompetence gör något")
         },
 
@@ -72,9 +88,18 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @param index the index of the cell that we want to update
          * @param value the keys inputed to the form
          */
-        updateCompetence(index: number, value:string){
-            this.competences[index] = value
-            console.log("updateCompetence gör något:", this.competences)
+        updateCompetence(index: number, payload: Partial<competence>){
+            const competence = this.competences[index]
+            if(!competence) return
+
+            if(payload.competenceType!==undefined){
+                competence.competenceType = payload.competenceType
+            }
+            if(payload.competenceTime !== undefined){
+                competence.competenceTime = payload.competenceTime
+            }
+            console.log("competence: ", competence)
+
         },
 
         /**
@@ -90,6 +115,8 @@ export const useApplicationStore = defineStore("applicationForm", {
          * creates a new, empty availability period
          */
         addEmptyAvailability() {
+            if(this.availability.length >= 3) return
+            //kanske lägga till error eller nått sånt
             this.availability.push({ from: null, to: null });
         },
 
@@ -119,7 +146,6 @@ export const useApplicationStore = defineStore("applicationForm", {
 
         submitApplicationForm(){
             return submitApplication({
-                personalInfo: this.personalInfo,
                 competences: this.competences,
                 availability: this.availability,
                 handlingState: this.handlingState,

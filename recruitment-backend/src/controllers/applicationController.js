@@ -6,7 +6,7 @@ async function applicationSubmission(req,res){
         const dto = new ApplicationDTO(req.body)
         const application = new Application(dto)
 
-        if(typeof dto.personalInfo !== "string" || 
+        if(
             typeof dto.competenceProfile !== "string" || 
             typeof dto.availability !== "string"){
                 return res.status(400).json({

@@ -3,9 +3,7 @@
     <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.personalInfoLabel}}</div>
 
     <form @submit.prevent>
-    <div 
-        v-for="(competence ,index) in applicationStore.competences"
-        :key="index">
+    <div>
         
         <v-text-field
             :label="t.firstNameLabel"

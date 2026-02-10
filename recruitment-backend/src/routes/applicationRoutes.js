@@ -6,10 +6,10 @@
 var express = require("express");
 var router = express.Router();
 
-const { login } = require("../controllers/authController");
+const { login } = require("../controllers/applicationController");
 
 // POST /auth/login
-router.post("/application", login);
+router.post("/application", applicationSubmission);
 
 
 
