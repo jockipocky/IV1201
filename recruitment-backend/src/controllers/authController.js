@@ -28,13 +28,14 @@ async function login(username, password) {
     firstName: userRow.firstName,
     lastName: userRow.lastName,
     email: userRow.email,
+    role_id: userRow.role_id,
   });
   return {
     ok: true,
     status: 200,
     cookie: {
       name: "auth",
-      value: result.token,
+      value: result.token, 
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

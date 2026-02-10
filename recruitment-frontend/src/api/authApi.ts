@@ -58,3 +58,7 @@ export const upgradeAccount = async (email: string, personalNumber: string, upgr
     password,
   });
 };
+
+export const logout = async () => {
+  return apiClient.post("/auth/logout");
+};

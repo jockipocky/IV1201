@@ -1,5 +1,6 @@
 export default {
   loginButtonLabel: "Log in",
+  logoutButtonLabel: "Log out",
   passwordFieldPlaceholder: "Enter your password",
   loginBoxTitle: "Account",
   upgradeAccountLink: "Upgrade legacy account",

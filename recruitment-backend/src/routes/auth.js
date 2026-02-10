@@ -26,6 +26,17 @@ router.post("/login", async function (req, res) {
   }
 });
 
+router.post("/logout", (req, res) => {
+  res.clearCookie("auth", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  return res.status(200).json({ ok: true });
+});
+
 router.post("/upgrade", async function (req, res) {
   try {
     const result = await upgradeAccount(req.body);
