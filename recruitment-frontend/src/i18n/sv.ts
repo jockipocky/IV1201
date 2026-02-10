@@ -1,5 +1,6 @@
 export default {
   loginButtonLabel: "Logga in",
+  logoutButtonLabel: "Logga ut",
   passwordFieldPlaceholder: "Ange ditt lösenord",
   loginBoxTitle: "Konto",
   upgradeAccountLink: "Uppgradera äldre konto",

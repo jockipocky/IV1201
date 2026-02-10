@@ -11,7 +11,8 @@
 
 
 import { defineStore } from "pinia";
-import { login, fetchUser } from "@/api/authApi";
+import { login, fetchUser,logout } from "@/api/authApi";
+import { router } from "@/router";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
@@ -49,12 +50,22 @@ export const useAuthStore = defineStore("auth", {
       }
     },//end of fetchUser. this is called on refresh to autologin using cookie
 
-    logout() {
+     async logout() {
+      try {
+        await logout(); // backend session destroyed
+      } catch (e) {
+        console.error("Logout failed:", e);
+      }
+      // frontend cleanup
       this.user = null;
       localStorage.removeItem("token");
+
+      // navigation
+      router.push("/login");
     },
   },
   getters:{ //getters accessible to the dom
+     isLoggedIn: (state) => !!state.user,
 
   },
 });
