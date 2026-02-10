@@ -6,7 +6,7 @@
 var express = require("express");
 var router = express.Router();
 
-const { login, upgradeAccount } = require("../controllers/authController");
+const { login, upgradeAccount, me, } = require("../controllers/authController");
 
 router.post("/login", async function (req, res) {
   try {
@@ -52,9 +52,9 @@ router.post("/upgrade", async function (req, res) {
   }
 })
 
-router.post("/me", async function (req, res) {
+router.get("/me", async function (req, res) {
   try {
-    const result = await authController.me(req);
+    const result = await me(req);
 
     if (!result.ok) {
       return res.status(result.status).json({ ok: false, error: result.error });

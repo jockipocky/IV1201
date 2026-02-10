@@ -107,21 +107,33 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
 
 async function getMe(token) {
   if (!token) {
-    return { ok: false, status: 401, error: "Not authenticared"};
+    return { ok: false, status: 401, error: "Not authenticated" };
   }
-  
+
   let payload;
   try {
     payload = jwt.verify(token, process.env.JWT_SECRET);
-  } catch {
-    return { ok: false, status: 401, error: "Invalid token" }; 
+  } catch (err) {
+
+    return { ok: false, status: 401, error: "Invalid token" };
   }
 
-  const user = await authSearch.findUserById(payload.person_id);
+
+
+  const personId = payload.person_id ?? payload.personId;
+
+
+  if (!personId) {
+    return { ok: false, status: 401, error: "Invalid token payload" };
+  }
+
+  const user = await authSearch.findUserById(personId);
+
   if (!user) {
     return { ok: false, status: 404, error: "User not found" };
   }
 
-  return { ok: true, user };
+  return { ok: true, status: 200, user };
 }
-module.exports = { login, upgradeAccount, getMe };
+
+module.exports = { login, upgradeAccount, getMe, };

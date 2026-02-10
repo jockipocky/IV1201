@@ -65,13 +65,15 @@ async function upgradePersonAccount(personId, username, password) {
   );
 }
 
-async function findUserbyId(person_id) {
-  const res = awaitdb.query(
+async function findUserById(person_id) {
+  const res = await db.query(
     `SELECT person_id, username, name, surname, email, role_id
      FROM person
      WHERE person_id = $1`,
-    [personId]
+    [person_id]
   );
+  if (res.rows.length === 0) return null;
+  return res.rows[0];
 }
 
  
@@ -81,5 +83,5 @@ module.exports = {
   usernameExists,
   upgradePersonAccount,
   searchForUser,
-  findUserbyId,
+  findUserById,
 };
