@@ -41,4 +41,19 @@ router.post("/upgrade", async function (req, res) {
   }
 })
 
+router.post("/me", async function (req, res) {
+  try {
+    const result = await authController.me(req);
+
+    if (!result.ok) {
+      return res.status(result.status).json({ ok: false, error: result.error });
+    }
+
+    return res.status(200).json({ ok: true, user: result.user });
+  } catch (err) {
+    console.error("ME ERROR:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+})
+
 module.exports = router;

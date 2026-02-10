@@ -80,4 +80,17 @@ if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptySt
   };
 }
 
-module.exports = { login, upgradeAccount };
+async function me(req) {
+  const token = req.cookies?.auth;
+
+  const result = await authService.getMe(token);
+  if (!result.ok) return result;
+
+  return {
+    ok: true,
+    status: 200,
+    user: result.user,
+  };
+}
+
+module.exports = { login, upgradeAccount, me };

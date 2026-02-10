@@ -87,6 +87,8 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
     { expiresIn: "1h" }
   );
 
+
+
   return {
     ok: true,
     user: { person_id: person.person_id, username: userDto.username },
@@ -103,5 +105,23 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
   };
 }
 
+async function getMe(token) {
+  if (!token) {
+    return { ok: false, status: 401, error: "Not authenticared"};
+  }
+  
+  let payload;
+  try {
+    payload = jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    return { ok: false, status: 401, error: "Invalid token" }; 
+  }
 
-module.exports = { login, upgradeAccount };
+  const user = await authSearch.findUserById(payload.person_id);
+  if (!user) {
+    return { ok: false, status: 404, error: "User not found" };
+  }
+
+  return { ok: true, user };
+}
+module.exports = { login, upgradeAccount, getMe };
