@@ -34,7 +34,7 @@ async function login(username, password) {
     status: 200,
     cookie: {
       name: "auth",
-      value: result.token,
+      value: result.token, 
       options: {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
