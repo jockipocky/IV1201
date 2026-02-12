@@ -127,12 +127,24 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @param index the element we want to change
          * @param range the start and end date of the applicants availability
          */
-        setAvailabilityRange(index: number, range: (string | null)[]) {
-            const from = range[0] ?? null;
-            const to = range[range.length - 1] ?? null;
+        setAvailabilityRange(index: number, range: (Date | null)[]) {
+            const fromDate = range[0] ?? null;
+            const toDate = range[range.length - 1] ?? null;
+
+            const from = fromDate ? this.formatDateToSQL(fromDate) : null
+            const to = toDate ? this.formatDateToSQL(toDate) : null
+
+
             this.availability[index] = { from, to };
 
             console.log("this.setAvailabilityRange: ", this.availability )
+        },
+
+        formatDateToSQL(date: Date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         },
 
         /**
