@@ -18,6 +18,7 @@
         />     
 
         <v-text-field
+            @keydown.prevent
             type="number"
             step="0.1"
             inpuutmode="decimal"  

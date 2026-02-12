@@ -15,14 +15,15 @@ async function applicationSubmission(req,res){
                 })
         }
 
-        const result = await applicationnService.applicationSubmission(dto)
+        const result = await applicationService.applicationSubmission(dto)
         if(!result){
             return res.status(401).json({
                 ok: false,
-                error: "All fields must be filles"
+                error: "All fields must be filled"
             })
         }
-
+        
+        return res.status(200).json({ ok: true, message: "Application submitted!" });
     }catch(err){
         console.error("APPLICATION SUBMISSION ERROR: ", err)
         return res.status(500).json({ok: false, error: "Server Error"})

@@ -60,12 +60,17 @@ export const useApplicationStore = defineStore("applicationForm", {
             /**
              * This returns a function so we can pass an index from the component
              */
-            getAvailabilityRange: (state) => {
-            return (index: number): (string | null)[] => {
-                const a = state.availability[index];
-                return a ? [a.from, a.to] : [];
-            };
-            },
+        getAvailabilityRange: (state) => {
+        return (index: number): (Date | null)[] => {
+            const a = state.availability[index];
+            if (!a) return [];
+
+            return [
+            a.from ? new Date(a.from) : null,
+            a.to ? new Date(a.to) : null
+            ];
+        };
+        },
   },
 
     actions: { //actions we can perform on the values in our store
@@ -140,6 +145,7 @@ export const useApplicationStore = defineStore("applicationForm", {
             console.log("this.setAvailabilityRange: ", this.availability )
         },
 
+        
         formatDateToSQL(date: Date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');

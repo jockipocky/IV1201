@@ -1,3 +1,6 @@
+const db = require("../db/db")
+
+
 const { randomUUID } = require("crypto")
 
 const applicationStat = {
@@ -42,8 +45,17 @@ class Application{
 
     applicationSubmission(applicationDTO){
         /**
-         * skicka dton till databasen och 
-         * besvara på korrekt sätt
+         * alternativ: BEGIN;
+
+INSERT INTO availability (person_id, from_date, to_date)
+VALUES (5, '2026-03-01', '2026-03-31');
+
+INSERT INTO competence_profile (person_id, competence_id, years_of_experience)
+VALUES (5, 2, 3.5);
+
+COMMIT;
+
+med rollback ifall den failar
          */
     }
 }
