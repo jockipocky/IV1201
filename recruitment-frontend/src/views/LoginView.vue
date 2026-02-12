@@ -17,6 +17,22 @@
 </template>
 
 <script lang="ts">
+/**
+ * LoginView actual view and component container.
+ *
+ * View which displays the login screen for the application.
+ *
+ * Does:
+ * - Centers content vertically and horizontally using Vuetify grid system
+ * - Displays the epic logo at the top
+ * - Renders the LoginBox component for user authentication
+ *
+ * Dependencies:
+ * - LoginBox component for the actual login form
+ * - Logo image asset for branding (really cool)
+ */
+
+
 import { defineComponent } from "vue";
 import LoginBox from "@/components/LoginBox.vue";
 import Logo from "@/assets/recruitboys.png";

@@ -1,5 +1,6 @@
 export default {
   loginButtonLabel: "Log in",
+  logoutButtonLabel: "Log out",
   passwordFieldPlaceholder: "Enter your password",
   loginBoxTitle: "Account",
   upgradeAccountLink: "Upgrade legacy account",
@@ -31,5 +32,9 @@ export default {
   yearsOfExperienceLabel:"Years of Experience",
   ticketSalesLabel: "Ticket Sales",
   rollerCoasterOperatorLabel:"Roller Coaster Operator" ,
-  lotteriesLabel:"Lotteries"
+  lotteriesLabel:"Lotteries",
+  backToLogin: "Return to login",
+  allFieldsRequired: "All fields are required",
+  upgradeSuccess: "Account successfully upgraded",
+  upgradeFailed: "Upgrade failed"
 };

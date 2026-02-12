@@ -1,5 +1,6 @@
 export default {
   loginButtonLabel: "Logga in",
+  logoutButtonLabel: "Logga ut",
   passwordFieldPlaceholder: "Ange ditt lösenord",
   loginBoxTitle: "Konto",
   upgradeAccountLink: "Uppgradera äldre konto",
@@ -31,7 +32,9 @@ export default {
   yearsOfExperience: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
-    lotteriesLabel:"brush vettefan vad man ska översätta det här till"
-
-
+    lotteriesLabel:"brush vettefan vad man ska översätta det här till",
+  backToLogin: "Gå tillbaka till login",
+  allFieldsRequired: "Alla fält måste fyllas i",
+  upgradeSuccess: "Kontot har uppgraderats",
+  upgradeFailed: "Uppgraderingen misslyckades",
 };

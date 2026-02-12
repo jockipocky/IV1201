@@ -15,8 +15,11 @@ export const useUpgradeStore = defineStore("upgrade", {
       try{
         const response = await upgradeAccount(email, personalNumber, upgradeCode, username, password);
         this.upgradeResult = response.data;
+        this.error = null;
+        return response.data;
       } catch(err: any){
         this.error = err.response?.data?.message || "Registering failed, sorry";
+        throw err;
       }
     }, //end of async login
   },
