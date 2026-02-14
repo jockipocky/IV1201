@@ -43,6 +43,7 @@ class Application{
         this.handlingStat = applicationStat.REJECTED
     }
 
+
     applicationSubmission(applicationDTO){
         /**
          * alternativ: BEGIN;

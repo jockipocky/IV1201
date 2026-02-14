@@ -8,7 +8,8 @@ async function applicationSubmission(req,res){
 
         if(
             typeof dto.competenceProfile !== "string" || 
-            typeof dto.availability !== "string"){
+            typeof dto.availability !== "string" ||
+            typeof dto.person_id !== "string"){
                 return res.status(400).json({
                     ok:false,
                     error:"All fields must be filled"
@@ -30,3 +31,9 @@ async function applicationSubmission(req,res){
     }
 }
 
+
+
+
+ module.exports = {
+    applicationSubmission, 
+};

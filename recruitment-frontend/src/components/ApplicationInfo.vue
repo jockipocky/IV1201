@@ -52,7 +52,11 @@
 import { defineComponent, ref } from "vue";
 import { useApplicationStore } from "@/stores/applicationStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
+import { onMounted } from "vue";
 
+onMounted(async () => {
+  await applicationStore.fetchUserInfo();
+});
 
 
     const error = ref<string | null>(null);

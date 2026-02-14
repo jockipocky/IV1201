@@ -15,6 +15,8 @@ const bodyParser = require('body-parser');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./src/routes/auth');
+var applicationRouter = require('./routes/applicationRoutes')
+
 
 var app = express();
 
@@ -32,6 +34,7 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/auth', usersRouter);
+app.use('/applications', applicationRouter)
 
 
 
@@ -50,6 +53,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+require("dotenv").config();
 
+console.log("DATABASE_URL =", process.env.DATABASE_URL);
 module.exports = app;
  

@@ -32,6 +32,7 @@
     competences: competence[];
     availability: availability[];
     handlingState: string;
+    person_id: string
   }
 
   export const getApplications = async () => {

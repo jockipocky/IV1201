@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
 import { submitApplication } from "@/api/applicationApi";
 import { renderToString } from "vue/server-renderer";
+import { useAuthStore } from "./authStore";
 
 const handlingState ={
     UNHANDLED: "unhandled",
@@ -21,6 +22,7 @@ interface personalInfo{
     lastname: string;
     email:string;
     personalNumber: string;
+    person_id: string
 }
 
 interface availability{
@@ -51,6 +53,7 @@ export const useApplicationStore = defineStore("applicationForm", {
         lastname: "",
         email: "",
         personalNumber: "",
+        person_id: ""
         },
         handlingState: handlingState.UNHANDLED,
         error: null as string |null,
@@ -145,7 +148,12 @@ export const useApplicationStore = defineStore("applicationForm", {
             console.log("this.setAvailabilityRange: ", this.availability )
         },
 
-        
+        /**
+         * this function formats the chosen availability dates to match the
+         * format used in the db
+         * @param date the selected date object received from the webbrowser
+         * @returns corecctly formated dates
+         */
         formatDateToSQL(date: Date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -162,11 +170,36 @@ export const useApplicationStore = defineStore("applicationForm", {
             
         },
 
+        async fetchUserInfo(){
+            const authStore = useAuthStore();
+
+            if(!authStore.user){
+                await authStore.fetchUser();
+            }
+
+            if(!authStore.user){
+                this.error = "User not logged in";
+                return;
+            }
+
+            // bara mappa från authStore
+            this.personalInfo = {
+                firstName: authStore.user.name,
+                lastname: authStore.user.surname,
+                email: authStore.user.email,
+                personalNumber: authStore.user.pnr,
+                person_id: authStore.user.person_id
+                //eventuellt lägg till så att dem skickar personnummer till a
+                //og fetch user i auth
+            }
+        },
+
         submitApplicationForm(){
             return submitApplication({
                 competences: this.competences,
                 availability: this.availability,
                 handlingState: this.handlingState,
+                person_id: this.personalInfo.person_id
             })
         },
 
