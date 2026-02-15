@@ -65,11 +65,32 @@ async function upgradePersonAccount(personId, username, password) {
   );
 }
 
+async function registerAccount(userDto) {
+  const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
+  try {
+      const res = await db.query(
+      `INSERT INTO person (username, name, surname, email, pnr, password, role_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING person_id, username, email`,
+      [username, firstName, lastName, email, personalNumber, password, role_id]
+    );
+    console.log("REGISTERED USER:", res.rows[0]);
+    return res.rows[0];
+
+  } catch (err) {
+    console.error("[DB ERROR]:", err);
+    if (err.code === "23505") { // Unique violation for inserted row in db
+     throw err; // Let the service layer handle this and return appropriate response
+    }
+  throw err;    
+  }
+}
 
 module.exports = {
   findPersonForUpgrade,
   verifyUpgradeCode,
   usernameExists,
   upgradePersonAccount,
-  searchForUser
+  searchForUser,
+  registerAccount
 };

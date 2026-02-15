@@ -27,8 +27,6 @@ async function login(username, password) {
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
-
-
   return {
     token,
     user
@@ -100,8 +98,32 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
         maxAge: 60 * 60 * 1000,
       },
     },
-  };
+  }; 
 }
 
+async function registerAccount(userDto) {
+  try {
+  const user = await authSearch.registerAccount(userDto);
+  return { ok: true, user };
 
-module.exports = { login, upgradeAccount };
+} catch (err) {
+  console.error("[SERVICE ERROR]:", err);
+  if (err.code === "23505") {
+    if (err.constraint === "unique_username") {
+      return { ok: false, status: 409, error: "Username already taken" };
+    }
+
+    if (err.constraint === "unique_email") {
+      return { ok: false, status: 409, error: "Email already registered" };
+    }
+
+    if (err.constraint === "unique_pnr") {
+      return { ok: false, status: 409, error: "Personal number already registered" };
+    }
+  }
+  // Unknown DB error
+  return { ok: false, status: 500, error: "Registration failed" };
+}
+}
+
+module.exports = { login, upgradeAccount, registerAccount };
