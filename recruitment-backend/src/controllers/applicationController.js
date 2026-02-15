@@ -1,5 +1,5 @@
-const ApplicationDTO = require("./ApplicationDTO");
-const { Application } = require("./Application");
+const ApplicationDTO = require("../domain/ApplicationDTO");
+const { Application } = require("../services/applicationService");
 
 async function applicationSubmission(req,res){
     try{
@@ -7,16 +7,16 @@ async function applicationSubmission(req,res){
         const application = new Application(dto)
 
         if(
-            typeof dto.competenceProfile !== "string" || 
-            typeof dto.availability !== "string" ||
-            typeof dto.person_id !== "string"){
+            dto.competenceProfile.length === 0  || 
+            dto.availability.length === 0 
+            ){
                 return res.status(400).json({
                     ok:false,
                     error:"All fields must be filled"
                 })
         }
 
-        const result = await applicationService.applicationSubmission(dto)
+        const result = await application.applicationSubmission(dto)
         if(!result){
             return res.status(401).json({
                 ok: false,

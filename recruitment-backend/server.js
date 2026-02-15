@@ -14,7 +14,7 @@ const bodyParser = require('body-parser');
 
 //var indexRouter = require('./routes/index');
 var usersRouter = require('./src/routes/auth');
-
+const applicationRouter = require('./src/routes/applicationRoutes');
 var app = express();
 
 
@@ -38,10 +38,13 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 
-
+app.use((req, res, next) => {
+    console.log("Incoming Request:", req.method, req.url);
+    next();
+});
 //app.use('/', indexRouter);
 app.use('/auth', usersRouter);
-
+app.use('/applications', applicationRouter);
 
 
 // catch 404 and forward to error handler
