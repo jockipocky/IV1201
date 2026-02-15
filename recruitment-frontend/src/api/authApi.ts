@@ -46,7 +46,7 @@ export const register = async (firstName: string, lastName: string, email: strin
     personalNumber,
     username,
     password,
-  });
+    });
 };
 
 export const upgradeAccount = async (email: string, personalNumber: string, upgradeCode: string, username: string, password: string) => {
