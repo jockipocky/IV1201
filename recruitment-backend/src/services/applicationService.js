@@ -1,5 +1,5 @@
 const db = require("../db/db")
-const { submitApplication } = require("../repository/applicationQuery")
+const { submitApplication, updateHandlingStatus } = require("../repository/applicationQuery")
 
 
 const applicationStat = {
@@ -33,7 +33,7 @@ class Application{
      * sätter hanldingStat till accepterad
      */
     accept(){
-        this.handlingStat=applicationStat.ACCEPTED
+        this.handlingState=applicationStat.ACCEPTED
     }
 
 
@@ -41,7 +41,7 @@ class Application{
      * sätter handlingStat till rejected
      */
     reject(){
-        this.handlingStat = applicationStat.REJECTED
+        this.handlingState = applicationStat.REJECTED
     }
 
     /**
@@ -67,29 +67,67 @@ class Application{
         }))
     }   
 
-    /**
-     * denna funktion skapar uppdaterar databasens competence_profile 
-     * och availability baserat på vad användaren har knappat in på
-     * frontend delen
-     * 
-     * @param {*} applicationDTO här finns all relevant information som ska läggas in i db
-     */
+/**
+ * denna funktion skapar i databasen competence_profile 
+ * och availability baserat på vad användaren har knappat in på
+ * frontend delen
+ * @param {*} applicationDTO relevant information från användaren
+ * @returns ifall uppdatering lyckades samt person_id
+ */
     async applicationSubmission(applicationDTO){
         //denna funktion kanske ska delas upp till updateDTO och ApplicationSubmission
-        
-        const mappedCompetences = this.mapCompetenceProfile(applicationDTO.competenceProfile)
+        try{
+            const mappedCompetences = this.mapCompetenceProfile(applicationDTO.competenceProfile)
 
-        const updateDTO = {
-            ...applicationDTO,
-            competenceProfile: mappedCompetences
+            const updateDTO = {
+                ...applicationDTO,
+                competenceProfile: mappedCompetences
+            }
+
+            console.log("mappedCompetences: ", mappedCompetences)
+            console.log("ApplicationDTO: ", updateDTO)
+
+            return await submitApplication(updateDTO)
+            }catch (error){
+                return{
+                    success: false,
+                    error: error.message
+                }
+            }
+        }   
+/**
+ * denna funktion ändrar handlingstatus i databasen till ACCEPTED
+ * @param {*} applicationDTO information från användare
+ * @returns ifall uppdateringen lyckades samt person_id
+ */
+    async acceptApplication(applicationDTO){
+        try{
+            this.accept()
+            applicationDTO.acceptApplication()
+            return await updateHandlingStatus(this.handlingState, applicationDTO)
+        }catch(error){
+            return {
+                success: false,
+                error: error.message
+            }
         }
 
-        console.log("mappedCompetences: ", mappedCompetences)
-        console.log("ApplicationDTO: ", updateDTO)
-
-        return await submitApplication(updateDTO)
-
-        }   
+    }
+/**
+ * denna funktion ändrar handlingstatus i databasen till REJECTED
+ * @param {*} applicationDTO information från användare
+ * @returns ifall vi uppdateringen lyckades samt person_id
+ */
+    async rejectApplication(applicationDTO){
+        try{
+            return await updateHandlingStatus(applicationStat.REJECTED, applicationDTO)
+        } catch(error){
+            return{
+                success: false,
+                error: error.message
+            }
+        }
+    }
 }
 
 
