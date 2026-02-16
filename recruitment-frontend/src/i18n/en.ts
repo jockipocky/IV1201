@@ -1,5 +1,6 @@
 export default {
   loginButtonLabel: "Log in",
+  logoutButtonLabel: "Log out",
   passwordFieldPlaceholder: "Enter your password",
   loginBoxTitle: "Account",
   upgradeAccountLink: "Upgrade legacy account",
@@ -41,4 +42,19 @@ export default {
   yearsUnit: "years",
   applicationNotFoundMessage: "Application no longer exists.",
   applicationUnauthorizedMessage: "You are not authorized to perform this action.",
+  competenceProfile: "Work Experience",
+  applicationFormTitle: "Application",
+  competence: "Competence",
+  availabilityRange: "Availability Range",
+  apply: "apply",
+  personalInfoLabel: "Personal Info",
+  genericError: "An error occurred",
+  yearsOfExperienceLabel:"Years of Experience",
+  ticketSalesLabel: "Ticket Sales",
+  rollerCoasterOperatorLabel:"Roller Coaster Operator" ,
+  lotteriesLabel:"Lotteries",
+  backToLogin: "Return to login",
+  allFieldsRequired: "All fields are required",
+  upgradeSuccess: "Account successfully upgraded",
+  upgradeFailed: "Upgrade failed"
 };

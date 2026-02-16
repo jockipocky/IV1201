@@ -1,4 +1,6 @@
+
 <template>
+  <RecruiterHeader />
   <v-container class="fill-height" fluid>
     <v-row justify="center" align="center">
       <v-col cols="12" md="10">
@@ -7,6 +9,7 @@
       </v-col>
     </v-row>
   </v-container>
+  <Footer></Footer>
 </template>
 
 <script lang="ts">
@@ -48,3 +51,6 @@ export default defineComponent({
   min-height: 100vh;
 }
 </style>
+
+<script setup lang="ts">
+</script>
