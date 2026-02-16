@@ -36,9 +36,9 @@
   }
 
   export const getApplications = async () => {
-    return apiClient.get("/applications");
+    return apiClient.get("/application");
   };
 
   export const submitApplication = async (data: SubmitApplicationPayload) => {
-    return apiClient.post("/applications", data);
+    return apiClient.post("/application", data);
   };
