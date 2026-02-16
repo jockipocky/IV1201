@@ -5,13 +5,32 @@ const db = require("../db/db")
  * relevanta fält uppdateras
  */
 async function submitApplication(applicationDTO){
-    const client = await db.connect();
+        const client = await db.connect()
+    
     try{
         await client.query("begin")
+        const hasApplied = await checkForApplication(client, applicationDTO)
+
+
+        if(hasApplied.exists){
+
+            await deleteAvailability(client, applicationDTO)
+            await deleteCompetences(client, applicationDTO)
+
+            //denna kanske är redundant, venne
+            await client.query(
+                `update person_application_status
+                set status='UNHANDLED'
+                where person_id=$1`,
+                [applicationDTO.person_id])
+        }else{ 
+            await client.query(`insert into person_application_status (person_id, status) values ($1, 'UNHANDLED');`,
+            [applicationDTO.person_id])
+        }
+
         await createCompetenceProfile(client, applicationDTO)
         await createAvailability(client, applicationDTO)
-        await client.query(`insert into person_application_status (person_id, status) values ($1, 'UNHANDLED');`,
-        [applicationDTO.person_id])
+
         await client.query("commit")
 
         return{
@@ -72,14 +91,42 @@ async function updateHandlingStatus(status, applicationDTO){
             person_id: applicationDTO.person_id
         }
     }catch(error){
-        await client.query("rollback;")
         return{
             success: false,
             error: error.message
         }
 
+    } finally{
+        client.release()
+    }
+}
+    async function checkForApplication(client, applicationDTO){
+        
+
+            const result = await client.query(`select * from person_application_status where person_id=$1`, 
+                [applicationDTO.person_id])
+                return{
+                    success: true,
+                    exists: result.rows.length > 0
+                }
+        
     }
 
-}
+
+
+
+
+    async function deleteCompetences(client, applicationDTO){
+        await client.query(`delete from competence_profile
+                            where person_id = $1;`,[applicationDTO.person_id])
+    }
+
+
+    async function deleteAvailability(client, applicationDTO){
+        await client.query(`delete from availability
+                            where person_id = $1;`,[applicationDTO.person_id])
+    }
+
+
 
 module.exports = { submitApplication, updateHandlingStatus}
