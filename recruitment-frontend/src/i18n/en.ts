@@ -20,5 +20,25 @@ export default {
   upgradeAccountEmailPlaceholder: "The email you signed up with",
   upgradeAccountUpgradeCodePlaceholder: "The upgrade code we sent to your email",
   upgradeButtonLabel: "Request upgrade",
-  loginError: "Error when attempting to log in. Please try again."
+  loginError: "Error when attempting to log in. Please try again.",
+
+  //new labels for applications view 
+  applicationsTitle: "Job Applications",
+  acceptButtonLabel: "Accept",
+  declineButtonLabel: "Decline",
+  competenceProfileTitle: "Competence Profile",
+  availabilityTitle: "Availability",
+  personNumberLabel: "Person number",
+  
+  //snackbar in applications view + some more labels for application view
+  applicationAcceptedMessage: "Application accepted successfully!",
+  applicationDeclinedMessage: "Application declined successfully!",
+  applicationUpdateFailedMessage: "Failed to update application status.",
+  applicationAlreadyHandledMessage: "This application was already handled by another recruiter.",
+  statusUnhandled: "UNHANDLED",
+  statusAccepted: "ACCEPTED",
+  statusRejected: "REJECTED",
+  yearsUnit: "years",
+  applicationNotFoundMessage: "Application no longer exists.",
+  applicationUnauthorizedMessage: "You are not authorized to perform this action.",
 };
