@@ -56,16 +56,27 @@ async function upgradeAccount(data) {
 if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptyString)) {
   return { ok: false, status: 400, error: "All fields are required" };
 }
+
+
+  if (data.firstName || data.lastName) {
+
+  }
+
   const userDto = new UserDTO({
     username,
     password,
-    firstName: data.firstName ?? "",
-    lastName: data.lastName ?? "",
+    firstName: data.firstName,
+    lastName: data.lastName,
     email,
+    personalNumber : data.personalNumber,
   });
+
+
+ 
+
   const result = await authService.upgradeAccount(
     userDto,
-    data.personalNumber,
+    //data.personalNumber,
     data.upgradeCode
   );
 

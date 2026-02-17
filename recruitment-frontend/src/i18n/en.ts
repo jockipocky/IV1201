@@ -62,4 +62,5 @@ export default {
   userNotFound:"User not found",
   invalidUpgradeCode:"Invalid code",
   acountAlreadyUpg:"Acount already upgraded",
+  invalidPersonalNumberFormat:"Wrong format of personal number",
 };

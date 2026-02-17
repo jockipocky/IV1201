@@ -12,11 +12,13 @@
         :rules="[requiredRule]"
       ></v-text-field>
 
-      <v-text-field
-        v-model="state.personNumber"
-        :label="t.personalNumberLabel"
-        :rules="[requiredRule]"
-      ></v-text-field>
+    <v-text-field
+      v-model="state.personNumber"
+      :label="t.personalNumberLabel"
+      placeholder="YYYYMMDD-XXXX"
+      :rules="[personNumberRule]"
+      
+    ></v-text-field>
 
       <v-text-field
         v-model="state.upgradeCode"
@@ -66,6 +68,7 @@ import { useUpgradeStore } from "@/stores/upgradeStore"; // Or create a separate
 import { inject } from 'vue' //for dictionary
 import { useRouter } from "vue-router";
 import { computed } from "vue";
+import { formatPersonNumber, isValidPersonNumberFormatted } from "@/utility/personNumber";
 export default defineComponent({
   name: "UpgradeAccountBox",
   setup() {
@@ -105,9 +108,20 @@ export default defineComponent({
     const tRef = inject<any>("t")!;
     const t = computed(() => tRef.value);
 
+    const personNumberRule = (v: string) => {
+      if (!v || !v.trim()) return t.value?.allFieldsRequired;
+
+      const formatted = formatPersonNumber(v);
+      if (!formatted) return t.value?.invalidPersonalNumberFormat;
+
+      return isValidPersonNumberFormatted(formatted) || t.value?.invalidPersonalNumber;
+    };
+
+
     const visible = ref(false);
     //const error = ref<string | null>(null);
     const upgradeStore = useUpgradeStore(); // reuse auth store or create register store
+
 
 
     const requiredRule = (v: string) =>
@@ -127,14 +141,20 @@ export default defineComponent({
 
       try {
         loading.value = true;
+        const formattedPersonNumber = formatPersonNumber(state.personNumber);
+        if (!formattedPersonNumber) {
+          errorKey.value = "invalidPersonalNumberFormat";
+          return;
+        }
 
         await upgradeStore.upgrade(
           state.email.trim(),
-          state.personNumber.trim(),
+          formattedPersonNumber,
           state.upgradeCode.trim(),
           state.username.trim(),
           state.password
         );
+
 
         successKey.value = "upgradeSuccess";
       } catch (err: any) {
@@ -162,6 +182,7 @@ export default defineComponent({
       goToLogin,
       requiredRule,
       formRef,
+      personNumberRule,
     };
   },
 });

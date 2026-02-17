@@ -33,15 +33,9 @@ async function login(username, password) {
   };
 }
 
-async function upgradeAccount(userDto, personalNumber, upgradeCode) {
-    if (
-    !userDto ||
-    typeof userDto.username !== "string" ||
-    typeof userDto.email !== "string"
-  ) {
-    return { ok: false, status: 400, error: { messageKey: "Invalid request data"} };
-  }
-  const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
+async function upgradeAccount(userDto, upgradeCode) {
+
+  const person = await authSearch.findPersonForUpgrade(userDto.email, userDto.personalNumber);
   if (!person) {
     return { ok: false, status: 404, error: { messageKey: "userNotFound"} };
   }
