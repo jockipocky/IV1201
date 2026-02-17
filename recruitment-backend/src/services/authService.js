@@ -39,17 +39,17 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
     typeof userDto.username !== "string" ||
     typeof userDto.email !== "string"
   ) {
-    return { ok: false, status: 400, error: "Invalid request data" };
+    return { ok: false, status: 400, error: { messageKey: "Invalid request data"} };
   }
   const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
   if (!person) {
-    return { ok: false, status: 404, error: "User not found" };
+    return { ok: false, status: 404, error: { messageKey: "userNotFound"} };
   }
   const hasUsername = typeof person.username === "string" && person.username.trim() !== "";
   const hasPassword = typeof person.password === "string" && person.password.trim() !== "";
 
   if (hasUsername || hasPassword) {
-    return { ok: false, status: 409, error: "Account already upgraded" };
+    return { ok: false, status: 409, error: { messageKey: "acountAlreadyUpg"} };
   }
 
 
@@ -64,13 +64,28 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
   );
 
   if (!validCode) {
-    return { ok: false, status: 401, error: "Invalid upgrade code" };
+    return { ok: false, status: 401, error: { messageKey: "invalidUpgradeCode"}};
   }
 
-  const usernameTaken = await authSearch.usernameExists(userDto.username);
-  if (usernameTaken) {
-    return { ok: false, status: 409, error: "Username already taken" };
+  try {
+    await authSearch.upgradePersonAccount(
+      person.person_id,
+      userDto.username,
+      userDto.password
+    );
+  } catch (err) {
+    console.error("[SERVICE ERROR]:", err);
+
+    if (err.code === "23505") {
+      if (err.constraint === "unique_username") {
+        return { ok: false, status: 409, error: { messageKey: "usernameTaken" } };
+      }
+
+    }
+
+    return { ok: false, status: 500, error: { messageKey: "upgradeFailed"} };
   }
+
 
 
   await authSearch.upgradePersonAccount(

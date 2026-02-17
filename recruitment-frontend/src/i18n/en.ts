@@ -56,5 +56,10 @@ export default {
   backToLogin: "Return to login",
   allFieldsRequired: "All fields are required",
   upgradeSuccess: "Account successfully upgraded",
-  upgradeFailed: "Upgrade failed"
+  upgradeFailed: "Upgrade failed",
+
+  usernameTaken:"Username already taken",
+  userNotFound:"User not found",
+  invalidUpgradeCode:"Invalid code",
+  acountAlreadyUpg:"Acount already upgraded",
 };

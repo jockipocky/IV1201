@@ -56,6 +56,12 @@ export default {
     lotteriesLabel:"brush vettefan vad man ska översätta det här till",
   backToLogin: "Gå tillbaka till login",
   allFieldsRequired: "Alla fält måste fyllas i",
-  upgradeSuccess: "Kontot har uppgraderats",
+  upgradeSuccess: "Kontot har uppgraderats, vänligen återvänd till login sida",
   upgradeFailed: "Uppgraderingen misslyckades",
+
+  usernameTaken:"Användarnamn är upptaget",
+  userNotFound:"Användaren kunde inte hittas",
+  invalidUpgradeCode:"Ogiltlig kod",
+  acountAlreadyUpg:"Konto är redan uppgraderat",
+
 };

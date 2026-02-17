@@ -46,6 +46,7 @@ router.post("/upgrade", async function (req, res) {
       return res.status(result.status).json({ ok: false, error: result.error });
     }
 
+
     return res.status(result.status).json(result.user);
   } catch (err) {
     console.error("LOGIN ERROR:", err);
