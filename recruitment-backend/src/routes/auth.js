@@ -6,7 +6,8 @@
 var express = require("express");
 var router = express.Router();
 
-const { login, upgradeAccount, me, } = require("../controllers/authController");
+const { login, upgradeAccount, registerAccount, me, } = require("../controllers/authController");
+
 
 router.post("/login", async function (req, res) {
   try {
@@ -66,5 +67,16 @@ router.get("/me", async function (req, res) {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 })
+router.post("/register", async (req, res) => {
+  console.log("ROUTE HIT");
+    const result = await registerAccount(req.body);
+
+    if (!result.ok) {
+      console.error("[ROUTES]: REGISTER ERROR:", result);
+      return res.status(result.status).json({ error: result.error });
+    }
+
+    return res.status(result.status).json(result.user);
+});
 
 module.exports = router;

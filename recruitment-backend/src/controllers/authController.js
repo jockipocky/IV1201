@@ -81,6 +81,30 @@ if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptySt
   };
 }
 
+  async function registerAccount(data) {
+    const { username, password, firstName, lastName, email, personalNumber } = data;
+    if (![username, password, firstName, lastName, email, personalNumber].every(isNonEmptyString)) {
+      return { ok: false, status: 400, error: "All fields are required" };
+    }
+    const userDto = new UserDTO({
+      username,
+      password,
+      firstName,
+      lastName,
+      email,
+      personalNumber
+    });
+    const result = await authService.registerAccount(userDto);
+
+    
+    if (!result.ok) {
+      // Business logic failure (e.g., duplicate username/email/pnr)
+      console.error("[CONTROLLER]: REGISTER ACCOUNT ERROR:", result.status, result.error);
+      return { ok: false, status: result.status, error: result.error };
+    }
+    return { ok: true, status: 201, user: result.user };
+  }  
+
 async function me(req) {
   const token = req.cookies?.auth;
 
@@ -94,4 +118,4 @@ async function me(req) {
   };
 }
 
-module.exports = { login, upgradeAccount, me };
+module.exports = { login, upgradeAccount, me, registerAccount};
