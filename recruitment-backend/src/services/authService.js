@@ -143,7 +143,6 @@ async function getMe(token) {
   return { ok: true, status: 200, user };
 }
 
-module.exports = { login, upgradeAccount, getMe, };
 async function registerAccount(userDto) {
   try {
   const user = await authSearch.registerAccount(userDto);
@@ -169,4 +168,4 @@ async function registerAccount(userDto) {
 }
 }
 
-module.exports = { login, upgradeAccount, registerAccount };
+module.exports = { login, upgradeAccount, registerAccount, getMe };
