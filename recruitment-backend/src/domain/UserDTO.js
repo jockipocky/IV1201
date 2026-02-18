@@ -5,7 +5,7 @@ class UserDTO {
     this.firstName = firstName
     this.lastName = lastName
     this.email = email
-    this.role_id = 2 // Default to regular user role
+    this.role_id = role_id
     this.personalNumber = personalNumber
   }
 }
