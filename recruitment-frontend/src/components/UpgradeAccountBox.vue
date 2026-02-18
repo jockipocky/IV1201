@@ -11,14 +11,14 @@
         type="email"
         :rules="[requiredRule]"
       ></v-text-field>
+      <v-text-field
+        :model-value="state.personNumber"
+        @update:modelValue="state.personNumber = formatPersonNumber($event) ?? $event"
+        :label="t.personalNumberLabel"
+        placeholder="YYYYMMDD-XXXX"
+        :rules="[personNumberRule]"
+      ></v-text-field>
 
-    <v-text-field
-      v-model="state.personNumber"
-      :label="t.personalNumberLabel"
-      placeholder="YYYYMMDD-XXXX"
-      :rules="[personNumberRule]"
-      
-    ></v-text-field>
 
       <v-text-field
         v-model="state.upgradeCode"
@@ -183,6 +183,7 @@ export default defineComponent({
       requiredRule,
       formRef,
       personNumberRule,
+      formatPersonNumber,
     };
   },
 });
