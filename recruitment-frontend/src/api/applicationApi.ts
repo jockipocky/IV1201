@@ -5,12 +5,6 @@
 
   import apiClient from "./http";
 
-  const handlingState ={
-      UNHANDLED: "unhandled",
-      REJECTED: "rejected",
-      ACCEPTED: "accepted"
-      
-  }
 
   interface personalInfo{
       firstName: string;
@@ -34,9 +28,15 @@
     handlingState: string;
     person_id: string
   }
-
-  export const getApplications = async () => {
-    return apiClient.get("/applications");
+  
+  /**
+   * http anropp till backend som kallar på
+   * all info angående application baserat på person_id
+   * @param person_id användar info 
+   * @returns 
+   */
+  export const fetchApplication = async (person_id: string) => {
+    return apiClient.get(`/applications/${person_id}`);
   };
 
   export const submitApplication = async (data: SubmitApplicationPayload) => {

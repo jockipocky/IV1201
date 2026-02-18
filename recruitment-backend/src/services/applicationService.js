@@ -1,5 +1,5 @@
 const db = require("../db/db")
-const { submitApplication, updateHandlingStatus,  updateApplication } = require("../repository/applicationQuery")
+const { submitApplication, updateHandlingStatus,  updateApplication, getApplication } = require("../repository/applicationQuery")
 
 
 const applicationStat = {
@@ -124,6 +124,25 @@ class Application{
         } catch(error){
             return{
                 success: false,
+                error: error.message
+            }
+        }
+    }
+
+    /**
+     * denna funktion säger till repository att fråga
+     * databasen om relevant application info
+     * @param {*} applicationDTO används för person_id
+     * @returns competenceProfile och availability
+     */
+    async getApplication(applicationDTO){
+        try{
+            const res = await getApplication(applicationDTO)
+            console.log("database sends: ", res)
+            return res
+        }catch(error){
+            return{
+                success:false,
                 error: error.message
             }
         }

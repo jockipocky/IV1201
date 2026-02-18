@@ -6,10 +6,11 @@
 var express = require("express");
 var router = express.Router();
 
-const { applicationSubmission } = require("../controllers/applicationController");
+const { applicationSubmission, fetchApplication } = require("../controllers/applicationController");
 
 // POST /auth/login
 router.post("/", applicationSubmission);
+router.get("/:person_id", fetchApplication )
 
 
 

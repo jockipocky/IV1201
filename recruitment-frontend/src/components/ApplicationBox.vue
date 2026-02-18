@@ -91,9 +91,13 @@ import { defineComponent, ref } from "vue";
 import { useApplicationStore } from "@/stores/applicationStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
 import { mdiPlus, mdiDelete } from "@mdi/js"
+import { onMounted } from "vue";
 
+    onMounted(async() => {
+        await applicationStore.fetchUserInfo()
+        await applicationStore.fetchApplication()
+    })
 
-import { submitApplication } from "@/api/applicationApi"; //måste skapas
 
 
     const error = ref<string | null>(null);

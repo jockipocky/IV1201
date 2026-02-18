@@ -100,6 +100,14 @@ async function updateHandlingStatus(status, applicationDTO){
         client.release()
     }
 }
+    /**
+     * denna hjälp funktion kollar ifall användaren redan har en 
+     * application i databasen för korrekt hantering
+     *
+     * @param {} client den aktuella snacket med databasen
+     * @param {*} applicationDTO relevant användarinfo
+     * @returns true if records exist else false
+     */
     async function checkForApplication(client, applicationDTO){
         
 
@@ -113,20 +121,99 @@ async function updateHandlingStatus(status, applicationDTO){
     }
 
 
-
-
-
+    /**
+     * hjälpar funktion som raderar competenceProfile
+     * för specificerad användare
+     * @param {*} client aktuell tråd med databas  
+     * @param {*} applicationDTO relevant användarinfo
+     */
     async function deleteCompetences(client, applicationDTO){
         await client.query(`delete from competence_profile
                             where person_id = $1;`,[applicationDTO.person_id])
     }
 
-
+    /**
+     *hjälpar funktion som raderar availability
+     * för specificerad användare
+     * @param {*} client aktuell kommunikation med databas
+     * @param {*} applicationDTO relevant användarinfo
+     */
     async function deleteAvailability(client, applicationDTO){
         await client.query(`delete from availability
                             where person_id = $1;`,[applicationDTO.person_id])
     }
 
+    /**
+     * hjälpar funktion som hämtar alla availability
+     * @param {*} client aktuell kommunikation med databas
+     * @param {*} applicationDTO relevant användarinfo
+     * @returns alla availabilities för relevant person
+     */
+    async function getAvailability(client, applicationDTO){
+        const res= await client.query(`select from_date, to_date 
+                            from availability 
+                            where person_id = $1;`,
+                            [applicationDTO.person_id])
 
+        return res
+    }
 
-module.exports = { submitApplication, updateHandlingStatus}
+    /**
+     * hjälpar funktion som hämtar alla competenceProfiles 
+     * @param {*} client aktuell kommunikation med databas
+     * @param {*} applicationDTO relevant användar info
+     * @returns all competence profile för relevant person
+     */
+    async function getCompeteceProfile(client, applicationDTO){
+       const res=  await client.query(`select competence_id, years_of_experience 
+                            from competence_profile 
+                            where person_id = $1;`,
+                            [applicationDTO.person_id])
+        return res
+    }
+
+    /**
+     * gör en transaktion där all relevant information 
+     * för en viss persons application returneras
+     * @param {*} applicationDTO relevant användar info
+     * @returns databas entries av competence_profile och availability
+     */
+    async function getApplication(applicationDTO){
+        const client = await db.connect()
+
+        try{
+            const hasApplied = await checkForApplication(client, applicationDTO)
+
+            if(hasApplied.exists){
+                await client.query("begin")
+
+                const availabilityRes= await getAvailability(client, applicationDTO)
+                const competenceRes = await getCompeteceProfile(client, applicationDTO)
+
+                await client.query("commit")
+                return{
+                    success: true,
+                    peron_id: applicationDTO.person_id,
+                    availability: availabilityRes.rows,
+                    competenceProfile: competenceRes.rows
+                }
+            } else{
+                return{
+                    success: true,
+                    message: "Person have not finished an application"
+                }
+
+            }
+        } catch(error){
+                await client.query("rollback")
+                return{
+                    success:false, 
+                    error: err.message
+                }
+
+            }finally{
+                client.release()
+            }
+}
+
+module.exports = { submitApplication, updateHandlingStatus, getApplication}
