@@ -16,10 +16,24 @@ import { onMounted } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 import Footer from "@/components/Footer.vue";
 import Header from "./components/Header.vue";
-const authStore = useAuthStore();
+import { useRouter } from "vue-router";
 
-onMounted(() => {
-  authStore.fetchUser();
+const authStore = useAuthStore();
+const router = useRouter();
+
+onMounted(async () => {
+  await authStore.fetchUser();
+
+  // after fetching, redirect if currently on a guest-only page
+  if (authStore.isLoggedIn) {
+    if (router.currentRoute.value.meta.guestOnly) {
+      if (authStore.user.role_id === 1) {
+        router.replace("/recruiter");
+      } else if (authStore.user.role_id === 2) {
+        router.replace("/applicant");
+      }
+    }
+  }
 });
 </script>
 
