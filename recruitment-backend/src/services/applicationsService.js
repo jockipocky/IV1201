@@ -1,8 +1,13 @@
 /**
  * applicationsService.js
  *
- * Service layer responsible for business logic related to job applications.
- * This layer contains business rules but no HTTP-specific logic.
+ * Service layer containing business logic for applications.
+ *
+ * Responsibilities:
+ * - Business logic (not a lot of it yet)
+ * - Delegate persistence to the repository layer
+ *
+ * Importantly, this layer has no knowledge of HTTP or Express!!
  */
 
 const jwt = require("jsonwebtoken");
@@ -10,55 +15,31 @@ const applicationsFetcher = require("../repository/applicationsQuery")
 
 
 /**
- * Fetches all applications from the repository layer.
+ * Fetch all unhandled applications.
  *
- * @returns {Promise<Object|null>}
- * Returns an object containing the applications list,
- * or null if no applications were found.
+ * @returns {Promise<{ applications: Array }>}
  */
 async function fetchAllApplications() {
   const applications = await applicationsFetcher.fetchAllApplications();
-  if (!applications) return null;
-  return {
-    applications
-  };
+  return { applications };
 }
 
 
 /**
- * Attempts to update the status of an application.
+ * Update the status of an application.
  *
- * Delegates the update operation to the repository layer.
+ * @param {number|string} personId - Applicant identifier
+ * @param {"ACCEPTED"|"REJECTED"} status - New status value
  *
- * Race Condition Handling:
- * - If the application was already updated by another recruiter,
- *   the repository returns updated: false.
- * - This method translates that into a 409 Conflict response.
+ * @returns {Promise<{ updated: boolean, currentStatus?: string }>}
  *
- * @param {number|string} personId - ID of the applicant.
- * @param {string} status - New status ("ACCEPTED" or "REJECTED").
- *
- * @returns {Promise<Object>} Structured response:
- * - { ok: true, status: 200, result: { status } }
- * - { ok: false, status: 409, error: string, currentStatus: string }
+ * Notes:
+ * - If updated is false, the application was already handled.
+ * - Race-condition protection is enforced in the repository layer, not here
  */
 async function updateApplicationStatus(personId, status) {
   const result = await applicationsFetcher.updateApplicationStatus(personId, status);
-  
-  if (!result.updated) {
-    return {
-      ok: false,
-      status: 409, //race condition with other recruiter
-      error: "Application already handled by another recruiter",
-      currentStatus: result.currentStatus
-    };
-  }
-
-  return {
-    ok: true,
-    status: 200,
-    result: { status }
-  };
+  return result;
 }
 
 module.exports = { fetchAllApplications, updateApplicationStatus };

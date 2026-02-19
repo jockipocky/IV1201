@@ -1,75 +1,97 @@
 /**
  * applicationsController.js
  *
- * Controller layer for application-related operations. NOT COMPLETE!!
- * Will in the future need to check JWT and identity.
+ * Controller layer for application endpoints.
  *
  * Responsibilities:
- * - Validating incoming request parameters
- * - Delegating business logic to the service layer
- * - Structuring standardized responses for the route layer
+ * - Extract and validate request data
+ * - Invoke service layer operations
+ * - Translate service results into HTTP responses
+ * - Handle unexpected server errors
  *
- * This layer does NOT directly interact with the database.
+ * This layer is HTTP-aware but does not access the database directly
  */
-
-const applicationsFetcher = require("../services/applicationsService");
+const applicationsService = require("../services/applicationsService");
 
 
 /**
- * Retrieves all applications through the service layer.
+ * Handle GET /applications/all
  *
- * Calls applicationsService.fetchAllApplications() and
- * wraps the result in a standardized response object.
- *
- * @returns {Promise<Object>} Structured response:
- * {
- *   ok: boolean,
- *   status: number,
- *   result?: Object,
- *   error?: string
- * }
+ * Response:
+ * - 200 gives { ok: true, result: { applications: [....] } }
+ * - 500 gives Server error
  */
-async function fetchAllApplications() {
+async function fetchAllApplications(req, res) {
+  try {
+    const result = await applicationsService.fetchAllApplications(); //fetch the applications
 
-  const result = await applicationsFetcher.fetchAllApplications();
-  if (!result) {
-    return { ok: false, status: 401, error: "An error occurred or something, soz" };
+    if (!result) { //if no result, 404
+      return res.status(404).json({
+        ok: false,
+        error: "No applications found"
+      });
+    }
+
+    return res.status(200).json({ //if result, 200!
+      ok: true,
+      result
+    });
+
+  } catch (err) { //if we threw an error its 500
+    console.error("Error fetching applications:", err);
+    return res.status(500).json({
+      ok: false,
+      error: "Server error when fetching applications"
+    });
   }
-
-  return {
-    ok: true,
-    status: 200,
-    result: result,
-  };
 }
 
 /**
- * Updates the status of a specific application.
+ * Handle PUT /applications/:personId/status
  *
- * Validates that the provided status is either "ACCEPTED" or "REJECTED"
- * before delegating to the service layer.
+ * Validates status and attempts to update the application status column in db.
  *
- * @param {number|string} personId - ID of the applicant.
- * @param {string} status - New status ("ACCEPTED" or "REJECTED").
- *
- * @returns {Promise<Object>} Structured response from the service layer.
- *
- * Possible responses:
- * - 400 invalid status
- * - 409 Conflict (race condition)
- * - 200 Successful update
+ * Responses:
+ * - 200 means status updated successfully
+ * - 400 means invalid status value
+ * - 409 means application already handled
+ * - 500 means server error
  */
-async function updateApplicationStatus(personId, status) {
+async function updateApplicationStatus(req, res) {
+  try {
+    const { personId } = req.params;
+    const { status } = req.body;
 
-  if (!["ACCEPTED", "REJECTED"].includes(status)) {
-    return {
+    if (!["ACCEPTED", "REJECTED"].includes(status)) { //invalid parameter if we didnt update with accepted or rejected
+      return res.status(400).json({
+        ok: false,
+        error: "Invalid status"
+      });
+    }
+
+    //try to update and fetch the result, we inspect result to see if we had a conflict
+    const result = await applicationsService.updateApplicationStatus(personId, status);
+
+    if (!result.updated) { //we didnt update the column which means it was handled already by another recruiter
+      return res.status(409).json({
+        ok: false,
+        error: "Application already handled by another recruiter",
+        currentStatus: result.currentStatus ?? null
+      });
+    }
+
+    return res.status(200).json({ //no conflict, it all worked out so 200
+      ok: true,
+      result: { status }
+    });
+
+  } catch (err) {//some other erro occured on our side (server side) so we give 500
+    console.error("Error updating application:", err);
+    return res.status(500).json({
       ok: false,
-      status: 400,
-      error: "Invalid status"
-    };
+      error: "Server error when updating application"
+    });
   }
-
-  return await applicationsFetcher.updateApplicationStatus(personId, status);
 }
 
 module.exports = {
