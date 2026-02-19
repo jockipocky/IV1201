@@ -56,6 +56,7 @@ async function fetchAllApplications(req, res) {
  * - 400 means invalid status value
  * - 409 means application already handled
  * - 500 means server error
+ * - 404 and 401 are yet to be implemented
  */
 async function updateApplicationStatus(req, res) {
   try {
