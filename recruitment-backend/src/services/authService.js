@@ -124,11 +124,7 @@ async function getMe(token) {
 
     return { ok: false, status: 401, error: "Invalid token" };
   }
-
-
-
   const personId = payload.person_id ?? payload.personId;
-
 
   if (!personId) {
     return { ok: false, status: 401, error: "Invalid token payload" };
@@ -142,7 +138,11 @@ async function getMe(token) {
 
   return { ok: true, status: 200, user };
 }
-
+/**
+ * Attempts to register a new user account. Returns an error if username, email or personal number is already taken.
+ * @param {*} userDto 
+ * @returns 
+ */
 async function registerAccount(userDto) {
   try {
   const user = await authSearch.registerAccount(userDto);

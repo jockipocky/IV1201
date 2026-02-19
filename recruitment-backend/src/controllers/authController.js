@@ -91,7 +91,11 @@ if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptySt
     cookie: result.cookie,
   };
 }
-
+  /**
+   * Registers a new user account, returns error if username, email or personal number is already taken.
+   * @param {*} data - object with username, password, firstName, lastName, email and personalNumber
+   * @returns 
+   */
   async function registerAccount(data) {
     const { username, password, firstName, lastName, email, personalNumber } = data;
     if (![username, password, firstName, lastName, email, personalNumber].every(isNonEmptyString)) {
