@@ -75,6 +75,10 @@ async function findUserById(person_id) {
   if (res.rows.length === 0) return null;
   return res.rows[0];
 }
+/**
+ * Try to register a new user account in db. Returns an error if username, email or personal number is already taken.
+ * @returns 
+ */
 async function registerAccount(userDto) {
   const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
   try {
