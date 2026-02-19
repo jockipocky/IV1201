@@ -98,19 +98,20 @@ export const useApplicationsStore = defineStore("register", {
    */
     async handleApplication(applicationId: number, action: "accept" | "decline") {
       this.handlingError = null;
-      try {
+      try { //if 200 or 300 response code we stay in this block
+        
+        //call our api to request a handling of an application
         await handleApplicationRequest(applicationId, action);
-        if (!this.applicationsResult) return;
-
+        
+        if (!this.applicationsResult) return; //if we dont have any applications to handle
         const app = this.applicationsResult.find(a => a.applicationId === applicationId);
-        if (!app) return;
-
-        app.status =
+        if (!app) return; //if the application in question is not in our model
+        app.status = //set to new value locally
           action === "accept"
             ? ApplicationStatus.ACCEPTED
             : ApplicationStatus.REJECTED;
 
-      } catch (err: any) {
+      } catch (err: any) { //if an error occured while fetching, including any 400 or 500 response codes
         const status = err.response?.status;
 
         if (status === 409) {
