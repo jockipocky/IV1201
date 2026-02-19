@@ -49,7 +49,7 @@ async function upgradeAccount(userDto, upgradeCode) {
 
 
   if (person.person_id < 11 || person.person_id > 900) {
-    return { ok: false, status: 403, error: "Not a legacy user" };
+    return { ok: false, status: 403, error: { messageKey: "notLegacy"} };
   }
 
   const validCode = await authSearch.verifyUpgradeCode(

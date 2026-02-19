@@ -63,4 +63,5 @@ export default {
   invalidUpgradeCode:"Invalid code",
   acountAlreadyUpg:"Acount already upgraded",
   invalidPersonalNumberFormat:"Wrong format of personal number",
+  notLegacy:"Not a legacy user",
 };

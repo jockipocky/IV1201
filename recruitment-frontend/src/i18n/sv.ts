@@ -64,4 +64,5 @@ export default {
   invalidUpgradeCode:"Ogiltlig kod",
   acountAlreadyUpg:"Konto är redan uppgraderat",
   invalidPersonalNumberFormat:"Fel format på personnummber",
+  notLegacy:"Inte en legacy user",
 };
