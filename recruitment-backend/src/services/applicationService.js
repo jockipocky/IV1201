@@ -1,11 +1,11 @@
 const db = require("../db/db")
-const { submitApplication, updateHandlingStatus } = require("../repository/applicationQuery")
+const { submitApplication, updateHandlingStatus,  updateApplication, getApplication } = require("../repository/applicationQuery")
 
 
 const applicationStat = {
-    UNHANDLED: "unhandled",
-    ACCEPTED: "accepted", 
-    REJECTED: "rejected"
+    UNHANDLED: "UNHANDLED",
+    ACCEPTED: "ACCEPTED", 
+    REJECTED: "REJECTED"
 }
 
 const COMPETENCE_TYPE_MAP ={
@@ -84,9 +84,10 @@ class Application{
                 competenceProfile: mappedCompetences
             }
 
+
             console.log("mappedCompetences: ", mappedCompetences)
             console.log("ApplicationDTO: ", updateDTO)
-
+            
             return await submitApplication(updateDTO)
             }catch (error){
                 return{
@@ -103,7 +104,6 @@ class Application{
     async acceptApplication(applicationDTO){
         try{
             this.accept()
-            applicationDTO.acceptApplication()
             return await updateHandlingStatus(this.handlingState, applicationDTO)
         }catch(error){
             return {
@@ -128,7 +128,27 @@ class Application{
             }
         }
     }
+
+    /**
+     * denna funktion säger till repository att fråga
+     * databasen om relevant application info
+     * @param {*} applicationDTO används för person_id
+     * @returns competenceProfile och availability
+     */
+    async getApplication(applicationDTO){
+        try{
+            const res = await getApplication(applicationDTO)
+            console.log("database sends: ", res)
+            return res
+        }catch(error){
+            return{
+                success:false,
+                error: error.message
+            }
+        }
+    }
 }
+
 
 
 

@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
-import { submitApplication } from "@/api/applicationApi";
+import { submitApplication, fetchApplication } from "@/api/applicationApi";
 import { renderToString } from "vue/server-renderer";
 import { useAuthStore } from "./authStore";
 
@@ -194,6 +194,12 @@ export const useApplicationStore = defineStore("applicationForm", {
             }
         },
 
+        /**
+         * denna funktion ser till att skicka ifylld 
+         * information från formuläret till databasen
+         * 
+         * @returns sets the relevant information and makes sure the database fills in a new entry
+         */
         submitApplicationForm(){
             return submitApplication({
                 competences: this.competences,
@@ -202,6 +208,31 @@ export const useApplicationStore = defineStore("applicationForm", {
                 person_id: this.personalInfo.person_id
             })
         },
+
+        /**
+         * denna funktion
+         */
+        async fetchApplication(){
+            try{
+                const res = await fetchApplication(this.personalInfo.person_id)
+                
+                if(!res.data.succes){
+                    return;
+                }
+
+                this.availability = res.data.availability.map((a: any) => ({
+                    from: a.from_date,
+                    to: a.to_date
+                }))
+
+                this.competences = res.data.competenceProfile.map((c: any) => ({
+                    competenceType: c.competence_id,
+                    competenceTime: String(c.years_of_experience)
+                }))
+            }catch(e){
+                this.error = "could not fetch application"
+            }
+        }
 
 
 
