@@ -20,6 +20,14 @@ async function searchForUser(username, password) {
     return result.rows[0];
 }
 
+/**
+ * Creates a query to find a user from person table with the matching email and personal number
+ * 
+ * 
+ * @param {*} email - user inputed email
+ * @param {*} personalNumber - user inputed personal number
+ * @returns - Table row for that user that contains person_id, username and password. 
+ */
 async function findPersonForUpgrade(email, personalNumber) {
   const res = await db.query(
     `SELECT person_id, username, password
@@ -29,15 +37,16 @@ async function findPersonForUpgrade(email, personalNumber) {
   );
   console.log("UPGRADE LOOKUP:", { email, personalNumber });
 
-const debug = await db.query(
-  "SELECT person_id, email, pnr FROM person WHERE email = $1",
-  [email]
-);
-console.log("MATCH BY EMAIL:", debug.rows);
 
   return res.rows[0];
 }
 
+/**
+ * This functions create a query to match the inputed upgrade code to the database that connects user id to an upgrade code
+ * @param {*} personId - person id that was retrived from findPersonForUpgrade
+ * @param {*} code - Inputed code from the user
+ * @returns - Returns a boolean whether there is a matching user for that code
+ */
 async function verifyUpgradeCode(personId, code) {
   const res = await db.query(
     `SELECT 1
@@ -48,14 +57,13 @@ async function verifyUpgradeCode(personId, code) {
   return res.rowCount > 0;
 }
 
-async function usernameExists(username) {
-  const res = await db.query(
-    `SELECT 1 FROM person WHERE username = $1`,
-    [username]
-  );
-  return res.rowCount > 0;
-}
 
+/**
+ * This function updates the database with the inputed username and password
+ * @param {*} personId - person id that connects the user in the databased retrived from findPersonForUpgrade
+ * @param {*} username - inputed username
+ * @param {*} password - inputed password
+ */
 async function upgradePersonAccount(personId, username, password) {
   await db.query(
     `UPDATE person
@@ -65,6 +73,11 @@ async function upgradePersonAccount(personId, username, password) {
   );
 }
 
+/**
+ * Takes a person id and look in the person table for the row conneteced with the id
+ * @param {*} person_id - id from a jwt 
+ * @returns - returns a user object with the user information
+ */
 async function findUserById(person_id) {
   const res = await db.query(
     `SELECT person_id, username, name, surname, email, role_id
@@ -75,6 +88,7 @@ async function findUserById(person_id) {
   if (res.rows.length === 0) return null;
   return res.rows[0];
 }
+
 /**
  * Try to register a new user account in db. Returns an error if username, email or personal number is already taken.
  * @returns 
@@ -104,7 +118,6 @@ async function registerAccount(userDto) {
 module.exports = {
   findPersonForUpgrade,
   verifyUpgradeCode,
-  usernameExists,
   upgradePersonAccount,
   searchForUser,
   findUserById,

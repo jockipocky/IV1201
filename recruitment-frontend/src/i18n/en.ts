@@ -55,7 +55,7 @@ export default {
   lotteriesLabel:"Lotteries",
   backToLogin: "Return to login",
   allFieldsRequired: "All fields are required",
-  upgradeSuccess: "Account successfully upgraded",
+  upgradeSuccess: "Account successfully upgraded please return to login page",
   upgradeFailed: "Upgrade failed",
 
   usernameTaken:"Username already taken",

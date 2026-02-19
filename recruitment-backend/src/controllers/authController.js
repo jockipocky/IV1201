@@ -46,11 +46,26 @@ async function login(username, password) {
     user: userDto,
   };
 }
+/**
+ * This code takes checks a value and sees if it is a string and that it is not empty
+ * @param {*} v - Data to check
+ * @returns - It returns wheter the data is a string and if it is empty.
+ */
 function isNonEmptyString(v) {
   return typeof v === "string" && v.trim().length > 0;
 }
+
+/**
+ * upgradeAcount takes data that is a request from the frontend and makes a sanity check so the data is not empty.
+ * It then uses the userDTO to fill the values given then pass it to the service layer with the upgrade code aswell.
+ * After it gets a result it will either return a error message if the result is not ok or it will return ok 200.
+ * 
+ * 
+ * @param {*} data - request data from frontend
+ * @returns - ok 200
+ */
 async function upgradeAccount(data) {
-  const { email, personalNumber, upgradeCode, username, password, firstName, lastName } = data;
+  const { email, personalNumber, upgradeCode, username, password } = data;
 
 
 if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptyString)) {
@@ -58,17 +73,13 @@ if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptySt
 }
 
 
-  if (data.firstName || data.lastName) {
 
-  }
 
   const userDto = new UserDTO({
     username,
     password,
-    firstName: data.firstName,
-    lastName: data.lastName,
     email,
-    personalNumber : data.personalNumber,
+    personalNumber, 
   });
 
 

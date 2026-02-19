@@ -33,6 +33,18 @@ async function login(username, password) {
   };
 }
 
+/**
+ * Upgrades acount by sending requestst to the repository layer
+ * It first look that the person exist in the database based on email and personal number
+ * Then it looks that the acount does not already have a username and/or password
+ * We work out form the assumption that the user that is legacy are from person id 11 - 900
+ * It then checks that the upgrade code is correct to the acount, then finaly it will update the database. 
+ * 
+ * @param {*} userDto - The user inputs from frontend with the data
+ * @param {*} upgradeCode - Upgradecode that the user got in their mail
+ * @returns - returns an error if something fails or it returns an ok 200.
+ */
+
 async function upgradeAccount(userDto, upgradeCode) {
 
   const person = await authSearch.findPersonForUpgrade(userDto.email, userDto.personalNumber);
@@ -81,36 +93,18 @@ async function upgradeAccount(userDto, upgradeCode) {
   }
 
 
-
-  await authSearch.upgradePersonAccount(
-    person.person_id,
-    userDto.username,
-    userDto.password
-  );
-
-  const token = jwt.sign(
-    { personId: person.person_id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-
-
-
   return {
-    ok: true,
-    user: { person_id: person.person_id, username: userDto.username },
-    cookie: {
-      name: "auth",
-      value: token,
-      options: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 1000,
-      },
-    },
+    ok: true, status: 200
+
   }; 
 }
+
+/**
+ * This is used to authenticate that a user has been logged in before and the cookie is still valid to allow auto login. 
+ * 
+ * @param {*} token - Takes token/cookie
+ * @returns  - returns error if not aitherncated or if something else is missing or it send back a ok 200
+ */
 
 async function getMe(token) {
   if (!token) {
