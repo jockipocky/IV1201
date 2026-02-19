@@ -36,6 +36,7 @@ export const useAuthStore = defineStore("auth", {
       try{
         const response = await login(username, password);
         this.user = response.data.user;
+        console.log("Login successful, user data:", this.user);
       } catch(err: any){
         console.log(err);
       }
@@ -66,6 +67,5 @@ export const useAuthStore = defineStore("auth", {
   },
   getters:{ //getters accessible to the dom
      isLoggedIn: (state) => !!state.user,
-
   },
 });

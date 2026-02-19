@@ -56,8 +56,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, reactive } from "vue";
-import { useRegisterStore } from "@/stores/registerStore"; // Or create a separate register store
+import { useRegisterStore } from "@/stores/registerStore";
 import { inject } from 'vue' //for dictionary
+import { router } from "@/router";
 
 export default defineComponent({
   name: "RegisterNewAccountBox",
@@ -77,13 +78,19 @@ export default defineComponent({
     const registerStore = useRegisterStore(); // reuse auth store or create register store
 
     const handleRegister = async () => {
+      
+      if (!state.firstName || !state.lastName || !state.email || !state.personNumber || !state.username || !state.password) {
+          error.value = "Please fill in all required fields.";
+          return;
+          }
+
       try {
-        // Optionally, add basic validation here
         await registerStore.register(state.firstName, state.lastName, state.email, state.personNumber, state.username, state.password); // implement a register action in your store
         error.value = null;
-        // optionally redirect after successful registration
+        alert("Registration successful! Please log in.");
+        router.push("/login"); //redirect to login page after successful registration
       } catch (err: any) {
-        error.value = err.response?.data?.message || "Registration failed";
+        error.value = err.response?.data?.error || "Registration failed";
       }
     };
 

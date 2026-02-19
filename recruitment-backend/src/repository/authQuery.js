@@ -75,6 +75,30 @@ async function findUserById(person_id) {
   if (res.rows.length === 0) return null;
   return res.rows[0];
 }
+/**
+ * Try to register a new user account in db. Returns an error if username, email or personal number is already taken.
+ * @returns 
+ */
+async function registerAccount(userDto) {
+  const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
+  try {
+      const res = await db.query(
+      `INSERT INTO person (username, name, surname, email, pnr, password, role_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING person_id, username, email`,
+      [username, firstName, lastName, email, personalNumber, password, role_id]
+    );
+    console.log("REGISTERED USER:", res.rows[0]);
+    return res.rows[0];
+
+  } catch (err) {
+    console.error("[DB ERROR]:", err);
+    if (err.code === "23505") { // Unique violation for inserted row in db
+     throw err; // Let the service layer handle this and return appropriate response
+    }
+  throw err;    
+  }
+}
 
  
 module.exports = {
@@ -84,4 +108,5 @@ module.exports = {
   upgradePersonAccount,
   searchForUser,
   findUserById,
+  registerAccount
 };

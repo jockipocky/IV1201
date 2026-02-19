@@ -9,7 +9,7 @@
 
             <!-- Only show if user is logged in -->
        <template v-if="auth.isLoggedIn">
-        <span class="user-name">{{ auth.user.name }}</span>
+        <span class="user-name">{{ auth.user.username }}</span>
         <button class="logout-btn" @click="onLogout">
           {{ t.logoutButtonLabel }}
         </button>

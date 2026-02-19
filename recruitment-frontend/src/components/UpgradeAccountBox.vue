@@ -11,12 +11,14 @@
         type="email"
         :rules="[requiredRule]"
       ></v-text-field>
-
       <v-text-field
-        v-model="state.personNumber"
+        :model-value="state.personNumber"
+        @update:modelValue="state.personNumber = formatPersonNumber($event) ?? $event"
         :label="t.personalNumberLabel"
-        :rules="[requiredRule]"
+        placeholder="YYYYMMDD-XXXX"
+        :rules="[personNumberRule]"
       ></v-text-field>
+
 
       <v-text-field
         v-model="state.upgradeCode"
@@ -65,7 +67,8 @@ import { defineComponent, ref, reactive } from "vue";
 import { useUpgradeStore } from "@/stores/upgradeStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
 import { useRouter } from "vue-router";
-
+import { computed } from "vue";
+import { formatPersonNumber, isValidPersonNumberFormatted } from "@/utility/personNumber";
 export default defineComponent({
   name: "UpgradeAccountBox",
   setup() {
@@ -78,9 +81,19 @@ export default defineComponent({
     });
     const formRef = ref<any>(null);
 
-    const success = ref<string | null>(null);
+    //const success = ref<string | null>(null);
     const loading = ref(false);
 
+    const errorKey = ref<string | null>(null);
+    const successKey = ref<string | null>(null);
+
+    const error = computed(() =>
+      errorKey.value ? (t.value?.[errorKey.value] ?? errorKey.value) : null
+    );
+
+    const success = computed(() =>
+      successKey.value ? (t.value?.[successKey.value] ?? successKey.value) : null
+    );
 
 
     const router = useRouter();
@@ -89,43 +102,72 @@ export default defineComponent({
       router.push("/login"); // change if needed
     };
 
-    const t = inject<any>('t') //this is our dictionary
+    //const t = inject<any>('t') //this is our dictionary
+    
+
+    const tRef = inject<any>("t")!;
+    const t = computed(() => tRef.value);
+
+    const personNumberRule = (v: string) => {
+      if (!v || !v.trim()) return t.value?.allFieldsRequired;
+
+      const formatted = formatPersonNumber(v);
+      if (!formatted) return t.value?.invalidPersonalNumberFormat;
+
+      return isValidPersonNumberFormatted(formatted) || t.value?.invalidPersonalNumber;
+    };
+
+
     const visible = ref(false);
-    const error = ref<string | null>(null);
+    //const error = ref<string | null>(null);
     const upgradeStore = useUpgradeStore(); // reuse auth store or create register store
 
 
+
     const requiredRule = (v: string) =>
-  (typeof v === "string" && v.trim().length > 0) || (t?.allFieldsRequired ?? "All fields are required");
+      (typeof v === "string" && v.trim().length > 0) ||
+      (t.value?.allFieldsRequired ?? "All fields are required");
+
 
     const handleUpgrade = async () => {
-      error.value = null;
-      success.value = null;
+      errorKey.value = null;
+      successKey.value = null;
 
       const result = await formRef.value?.validate();
       if (!result?.valid) {
-        error.value = t?.allFieldsRequired ?? "All fields are required";
+        errorKey.value = "allFieldsRequired";
         return;
       }
 
       try {
         loading.value = true;
+        const formattedPersonNumber = formatPersonNumber(state.personNumber);
+        if (!formattedPersonNumber) {
+          errorKey.value = "invalidPersonalNumberFormat";
+          return;
+        }
 
         await upgradeStore.upgrade(
           state.email.trim(),
-          state.personNumber.trim(),
+          formattedPersonNumber,
           state.upgradeCode.trim(),
           state.username.trim(),
           state.password
         );
 
-        success.value = t?.upgradeSuccess ?? "Account successfully upgraded";
+
+        successKey.value = "upgradeSuccess";
       } catch (err: any) {
-        error.value = err.response?.data?.error || err.response?.data?.message || (t?.upgradeFailed ?? "Upgrade failed");
+        // If backend later returns messageKey, use it:
+        const backendKey = err.response?.data?.error?.messageKey;
+
+        // Otherwise fallback to a known key:
+        errorKey.value = backendKey ?? "upgradeFailed";
       } finally {
         loading.value = false;
       }
     };
+
 
 
 
@@ -140,6 +182,8 @@ export default defineComponent({
       goToLogin,
       requiredRule,
       formRef,
+      personNumberRule,
+      formatPersonNumber,
     };
   },
 });

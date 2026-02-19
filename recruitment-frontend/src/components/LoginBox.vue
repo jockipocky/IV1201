@@ -134,7 +134,7 @@ export default defineComponent({
 
       if (authStore.user) {
         if (authStore.user.role_id === 1) {
-          router.push("/applications");
+          router.push("/recruiter");
         } else if(authStore.user.role_id === 2){
           router.push("/apply");
         } else{

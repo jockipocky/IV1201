@@ -23,6 +23,27 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "Uppgraderingskoden vi skickade till din e-post",
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
+
+  //new labels for applications view 
+  applicationsTitle: "Jobbansökningar",
+  acceptButtonLabel: "Acceptera",
+  declineButtonLabel: "Avslå",
+  competenceProfileTitle: "Kompetensprofil",
+  availabilityTitle: "Tillgänglighet",
+  personNumberLabel: "Personnummer",
+
+  //snackbar in applications view + some more labels for application view
+  applicationAcceptedMessage: "Ansökan accepterades!",
+  applicationDeclinedMessage: "Ansökan avslogs!",
+  applicationUpdateFailedMessage: "Misslyckades med att uppdatera ansökan.",
+  applicationAlreadyHandledMessage: "Denna ansökan har redan hanterats av en annan rekryterare.",
+
+  statusUnhandled: "EJ HANTERAD",
+  statusAccepted: "ACCEPTERAD",
+  statusRejected: "AVSLAGEN",
+  yearsUnit: "år",
+  applicationNotFoundMessage: "Ansökan finns inte längre.",
+  applicationUnauthorizedMessage: "Du har inte behörighet för denna åtgärd.",
   competenceProfile:  "Arbetslivserfarenheter",
   competence: "Erfarenhet",
   availabilityRange: "Tillgänglighet",
@@ -35,6 +56,13 @@ export default {
     lotteriesLabel:"brush vettefan vad man ska översätta det här till",
   backToLogin: "Gå tillbaka till login",
   allFieldsRequired: "Alla fält måste fyllas i",
-  upgradeSuccess: "Kontot har uppgraderats",
+  upgradeSuccess: "Kontot har uppgraderats, vänligen återvänd till login sida",
   upgradeFailed: "Uppgraderingen misslyckades",
+
+  usernameTaken:"Användarnamn är upptaget",
+  userNotFound:"Användaren kunde inte hittas",
+  invalidUpgradeCode:"Ogiltlig kod",
+  acountAlreadyUpg:"Konto är redan uppgraderat",
+  invalidPersonalNumberFormat:"Fel format på personnummber",
+  notLegacy:"Inte en legacy user",
 };

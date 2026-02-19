@@ -14,6 +14,7 @@ const bodyParser = require('body-parser');
 
 //var indexRouter = require('./routes/index');
 var usersRouter = require('./src/routes/auth');
+var applicationsRouter = require('./src/routes/applications');
 const applicationRouter = require('./src/routes/applicationRoutes');
 var app = express();
 
@@ -44,7 +45,10 @@ app.use((req, res, next) => {
 });
 //app.use('/', indexRouter);
 app.use('/auth', usersRouter);
-app.use('/applications', applicationRouter);
+
+app.use('/applications', applicationsRouter);
+app.use('/application', applicationRouter);
+
 
 
 // catch 404 and forward to error handler

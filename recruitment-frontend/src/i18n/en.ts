@@ -22,6 +22,26 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "The upgrade code we sent to your email",
   upgradeButtonLabel: "Request upgrade",
   loginError: "Error when attempting to log in. Please try again.",
+
+  //new labels for applications view 
+  applicationsTitle: "Job Applications",
+  acceptButtonLabel: "Accept",
+  declineButtonLabel: "Decline",
+  competenceProfileTitle: "Competence Profile",
+  availabilityTitle: "Availability",
+  personNumberLabel: "Person number",
+  
+  //snackbar in applications view + some more labels for application view
+  applicationAcceptedMessage: "Application accepted successfully!",
+  applicationDeclinedMessage: "Application declined successfully!",
+  applicationUpdateFailedMessage: "Failed to update application status.",
+  applicationAlreadyHandledMessage: "This application was already handled by another recruiter.",
+  statusUnhandled: "UNHANDLED",
+  statusAccepted: "ACCEPTED",
+  statusRejected: "REJECTED",
+  yearsUnit: "years",
+  applicationNotFoundMessage: "Application no longer exists.",
+  applicationUnauthorizedMessage: "You are not authorized to perform this action.",
   competenceProfile: "Work Experience",
   applicationFormTitle: "Application",
   competence: "Competence",
@@ -36,5 +56,12 @@ export default {
   backToLogin: "Return to login",
   allFieldsRequired: "All fields are required",
   upgradeSuccess: "Account successfully upgraded",
-  upgradeFailed: "Upgrade failed"
+  upgradeFailed: "Upgrade failed",
+
+  usernameTaken:"Username already taken",
+  userNotFound:"User not found",
+  invalidUpgradeCode:"Invalid code",
+  acountAlreadyUpg:"Acount already upgraded",
+  invalidPersonalNumberFormat:"Wrong format of personal number",
+  notLegacy:"Not a legacy user",
 };

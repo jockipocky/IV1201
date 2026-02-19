@@ -27,37 +27,29 @@ async function login(username, password) {
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
-
-
   return {
     token,
     user
   };
 }
 
-async function upgradeAccount(userDto, personalNumber, upgradeCode) {
-    if (
-    !userDto ||
-    typeof userDto.username !== "string" ||
-    typeof userDto.email !== "string"
-  ) {
-    return { ok: false, status: 400, error: "Invalid request data" };
-  }
-  const person = await authSearch.findPersonForUpgrade(userDto.email, personalNumber);
+async function upgradeAccount(userDto, upgradeCode) {
+
+  const person = await authSearch.findPersonForUpgrade(userDto.email, userDto.personalNumber);
   if (!person) {
-    return { ok: false, status: 404, error: "User not found" };
+    return { ok: false, status: 404, error: { messageKey: "userNotFound"} };
   }
   const hasUsername = typeof person.username === "string" && person.username.trim() !== "";
   const hasPassword = typeof person.password === "string" && person.password.trim() !== "";
 
   if (hasUsername || hasPassword) {
-    return { ok: false, status: 409, error: "Account already upgraded" };
+    return { ok: false, status: 409, error: { messageKey: "acountAlreadyUpg"} };
   }
 
 
 
   if (person.person_id < 11 || person.person_id > 900) {
-    return { ok: false, status: 403, error: "Not a legacy user" };
+    return { ok: false, status: 403, error: { messageKey: "notLegacy"} };
   }
 
   const validCode = await authSearch.verifyUpgradeCode(
@@ -66,13 +58,28 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
   );
 
   if (!validCode) {
-    return { ok: false, status: 401, error: "Invalid upgrade code" };
+    return { ok: false, status: 401, error: { messageKey: "invalidUpgradeCode"}};
   }
 
-  const usernameTaken = await authSearch.usernameExists(userDto.username);
-  if (usernameTaken) {
-    return { ok: false, status: 409, error: "Username already taken" };
+  try {
+    await authSearch.upgradePersonAccount(
+      person.person_id,
+      userDto.username,
+      userDto.password
+    );
+  } catch (err) {
+    console.error("[SERVICE ERROR]:", err);
+
+    if (err.code === "23505") {
+      if (err.constraint === "unique_username") {
+        return { ok: false, status: 409, error: { messageKey: "usernameTaken" } };
+      }
+
+    }
+
+    return { ok: false, status: 500, error: { messageKey: "upgradeFailed"} };
   }
+
 
 
   await authSearch.upgradePersonAccount(
@@ -102,7 +109,7 @@ async function upgradeAccount(userDto, personalNumber, upgradeCode) {
         maxAge: 60 * 60 * 1000,
       },
     },
-  };
+  }; 
 }
 
 async function getMe(token) {
@@ -117,11 +124,7 @@ async function getMe(token) {
 
     return { ok: false, status: 401, error: "Invalid token" };
   }
-
-
-
   const personId = payload.person_id ?? payload.personId;
-
 
   if (!personId) {
     return { ok: false, status: 401, error: "Invalid token payload" };
@@ -135,5 +138,34 @@ async function getMe(token) {
 
   return { ok: true, status: 200, user };
 }
+/**
+ * Attempts to register a new user account. Returns an error if username, email or personal number is already taken.
+ * @param {*} userDto 
+ * @returns 
+ */
+async function registerAccount(userDto) {
+  try {
+  const user = await authSearch.registerAccount(userDto);
+  return { ok: true, user };
 
-module.exports = { login, upgradeAccount, getMe, };
+} catch (err) {
+  console.error("[SERVICE ERROR]:", err);
+  if (err.code === "23505") {
+    if (err.constraint === "unique_username") {
+      return { ok: false, status: 409, error: "Username already taken" };
+    }
+
+    if (err.constraint === "unique_email") {
+      return { ok: false, status: 409, error: "Email already registered" };
+    }
+
+    if (err.constraint === "unique_pnr") {
+      return { ok: false, status: 409, error: "Personal number already registered" };
+    }
+  }
+  // Unknown DB error
+  return { ok: false, status: 500, error: "Registration failed" };
+}
+}
+
+module.exports = { login, upgradeAccount, registerAccount, getMe };
