@@ -135,7 +135,7 @@ export default defineComponent({
 
       const result = await formRef.value?.validate();
       if (!result?.valid) {
-        errorKey.value = "allFieldsRequired";
+        //errorKey.value = "allFieldsRequired";
         return;
       }
 
