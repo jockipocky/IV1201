@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
       return next("/recruiter");
     }
     if (user?.role_id === 2) {
-      return next("/applicant");
+      return next("/applicationform");
     }
   }
 

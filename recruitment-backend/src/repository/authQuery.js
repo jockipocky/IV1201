@@ -97,10 +97,10 @@ async function registerAccount(userDto) {
   const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
   try {
       const res = await db.query(
-      `INSERT INTO person (username, name, surname, email, pnr, password, role_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO person (username, name, surname, email, pnr, password)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING person_id, username, email`,
-      [username, firstName, lastName, email, personalNumber, password, role_id]
+      [username, firstName, lastName, email, personalNumber, password]
     );
     console.log("REGISTERED USER:", res.rows[0]);
     return res.rows[0];
