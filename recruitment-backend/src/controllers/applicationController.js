@@ -1,5 +1,7 @@
 const ApplicationDTO = require("../domain/ApplicationDTO");
+const UserDTO = require("../domain/UserDTO");
 const { Application } = require("../services/applicationService");
+const authService = require("../services/authService");
 
 /**
  * denna funktion dubbellkollar så att sanvändaren har fyllt 
@@ -26,7 +28,6 @@ async function applicationSubmission(req,res){
 
         const result = await application.applicationSubmission(dto)
 
-        console.log("RESULT TO FRONTEND: ", result)
         if(!result.success){
             return res.status(401).json({
                 ok: false,
@@ -64,7 +65,7 @@ async function fetchApplication(req, res){
 
         return res.status(200).json(result)
     }catch(error){
-        console.error("ERROR: ", e)
+        console.error("ERROR: ", error)
         return res.status(500).json({
             ok: false,
             error: "server error"
@@ -72,9 +73,46 @@ async function fetchApplication(req, res){
     }
 }
 
+ async function updatePI(req, res) {
+    try{
+        const dto = new UserDTO(req.body)
+
+        if(!dto.lastName || !dto.email ||
+            !dto.firstName || !dto.personalNumber) {
+            return res.status(400).json({
+                ok: false,
+                error: "please fill in the complete form"
+            })
+        }
+        
+        const result = await authService.updatePI(dto);
+
+        if (!result.success) {
+            return res.status(400).json({
+                success: false,
+                error: result.error
+            });
+        }
+
+            return res.status(200).json({
+                success: true,
+                message: "profile updated"
+            });
+
+    }catch(error){
+        console.error("Error: ", error)
+        return res.status(500).json({
+            ok: false,
+            error: "server error"
+        })
+    }
+    
+ }
+
 
 
  module.exports = {
     applicationSubmission, 
-    fetchApplication
+    fetchApplication,
+    updatePI
 };

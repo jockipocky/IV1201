@@ -85,8 +85,6 @@ class Application{
             }
 
 
-            console.log("mappedCompetences: ", mappedCompetences)
-            console.log("ApplicationDTO: ", updateDTO)
             
             return await submitApplication(updateDTO)
             }catch (error){
@@ -138,7 +136,6 @@ class Application{
     async getApplication(applicationDTO){
         try{
             const res = await getApplication(applicationDTO)
-            console.log("database sends: ", res)
             return res
         }catch(error){
             return{

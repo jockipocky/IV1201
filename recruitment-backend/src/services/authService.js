@@ -127,7 +127,7 @@ async function getMe(token) {
   const user = await authSearch.findUserById(personId);
 
   if (!user) {
-    return { ok: false, status: 404, error: "User not found" };
+    return { ok: false, status: "User not found" };
   }
 
   return { ok: true, status: 200, user };
@@ -162,4 +162,26 @@ async function registerAccount(userDto) {
 }
 }
 
-module.exports = { login, upgradeAccount, registerAccount, getMe };
+
+async function updatePI(userDTO){
+  try{
+      const updated = await authSearch.submitUpdatedPI(userDTO)
+      
+      if(!updated || !updated.person_id){
+        return {
+          success: false,
+          error: "Could not update user"
+        }
+      }
+      return{success: true, message: "profile saved succesfully"}
+  }catch(error){
+    console.error("[SERVICE ERROR]:", error)
+    return{
+      
+      success: false,
+      error: error.message
+    }
+  }
+}
+
+module.exports = { login, upgradeAccount, registerAccount, getMe, updatePI };

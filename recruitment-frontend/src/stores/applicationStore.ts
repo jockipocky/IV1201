@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
-import { submitApplication, fetchApplication } from "@/api/applicationApi";
+import { submitApplication, fetchApplication , submitPI} from "@/api/applicationApi";
 import { renderToString } from "vue/server-renderer";
 import { useAuthStore } from "./authStore";
 
@@ -42,6 +42,7 @@ interface ApplicationState{
     personalInfo: personalInfo;
     handlingState: string;
     error:string | null;
+    successMessage: string |null
 }
 
 export const useApplicationStore = defineStore("applicationForm", {
@@ -56,7 +57,8 @@ export const useApplicationStore = defineStore("applicationForm", {
         person_id: ""
         },
         handlingState: handlingState.UNHANDLED,
-        error: null as string |null,
+        error: null as string |null, 
+        successMessage: null,
     }),
 
       getters:{ //getters accessible to the dom
@@ -207,6 +209,36 @@ export const useApplicationStore = defineStore("applicationForm", {
                 handlingState: this.handlingState,
                 person_id: this.personalInfo.person_id
             })
+        },
+
+        async submitPersonalInfo() {
+            this.error = null
+            this.successMessage = null
+
+            try{
+                const res = await submitPI({
+                    firstName: this.personalInfo.firstName,
+                    lastName:this.personalInfo.lastname,
+                    email: this.personalInfo.email,
+                    personalNumber: this.personalInfo.personalNumber,
+                    person_id: this.personalInfo.person_id
+                })
+
+                if(res.data.success){
+                    this.successMessage =" profilen har sparats!"
+                    setTimeout(() => {
+                        this.successMessage = null;
+                    }, 3000);
+                } else{
+                        this.error = "Något gick fel";
+                        this.successMessage = null;
+                        setTimeout(() => {
+                        this.successMessage = null;
+                    }, 3000);
+                }
+            }catch (error){
+                this.error = "kunde inte spara profilen"
+            }
         },
 
         /**

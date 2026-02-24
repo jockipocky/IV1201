@@ -30,7 +30,7 @@ onMounted(async () => {
       if (authStore.user.role_id === 1) {
         router.replace("/recruiter");
       } else if (authStore.user.role_id === 2) {
-        router.replace("/applicationform");
+        router.replace("/profile");
       }
     }
   }

@@ -28,6 +28,14 @@
     handlingState: string;
     person_id: string
   }
+
+  interface SubmitPIPayload{
+    firstName: string;
+    lastName: string;
+    email: string;
+    personalNumber: string;
+    person_id: string;
+  }
   
   /**
    * http anropp till backend som kallar på
@@ -42,3 +50,7 @@
   export const submitApplication = async (data: SubmitApplicationPayload) => {
     return apiClient.post("/application", data);
   };
+
+  export const submitPI = async (data: SubmitPIPayload) => {
+    return apiClient.post("/applications/personal-info", data)
+  }

@@ -94,7 +94,6 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
 import { onMounted } from "vue";
 
     onMounted(async() => {
-        await applicationStore.fetchUserInfo()
         await applicationStore.fetchApplication()
     })
 

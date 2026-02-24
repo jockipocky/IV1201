@@ -114,12 +114,33 @@ async function registerAccount(userDto) {
   }
 }
 
+async function submitUpdatedPI(userDTO){
+  const client = await db.connect()
+  try{
+
+    const result = await client.query(`update person 
+      set name = $1, surname= $2, pnr = $3, email = $4 
+      where person_id=$5 
+      returning person_id`,
+                        [userDTO.firstName, userDTO.lastName, userDTO.personalNumber, userDTO.email, userDTO.person_id]
+    )
+
+      return result.rows[0];
+
+  } catch(error){
+    console.error("database error: ", error)
+    throw error
+  } finally{
+    client.release()
+  }
+}
  
-module.exports = {
+module.exports = {    
   findPersonForUpgrade,
   verifyUpgradeCode,
   upgradePersonAccount,
   searchForUser,
   findUserById,
-  registerAccount
+  registerAccount,
+  submitUpdatedPI
 };

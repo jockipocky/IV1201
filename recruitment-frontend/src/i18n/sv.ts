@@ -50,7 +50,7 @@ export default {
   apply: "Ansök",
   personalInfoLabel: "Personlig Information",
   genericError: "ett fel uppstod",
-  yearsOfExperience: "år av erfarenhet",
+  yearsOfExperienceLabel: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
     lotteriesLabel:"brush vettefan vad man ska översätta det här till",
@@ -65,4 +65,8 @@ export default {
   acountAlreadyUpg:"Konto är redan uppgraderat",
   invalidPersonalNumberFormat:"Fel format på personnummber",
   notLegacy:"Inte en legacy user",
+  changePersonalInfo: "Spara ändringar",
+  cancelLabel: "Avbryt",
+  successMessage: "Profilen har sparats!",
+  profileError: "Profilen sparades inte",
 };

@@ -64,4 +64,8 @@ export default {
   acountAlreadyUpg:"Acount already upgraded",
   invalidPersonalNumberFormat:"Wrong format of personal number",
   notLegacy:"Not a legacy user",
+  changePersonalInfo: "Save Changes",
+  cancelLabel: "Cancel",
+  successMessage: "The profile has been saved!",
+  profileError: "Profile could not be saved",
 };
