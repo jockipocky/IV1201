@@ -184,12 +184,13 @@ export const useApplicationStore = defineStore("applicationForm", {
                 return;
             }
 
+            console.log("user when updating from fetchuserinfo: ", authStore.user);
             // bara mappa från authStore
             this.personalInfo = {
-                firstName: authStore.user.name,
-                lastname: authStore.user.surname,
+                firstName: authStore.user.firstName,
+                lastname: authStore.user.lastName,
                 email: authStore.user.email,
-                personalNumber: authStore.user.pnr,
+                personalNumber: authStore.user.personalNumber,
                 person_id: authStore.user.person_id
                 //eventuellt lägg till så att dem skickar personnummer till a
                 //og fetch user i auth
@@ -248,6 +249,7 @@ export const useApplicationStore = defineStore("applicationForm", {
             try{
                 const res = await fetchApplication(this.personalInfo.person_id)
                 
+                 console.log("application fetch result: ", res);
                 if(!res.data.succes){
                     return;
                 }
@@ -262,6 +264,7 @@ export const useApplicationStore = defineStore("applicationForm", {
                     competenceTime: String(c.years_of_experience)
                 }))
             }catch(e){
+                console.log("failed to fetch application: ", e);
                 this.error = "could not fetch application"
             }
         }

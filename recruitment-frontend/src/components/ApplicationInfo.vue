@@ -8,7 +8,6 @@
         v-if="!isEditing" 
         variant="text" 
         color="primary" 
-        prepend-icon="mdi-pencil"
         @click="isEditing = true"
       >
         {{ t.editButtonLabel || 'Edit' }}

@@ -21,14 +21,16 @@ async function login(username, password) {
     return { ok: false, status: 401, error: "Invalid username or password" };
   }
   const userRow = result.user;
-
+  console.log("userRow: ", userRow);
   const userDto = new UserDTO({
     username: userRow.username,
     password: null,
-    firstName: userRow.firstName,
-    lastName: userRow.lastName,
+    firstName: userRow.name,
+    lastName: userRow.surname,
     email: userRow.email,
     role_id: userRow.role_id,
+    person_id: userRow.person_id,
+    personalNumber: userRow.pnr,
   });
   return {
     ok: true,
@@ -135,12 +137,25 @@ async function me(req) {
   const token = req.cookies?.auth;
 
   const result = await authService.getMe(token);
+
+  //convert to values in the shape needed by frontend (established by login)
+  const sendResult= {
+      username : result.user.username,
+      password : null,
+      firstName : result.user.name,
+      lastName : result.user.surname,
+      email : result.user.email,
+      personalNumber : result.user.pnr,
+      role_id : result.user.role_id,
+      person_id : result.user.person_id
+  }
+
   if (!result.ok) return result;
 
   return {
     ok: true,
     status: 200,
-    user: result.user,
+    user: sendResult,
   };
 }
 

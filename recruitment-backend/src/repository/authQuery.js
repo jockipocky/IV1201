@@ -12,7 +12,7 @@ const db = require("../db/db");
  */
 async function searchForUser(username, password) {
     const result = await db.query(
-        "SELECT person_id, username, name, surname, email, role_id, username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
+        "SELECT person_id, username, name, surname, email, role_id, username, pnr FROM person WHERE username = $1 AND password = $2 LIMIT 1",
         [username, password]
     );
 
@@ -80,7 +80,7 @@ async function upgradePersonAccount(personId, username, password) {
  */
 async function findUserById(person_id) {
   const res = await db.query(
-    `SELECT person_id, username, name, surname, email, role_id
+    `SELECT person_id, username, name, surname, email, role_id, pnr
      FROM person
      WHERE person_id = $1`,
     [person_id]

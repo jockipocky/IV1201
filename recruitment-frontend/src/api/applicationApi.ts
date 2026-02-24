@@ -44,11 +44,11 @@
    * @returns 
    */
   export const fetchApplication = async (person_id: string) => {
-    return apiClient.get(`/application/${person_id}`);
+    return apiClient.get(`/applications/${person_id}`);
   };
 
   export const submitApplication = async (data: SubmitApplicationPayload) => {
-    return apiClient.post("/application", data);
+    return apiClient.post("/applications", data);
   };
 
   export const submitPI = async (data: SubmitPIPayload) => {
