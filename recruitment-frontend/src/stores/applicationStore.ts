@@ -172,6 +172,11 @@ export const useApplicationStore = defineStore("applicationForm", {
             
         },
 
+        /**
+         *this function gets all relevant personal info from 
+         *from the database
+         * @returns object with personal information
+         */
         async fetchUserInfo(){
             const authStore = useAuthStore();
 
@@ -211,7 +216,10 @@ export const useApplicationStore = defineStore("applicationForm", {
                 person_id: this.personalInfo.person_id
             })
         },
-
+        /**
+         * this functions submits personal information
+         * to the database when a button is pressed
+         */
         async submitPersonalInfo() {
             this.error = null
             this.successMessage = null
@@ -243,7 +251,9 @@ export const useApplicationStore = defineStore("applicationForm", {
         },
 
         /**
-         * denna funktion
+         * this function gets application information from
+         * from the database and mats the availability and
+         * competence profiles correctly
          */
         async fetchApplication(){
             try{
