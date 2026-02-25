@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
-import { submitApplication, fetchApplication } from "@/api/applicationApi";
+import { submitApplication, fetchApplication , submitPI} from "@/api/applicationApi";
 import { renderToString } from "vue/server-renderer";
 import { useAuthStore } from "./authStore";
 
@@ -42,7 +42,21 @@ interface ApplicationState{
     personalInfo: personalInfo;
     handlingState: string;
     error:string | null;
+    successMessage: string |null,
+    application:ApplicationDTO |null,
+    hasApplication: boolean,
+    isLoading: boolean
 }
+    interface ApplicationDTO {
+        competences: {
+            name: string;
+            yearsOfExperience: number;
+        }[];
+        availability: {
+            fromDate: string;
+            toDate: string;
+        }[];
+    }
 
 export const useApplicationStore = defineStore("applicationForm", {
     state: () : ApplicationState=> ({ //actual initial state of the values in our store (MODEL)
@@ -56,8 +70,13 @@ export const useApplicationStore = defineStore("applicationForm", {
         person_id: ""
         },
         handlingState: handlingState.UNHANDLED,
-        error: null as string |null,
+        error: null as string |null, 
+        successMessage: null,
+        application: null,
+        hasApplication: false,
+        isLoading: false,
     }),
+
 
       getters:{ //getters accessible to the dom
             /**
@@ -88,7 +107,6 @@ export const useApplicationStore = defineStore("applicationForm", {
                 competenceTime: "",
                 competenceType: ""
             });
-            console.log("addEmptyCompetence gör något")
         },
 
         /**
@@ -106,7 +124,6 @@ export const useApplicationStore = defineStore("applicationForm", {
             if(payload.competenceTime !== undefined){
                 competence.competenceTime = payload.competenceTime
             }
-            console.log("competence: ", competence)
 
         },
 
@@ -116,7 +133,6 @@ export const useApplicationStore = defineStore("applicationForm", {
          */
         removeCompetence(index: number){
             this.competences.splice(index, 1);
-            console.log("remoceCompetence gör något")
         },
 
         /**
@@ -145,7 +161,6 @@ export const useApplicationStore = defineStore("applicationForm", {
 
             this.availability[index] = { from, to };
 
-            console.log("this.setAvailabilityRange: ", this.availability )
         },
 
         /**
@@ -170,6 +185,11 @@ export const useApplicationStore = defineStore("applicationForm", {
             
         },
 
+        /**
+         *this function gets all relevant personal info from 
+         *from the database
+         * @returns object with personal information
+         */
         async fetchUserInfo(){
             const authStore = useAuthStore();
 
@@ -184,10 +204,10 @@ export const useApplicationStore = defineStore("applicationForm", {
 
             // bara mappa från authStore
             this.personalInfo = {
-                firstName: authStore.user.name,
-                lastname: authStore.user.surname,
+                firstName: authStore.user.firstName,
+                lastname: authStore.user.lastName,
                 email: authStore.user.email,
-                personalNumber: authStore.user.pnr,
+                personalNumber: authStore.user.personalNumber,
                 person_id: authStore.user.person_id
                 //eventuellt lägg till så att dem skickar personnummer till a
                 //og fetch user i auth
@@ -200,45 +220,103 @@ export const useApplicationStore = defineStore("applicationForm", {
          * 
          * @returns sets the relevant information and makes sure the database fills in a new entry
          */
-        submitApplicationForm(){
-            return submitApplication({
-                competences: this.competences,
-                availability: this.availability,
-                handlingState: this.handlingState,
-                person_id: this.personalInfo.person_id
-            })
+        async submitApplicationForm(){
+            try{
+                const res = await submitApplication({
+                    competenceProfile: this.competences,
+                    availability: this.availability,
+                    person_id: this.personalInfo.person_id
+                })
+                if(res.data.success){
+                    this.hasApplication = true
+                    return true
+                } else {
+                    this.hasApplication = false
+                    return false
+                }
+            }catch(error){
+                console.error("submission failed:, ", error)
+                this.hasApplication = false
+                return false 
+            }
+        },
+        /**
+         * this functions submits personal information
+         * to the database when a button is pressed
+         */
+        async submitPersonalInfo() {
+            this.error = null
+            this.successMessage = null
+
+            try{
+                const res = await submitPI({
+                    firstName: this.personalInfo.firstName,
+                    lastName:this.personalInfo.lastname,
+                    email: this.personalInfo.email,
+                    personalNumber: this.personalInfo.personalNumber,
+                    person_id: this.personalInfo.person_id
+                })
+
+                if(res.data.success){
+                    this.successMessage =" profilen har sparats!"
+                    setTimeout(() => {
+                        this.successMessage = null;
+                    }, 3000);
+                } else{
+                        this.error = "Något gick fel";
+                        this.successMessage = null;
+                        setTimeout(() => {
+                        this.successMessage = null;
+                    }, 3000);
+                }
+            }catch (error){
+                this.error = "kunde inte spara profilen"
+            }
         },
 
         /**
-         * denna funktion
+         * this function gets application information from
+         * from the database and mats the availability and
+         * competence profiles correctly
          */
-        async fetchApplication(){
-            try{
-                const res = await fetchApplication(this.personalInfo.person_id)
-                
-                if(!res.data.succes){
-                    return;
-                }
+        
 
-                this.availability = res.data.availability.map((a: any) => ({
-                    from: a.from_date,
-                    to: a.to_date
-                }))
+            async fetchApplication() {
+        if (!this.personalInfo.person_id) return;
 
-                this.competences = res.data.competenceProfile.map((c: any) => ({
-                    competenceType: c.competence_id,
-                    competenceTime: String(c.years_of_experience)
+        this.isLoading = true;
+
+        try {
+            const res = await fetchApplication(this.personalInfo.person_id);
+
+
+            if (res.data.success) {
+            this.hasApplication = true;
+
+            this.application = {
+                competences: res.data.competenceProfile.map((c: any) => ({
+                name: c.competenceType,
+                yearsOfExperience: Number(c.competenceTime)
+                })),
+
+                availability: res.data.availability.map((a: any) => ({
+                fromDate: a.from_date.split("T")[0], // tar bort tid
+                toDate: a.to_date.split("T")[0]
                 }))
-            }catch(e){
-                this.error = "could not fetch application"
+            };
+
+            } else {
+            this.hasApplication = false;
+            this.application = null;
             }
+
+        } catch (e) {
+            this.hasApplication = false;
+            this.application = null;
+        } finally {
+            this.isLoading = false;
         }
-
-
-
-
-
-  
+        }
 
   },
 });

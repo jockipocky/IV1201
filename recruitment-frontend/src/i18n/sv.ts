@@ -54,7 +54,7 @@ export default {
   apply: "Ansök",
   personalInfoLabel: "Personlig Information",
   genericError: "ett fel uppstod",
-  yearsOfExperience: "år av erfarenhet",
+  yearsOfExperienceLabel: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
     lotteriesLabel:"brush vettefan vad man ska översätta det här till",
@@ -69,11 +69,4 @@ export default {
   acountAlreadyUpg:"Konto är redan uppgraderat",
   invalidPersonalNumberFormat:"Fel format på personnummber",
   notLegacy:"Inte en legacy user",
-
-  "errors": {
-    "usernameIsTaken": "Användarnamnet är redan upptaget.",
-    "emailIsTaken": "E-postadressen är redan registrerad.",
-    "pnrIsTaken": "Personnumret är redan registrerat.",
-  }
-
 };

@@ -14,6 +14,11 @@ const COMPETENCE_TYPE_MAP ={
     "roller coaster operator": 3
 }
 
+const ID_TO_COMPETENCE_MAP = {
+    1: "ticket sales",
+    2: "lotteries",
+    3: "roller coaster operator"
+}
 /**
  * hur application hanteras och sätts styrs härifrån
  * 
@@ -55,15 +60,46 @@ class Application{
 
             return id
         }
+
+
     /**
      * denna funktion ser till så att DTO värdena ändras 
      * @param {type, time} competenceProfile består av två element, typ av competence och years_of_experience
      * @returns 
      */
-    mapCompetenceProfile(competenceProfile){
+    mapCompetenceProfileToDB(competenceProfile){
         return competenceProfile.map(c=> ({
             competence_id: this.mapCompetenceToId(c.competenceType),
             years_of_experience: c.competenceTime
+        }))
+    }   
+
+    /**
+     * this function converts from number id
+     * to competence
+     * @param {type, competence} type 
+     * @returns name of competence
+     */
+    mapIdToCompetence(id){
+        const competence = ID_TO_COMPETENCE_MAP[id]
+
+        if(!competence){
+            throw new Error(`Invalid competence id: ${id}`)
+        }
+
+        return competence
+    }
+
+    /**
+     * this function does the mapping to correct
+     * front end format
+     * @param {type, competence} competenceProfile 
+     * @returns correctly formatted competence
+     */
+    mapCompetenceProfileFromDB(competenceProfile){
+        return competenceProfile.map(c=> ({
+            competenceType: this.mapIdToCompetence(c.competence_id),
+            competenceTime: String(c.years_of_experience)
         }))
     }   
 
@@ -77,7 +113,7 @@ class Application{
     async applicationSubmission(applicationDTO){
         //denna funktion kanske ska delas upp till updateDTO och ApplicationSubmission
         try{
-            const mappedCompetences = this.mapCompetenceProfile(applicationDTO.competenceProfile)
+            const mappedCompetences = this.mapCompetenceProfileToDB(applicationDTO.competenceProfile)
 
             const updateDTO = {
                 ...applicationDTO,
@@ -85,8 +121,6 @@ class Application{
             }
 
 
-            console.log("mappedCompetences: ", mappedCompetences)
-            console.log("ApplicationDTO: ", updateDTO)
             
             return await submitApplication(updateDTO)
             }catch (error){
@@ -138,8 +172,22 @@ class Application{
     async getApplication(applicationDTO){
         try{
             const res = await getApplication(applicationDTO)
-            console.log("database sends: ", res)
-            return res
+            if(!res.success) return res
+
+            if(!res.competenceProfile || !res.availability){
+                return {
+                    success: false,
+                    availability:[],
+                    competenceProfile: [],
+                }
+            }
+            const mappedCompetences = this.mapCompetenceProfileFromDB(res.competenceProfile)            
+
+            return {
+                success:true,
+                availability: res.availability,
+                competenceProfile: mappedCompetences
+            }
         }catch(error){
             return{
                 success:false,

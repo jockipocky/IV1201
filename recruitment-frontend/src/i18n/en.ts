@@ -75,5 +75,11 @@ export default {
     "usernameIsTaken": "Username is already taken.",
     "emailIsTaken": "Email is already registered.",
     "pnrIsTaken": "Personal number is already registered.",
-  }
+  },
+  changePersonalInfo: "Save Changes",
+  cancelLabel: "Cancel",
+  successMessage: "The profile has been saved!",
+  profileError: "Profile could not be saved",
+  applicationInfo: "Application Information",
+  
 };

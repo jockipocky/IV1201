@@ -12,8 +12,8 @@ const db = require("../db/db");
  */
 async function searchForUser(username) {
     const result = await db.query(
-        "SELECT person_id, username, name, surname, email, role_id, password FROM person WHERE username = $1 LIMIT 1",
-        [username]
+        "SELECT person_id, username, name, surname, email, role_id, username, pnr, password FROM person WHERE username = $1 AND password = $2 LIMIT 1",
+        [username, password]
     );
 
     if (result.rows.length === 0) return null;
@@ -80,7 +80,7 @@ async function upgradePersonAccount(personId, username, password) {
  */
 async function findUserById(person_id) {
   const res = await db.query(
-    `SELECT person_id, username, name, surname, email, role_id
+    `SELECT person_id, username, name, surname, email, role_id, pnr
      FROM person
      WHERE person_id = $1`,
     [person_id]
@@ -102,7 +102,6 @@ async function registerAccount(userDto) {
        RETURNING person_id, username, email`,
       [username, firstName, lastName, email, personalNumber, password]
     );
-    console.log("REGISTERED USER:", res.rows[0]);
     return res.rows[0];
 
   } catch (err) {
@@ -113,12 +112,33 @@ async function registerAccount(userDto) {
   }
 }
 
+async function submitUpdatedPI(userDTO){
+  const client = await db.connect()
+  try{
+
+    const result = await client.query(`update person 
+      set name = $1, surname= $2, pnr = $3, email = $4 
+      where person_id=$5 
+      returning person_id`,
+                        [userDTO.firstName, userDTO.lastName, userDTO.personalNumber, userDTO.email, userDTO.person_id]
+    )
+
+      return result.rows[0];
+
+  } catch(error){
+    console.error("database error: ", error)
+    throw error
+  } finally{
+    client.release()
+  }
+}
  
-module.exports = {
+module.exports = {    
   findPersonForUpgrade,
   verifyUpgradeCode,
   upgradePersonAccount,
   searchForUser,
   findUserById,
-  registerAccount
+  registerAccount,
+  submitUpdatedPI
 };
