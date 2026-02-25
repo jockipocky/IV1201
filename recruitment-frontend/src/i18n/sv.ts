@@ -23,7 +23,11 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "Uppgraderingskoden vi skickade till din e-post",
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
-
+  passwordTooShort : "Lösenordet måste vara minst 8 tecken.",
+  invalidEmail: "E-post måste innehålla @.",
+  registrationSuccess: "Registrering lyckades! Vänligen logga in.",
+  registrationFailed: "Registreringen misslyckades. Vänligen försök igen.",
+  
   //new labels for applications view 
   applicationsTitle: "Jobbansökningar",
   acceptButtonLabel: "Acceptera",
@@ -65,4 +69,11 @@ export default {
   acountAlreadyUpg:"Konto är redan uppgraderat",
   invalidPersonalNumberFormat:"Fel format på personnummber",
   notLegacy:"Inte en legacy user",
+
+  "errors": {
+    "usernameIsTaken": "Användarnamnet är redan upptaget.",
+    "emailIsTaken": "E-postadressen är redan registrerad.",
+    "pnrIsTaken": "Personnumret är redan registrerat.",
+  }
+
 };

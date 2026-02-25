@@ -22,6 +22,12 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "The upgrade code we sent to your email",
   upgradeButtonLabel: "Request upgrade",
   loginError: "Error when attempting to log in. Please try again.",
+  passwordTooShort : "Password must be at least 8 characters.",
+  invalidEmail: "Email must contain @.",
+  registrationSuccess: "Registration successful! Please log in.",
+  emailRegistered: "Email already registered",
+  pnrRegistered: "Personal number already registered",
+  registrationFailed: "Registration failed. Please try again.",
 
   //new labels for applications view 
   applicationsTitle: "Job Applications",
@@ -64,4 +70,10 @@ export default {
   acountAlreadyUpg:"Acount already upgraded",
   invalidPersonalNumberFormat:"Wrong format of personal number",
   notLegacy:"Not a legacy user",
+
+  "errors": {
+    "usernameIsTaken": "Username is already taken.",
+    "emailIsTaken": "Email is already registered.",
+    "pnrIsTaken": "Personal number is already registered.",
+  }
 };

@@ -10,10 +10,10 @@ const db = require("../db/db");
  * @param {*} password - password from request
  * @returns - whole row from connected user.
  */
-async function searchForUser(username, password) {
+async function searchForUser(username) {
     const result = await db.query(
-        "SELECT person_id, username, name, surname, email, role_id, username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
-        [username, password]
+        "SELECT person_id, username, name, surname, email, role_id, password FROM person WHERE username = $1 LIMIT 1",
+        [username]
     );
 
     if (result.rows.length === 0) return null;
@@ -94,7 +94,7 @@ async function findUserById(person_id) {
  * @returns 
  */
 async function registerAccount(userDto) {
-  const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
+  const { firstName, lastName, username, email, personalNumber, password,} = userDto;
   try {
       const res = await db.query(
       `INSERT INTO person (username, name, surname, email, pnr, password)
@@ -106,7 +106,6 @@ async function registerAccount(userDto) {
     return res.rows[0];
 
   } catch (err) {
-    console.error("[DB ERROR]:", err);
     if (err.code === "23505") { // Unique violation for inserted row in db
      throw err; // Let the service layer handle this and return appropriate response
     }

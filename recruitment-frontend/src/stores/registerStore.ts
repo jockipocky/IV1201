@@ -13,13 +13,19 @@ export const useRegisterStore = defineStore("register", {
 
   actions: { //actions we can perform on the values in our store
 
-    async register(firstName: string, lastName: string, email: string, personalNumber: string, username: string, password: string,) {
-      
+    async register(
+      firstName: string,
+      lastName: string,
+      email: string,
+      personalNumber: string,
+      username: string, 
+      password: string,
+      ) {
         const response = await register(firstName, lastName, email, personalNumber, username, password);
-        console.log("[RegisterStore] Registration successful, response data:", response.data);
+        console.log("[RegisterStore] Registration successful, response data:", response);
         this.registeringResult = response.data;
     },
-  },
+  },  
   getters:{ //getters accessible to the dom
 
   },
