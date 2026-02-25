@@ -16,6 +16,8 @@ async function applicationSubmission(req,res){
         const dto = new ApplicationDTO(req.body)
         const application = new Application(dto)
 
+        console.log("req body: ", req.body)
+        console.log("DTO: ", dto )
         if(
             dto.competenceProfile.length === 0  || 
             dto.availability.length === 0 
@@ -61,7 +63,6 @@ async function fetchApplication(req, res){
         const application = new Application({})
         const result = await application.getApplication({person_id})
 
-        console.log("controller result: ", result)
 
         return res.status(200).json(result)
     }catch(error){

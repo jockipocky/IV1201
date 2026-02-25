@@ -23,9 +23,8 @@
   }
 
   interface SubmitApplicationPayload{
-    competences: competence[];
+    competenceProfile: competence[];
     availability: availability[];
-    handlingState: string;
     person_id: string
   }
 

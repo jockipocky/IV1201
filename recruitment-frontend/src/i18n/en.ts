@@ -68,4 +68,6 @@ export default {
   cancelLabel: "Cancel",
   successMessage: "The profile has been saved!",
   profileError: "Profile could not be saved",
+  applicationInfo: "Application Information",
+  
 };

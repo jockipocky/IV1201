@@ -199,8 +199,9 @@ async function updateHandlingStatus(status, applicationDTO){
                 }
             } else{
                 return{
-                    success: true,
-                    message: "Person have not finished an application"
+                    success: false,
+                    availability: [],
+                    competenceProfile: []
                 }
 
             }

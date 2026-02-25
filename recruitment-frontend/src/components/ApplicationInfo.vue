@@ -8,6 +8,7 @@
         v-if="!isEditing" 
         variant="text" 
         color="primary" 
+        prepend-icon="mdi-pencil"
         @click="isEditing = true"
       >
         {{ t.editButtonLabel || 'Edit' }}
@@ -118,12 +119,11 @@ import { useApplicationStore } from "@/stores/applicationStore";
 const applicationStore = useApplicationStore();
 const t = inject<any>("t");
 const error = ref<string | null>(null);
-const isEditing = ref(false); // Controls the view toggle
+const isEditing = ref(false); 
 
 const originalPersonalInfo = ref<any>(null);
 
 onMounted(async () => {
-  await applicationStore.fetchUserInfo();
   saveOriginalState();
 });
 

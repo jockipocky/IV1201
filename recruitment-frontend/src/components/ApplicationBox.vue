@@ -3,85 +3,65 @@
     <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.competenceProfile}}</div>
 
     <form @submit.prevent>
-    <div 
-        v-for="(competence ,index) in applicationStore.competences"
-        :key="index">
+      <div v-for="(competence ,index) in applicationStore.competences" :key="index">
         <v-select
           :label="t.competence"
           :items="[t.ticketSalesLabel, t.rollerCoasterOperatorLabel, t.lotteriesLabel]"
           :model-value="competence.competenceType"
-          @update:model-value=" 
-          applicationStore.updateCompetence(index, {competenceType: $event})"
+          @update:model-value="applicationStore.updateCompetence(index, {competenceType: $event})"
           variant="outlined"
           density="compact"
           class="mb-6"
         />     
 
         <v-text-field
-            @keydown.prevent
-            type="number"
-            step="0.1"
-            inpuutmode="decimal"  
-            pattern="[0-9]*"
-            @update:model-value="applicationStore.updateCompetence(index, {competenceTime: $event})"
-            :label="t.yearsOfExperienceLabel"
-            :model-value="competence.competenceTime"
-            :append-inner-icon="
-            index === applicationStore.competences.length - 1
-            ? mdiPlus
-            : mdiDelete
-            "
-            @click:append-inner="handleCompIconClick(index)"
-            class="mb-2"/>
- 
-        
-    
-    
-     </div> 
+          @keydown.prevent
+          type="number"
+          step="0.1"
+          @update:model-value="applicationStore.updateCompetence(index, {competenceTime: $event})"
+          :label="t.yearsOfExperienceLabel"
+          :model-value="competence.competenceTime"
+          :append-inner-icon="index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete"
+          @click:append-inner="handleCompIconClick(index)"
+          class="mb-2"
+        />
+      </div> 
       
-     <div
-        v-for="(availability, index) in applicationStore.availability"
-        :key="index"
-        class="mb-4"
-
-     > <v-date-picker
-            multiple="range"
-            :model-value = "applicationStore.getAvailabilityRange(index)"
-            @update:model-value="applicationStore.setAvailabilityRange(index, $event )"
-            :title= t.availabilityRange
+      <div v-for="(availability, index) in applicationStore.availability" :key="index" class="mb-4">
+        <v-date-picker
+          multiple="range"
+          :model-value="applicationStore.getAvailabilityRange(index)"
+          @update:model-value="applicationStore.setAvailabilityRange(index, $event)"
+          :title="t.availabilityRange"
         ></v-date-picker> 
         
-        <v-btn
-            icon
-            @click="handleAvailabilityIconClick(index)"
-        >
-            <v-icon>
-                {{ index === applicationStore.availability.length-1 ? mdiPlus: mdiDelete }}
-            </v-icon>
-
+        <v-btn icon @click="handleAvailabilityIconClick(index)">
+          <v-icon>{{ index === applicationStore.availability.length-1 ? mdiPlus : mdiDelete }}</v-icon>
         </v-btn>
-    
-    </div>
+      </div>
 
-    <div>
+      <div class="d-flex ga-3">
         <v-btn
-        color="#2196F3"
-        @click="onApply"
+          color="primary"
+          class="flex-grow-1"
+          @click="onApply"
         >
-            {{t.apply}}
+          {{ t.apply }}
         </v-btn>
-    </div>
-
-
-
-
-
+        
+        <v-btn
+          variant="outlined"
+          color="red"
+          class="flex-grow-1"
+          @click="cancelForm"
+        >
+          {{ t.cancelLabel || 'Cancel' }}
+        </v-btn>
+      </div>
 
       <v-alert v-if="error" type="error" class="mt-4" dense>
         {{ error }}
       </v-alert>
-
-
     </form>
   </v-card>
 </template>
@@ -93,9 +73,7 @@ import { inject } from 'vue' //for dictionary
 import { mdiPlus, mdiDelete } from "@mdi/js"
 import { onMounted } from "vue";
 
-    onMounted(async() => {
-        await applicationStore.fetchApplication()
-    })
+
 
 
 
@@ -136,11 +114,21 @@ import { onMounted } from "vue";
     const onApply = async() =>{
         try {
             await applicationStore.submitApplicationForm();
+            window.location.reload()
         } catch (e) {
             error.value = t.genericError
         }
     };
-    //överväg lägg till funktionallitet så att vi skapar en ny competence ifall vi trycker på enter
+
+    const cancelForm = () => {
+    applicationStore.competences = [];
+    applicationStore.availability = [];
+    
+    applicationStore.addEmptyCompetence();
+    applicationStore.addEmptyAvailability();
+    
+    error.value = null;
+};
 
 
 

@@ -69,4 +69,5 @@ export default {
   cancelLabel: "Avbryt",
   successMessage: "Profilen har sparats!",
   profileError: "Profilen sparades inte",
+  applicationInfo: "Aktiv ansökan",
 };
