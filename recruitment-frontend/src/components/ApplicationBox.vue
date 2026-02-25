@@ -67,11 +67,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, ref } from "vue";
+import { ref } from "vue";
 import { useApplicationStore } from "@/stores/applicationStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
 import { mdiPlus, mdiDelete } from "@mdi/js"
-import { onMounted } from "vue";
 
 
 

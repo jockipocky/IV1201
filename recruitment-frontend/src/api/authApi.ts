@@ -36,7 +36,6 @@ export const login = async (username: string, password: string) => {
 
 export const fetchUser = async () => {
   const res = await apiClient.get("/auth/me");
-  console.log("res is: ", res);
   return res;
 }; //called on page refresh to auto-login if we have cookie
 

@@ -102,7 +102,6 @@ async function registerAccount(userDto) {
        RETURNING person_id, username, email`,
       [username, firstName, lastName, email, personalNumber, password]
     );
-    console.log("REGISTERED USER:", res.rows[0]);
     return res.rows[0];
 
   } catch (err) {

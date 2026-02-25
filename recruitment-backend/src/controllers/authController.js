@@ -21,7 +21,6 @@ async function login(username, password) {
     return { ok: false, status: 401, error: "Invalid username or password" };
   }
   const userRow = result.user;
-  console.log("userRow: ", userRow);
   const userDto = new UserDTO({
     username: userRow.username,
     password: null,

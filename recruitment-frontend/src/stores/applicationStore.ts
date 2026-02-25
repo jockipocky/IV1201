@@ -161,7 +161,6 @@ export const useApplicationStore = defineStore("applicationForm", {
 
             this.availability[index] = { from, to };
 
-            console.log("this.setAvailabilityRange: ", this.availability )
         },
 
         /**
@@ -290,7 +289,6 @@ export const useApplicationStore = defineStore("applicationForm", {
         try {
             const res = await fetchApplication(this.personalInfo.person_id);
 
-            console.log("FETCH RESULT:", res.data);
 
             if (res.data.success) {
             this.hasApplication = true;
