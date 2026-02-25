@@ -59,7 +59,7 @@
         {{t.registerButtonLabel}}
       </v-btn>
 
-      <v-btn class="mt-6 mb-4" color="blue" block @click="goToLogin">
+      <v-btn class="mt-6 mb-4" variant="tonal" block @click="goToLogin">
         {{t.backToLogin}}
       </v-btn>
 
@@ -134,6 +134,7 @@ export default defineComponent({
       try {
         await registerStore.register(state.firstName, state.lastName, state.email, state.personNumber, state.username, state.password); // implement a register action in your store
         error.value = null;
+        success.value = t.value?.registrationSuccess;
         setTimeout(() => router.push("/login"), 2000);
       } catch (err: any) {
         console.error("Error during registration:", err);
