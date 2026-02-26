@@ -9,7 +9,7 @@
         :placeholder="t.emailLabel"
         :label="t.upgradeAccountEmailPlaceholder"
         type="email"
-        :rules="[requiredRule]"
+        :rules="[requiredRule, emailRule]"
       ></v-text-field>
       <v-text-field
         :model-value="state.personNumber"
@@ -39,7 +39,7 @@
         :type="visible ? 'text' : 'password'"
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         @click:append-inner="visible = !visible"
-        :rules="[requiredRule]"
+        :rules="[requiredRule, passwordMinRule]"
       ></v-text-field>
 
       <v-alert v-if="error" type="error" class="mt-4" dense>
@@ -128,6 +128,13 @@ export default defineComponent({
       (typeof v === "string" && v.trim().length > 0) ||
       (t.value?.allFieldsRequired ?? "All fields are required");
 
+    const emailRule = (v: string | null | undefined) =>
+      (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ||
+      "Enter a valid email"
+
+    const passwordMinRule = (v: string | null | undefined) =>
+      (!!v && v.length >= 8) ||
+      "Password must be at least 8 characters"
 
     const handleUpgrade = async () => {
       errorKey.value = null;
@@ -184,6 +191,8 @@ export default defineComponent({
       formRef,
       personNumberRule,
       formatPersonNumber,
+      emailRule,
+      passwordMinRule
     };
   },
 });
