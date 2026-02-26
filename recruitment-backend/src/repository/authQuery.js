@@ -12,8 +12,8 @@ const db = require("../db/db");
  */
 async function searchForUser(username) {
     const result = await db.query(
-        "SELECT person_id, username, name, surname, email, role_id, username, pnr, password FROM person WHERE username = $1 AND password = $2 LIMIT 1",
-        [username, password]
+        "SELECT person_id, username, name, surname, email, role_id, username, pnr, password FROM person WHERE username = $1",
+        [username]
     );
 
     if (result.rows.length === 0) return null;
