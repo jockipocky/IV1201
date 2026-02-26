@@ -65,8 +65,7 @@ export const useApplicationsStore = defineStore("register", {
     async fetchAllApplications() {
       try{
         const response = await getApplications();
-        console.log("response:   ", response)
-        this.applicationsResult = mapApplicationsResponse(response.data.applications);
+        this.applicationsResult = mapApplicationsResponse(response);
         console.log("applicationResult is now: ", this.applicationsResult);
       } catch(err: any){
         this.error = err.response?.data?.message || "Failed to fetch job applications from DB.";
