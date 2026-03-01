@@ -1,3 +1,22 @@
+/**
+ * @file authControllerMe.test.js
+ * @description Unit tests for authController.me()
+ * 
+ * This file tests the "get current user" controller function in isolation.
+ * It mocks the authService.getMe function.
+ * 
+ * Controller responsibility: Get user from request, call service,
+ * format response.
+ * 
+ * Test scenarios:
+ * - Unauthenticated request returns 401
+ * - Authenticated request returns user data
+ * - Service errors are handled
+ * 
+ * @controller authController.me
+ * @service authService.getMe
+ */
+
 jest.mock("../../src/services/authService", () => ({
   getMe: jest.fn()
 }));

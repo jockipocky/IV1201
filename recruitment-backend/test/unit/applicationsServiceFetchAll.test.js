@@ -1,3 +1,21 @@
+/**
+ * @file applicationsServiceFetchAll.test.js
+ * @description Unit tests for applicationsService.fetchAllApplications()
+ * 
+ * This file tests the fetch all applications service in isolation.
+ * (For recruiters to see unhandled applications)
+ * It mocks applicationsQuery repository.
+ * 
+ * Service responsibility: Get all unhandled applications from repository.
+ * 
+ * Test scenarios:
+ * - Returns applications array
+ * - Returns empty array when none exist
+ * 
+ * @service applicationsService.fetchAllApplications
+ * @repository applicationsQuery.fetchAllApplications
+ */
+
 jest.mock("../../src/repository/applicationsQuery", () => ({
   fetchAllApplications: jest.fn()
 }));

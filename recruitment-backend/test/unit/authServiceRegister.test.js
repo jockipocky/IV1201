@@ -1,3 +1,23 @@
+/**
+ * @file authServiceRegister.test.js
+ * @description Unit tests for authService.registerAccount()
+ * 
+ * This file tests the user registration service function in isolation.
+ * It mocks bcrypt and authQuery repository.
+ * 
+ * Service responsibility: Business logic for user registration.
+ * Validate input, hash password, create user in database.
+ * 
+ * Test scenarios:
+ * - Missing required fields return error
+ * - Duplicate username returns error
+ * - Weak password returns error
+ * - Successful registration returns user data
+ * 
+ * @service authService.registerAccount
+ * @repository authQuery.registerAccount
+ */
+
 jest.mock("bcrypt", () => ({
   hash: jest.fn(() => "hashed-password")
 }));

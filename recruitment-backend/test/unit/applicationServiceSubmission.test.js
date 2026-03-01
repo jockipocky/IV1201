@@ -1,3 +1,22 @@
+/**
+ * @file applicationServiceSubmission.test.js
+ * @description Unit tests for Application.applicationSubmission()
+ * 
+ * This file tests the application submission service in isolation.
+ * It mocks applicationQuery repository.
+ * 
+ * Service responsibility: Create ApplicationDTO, call repository
+ * to submit job application to database.
+ * 
+ * Test scenarios:
+ * - New application submission succeeds
+ * - Update existing application succeeds
+ * - Database error returns failure
+ * 
+ * @service Application.applicationSubmission
+ * @repository applicationQuery.submitApplication
+ */
+
 jest.mock("../../src/repository/applicationQuery", () => ({
   submitApplication: jest.fn()
 }));

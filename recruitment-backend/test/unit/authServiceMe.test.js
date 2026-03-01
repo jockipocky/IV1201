@@ -1,3 +1,21 @@
+/**
+ * @file authServiceMe.test.js
+ * @description Unit tests for authService.getMe()
+ * 
+ * This file tests the "get current user" service function in isolation.
+ * It mocks jwt and authQuery repository.
+ * 
+ * Service responsibility: Business logic for getting user by ID.
+ * Find user in database and return user data.
+ * 
+ * Test scenarios:
+ * - User found returns user data
+ * - User not found returns error
+ * 
+ * @service authService.getMe
+ * @repository authQuery.findUserById
+ */
+
 jest.mock("jsonwebtoken", () => ({
   verify: jest.fn()
 }));

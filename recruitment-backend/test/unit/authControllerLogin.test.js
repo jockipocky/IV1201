@@ -1,3 +1,23 @@
+/**
+ * @file authControllerLogin.test.js
+ * @description Unit tests for authController.login()
+ * 
+ * This file tests the login controller function in isolation.
+ * It mocks the authService.login function.
+ * 
+ * Controller responsibility: Handle HTTP request, validate input,
+ * call service, format response.
+ * 
+ * Test scenarios:
+ * - Username/password not strings return 400
+ * - Missing username/password return 400
+ * - Invalid credentials return 401
+ * - Successful login returns 200 with cookie and user
+ * 
+ * @controller authController.login
+ * @service authService.login
+ */
+
 jest.mock("../../src/services/authService", () => ({
   login: jest.fn()
 }));

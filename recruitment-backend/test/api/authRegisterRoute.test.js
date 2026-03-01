@@ -1,3 +1,18 @@
+/**
+ * @file authRegisterRoute.test.js
+ * @description Tests for POST /auth/register endpoint
+ * 
+ * This file tests the user registration HTTP endpoint using supertest.
+ * It mocks the authController.registerAccount function.
+ * 
+ * Test scenarios:
+ * - Registration failure returns 400/409
+ * - Successful registration returns 201
+ * 
+ * @route POST /auth/register
+ * @controller authController.registerAccount
+ */
+
 jest.mock("../../src/controllers/authController", () => ({
   registerAccount: jest.fn()
 }));

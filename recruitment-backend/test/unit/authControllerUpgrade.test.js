@@ -1,3 +1,22 @@
+/**
+ * @file authControllerUpgrade.test.js
+ * @description Unit tests for authController.upgradeAccount()
+ * 
+ * This file tests the account upgrade controller function in isolation.
+ * It mocks the authService.upgradeAccount function.
+ * 
+ * Controller responsibility: Handle HTTP request, validate input,
+ * call service, format response.
+ * 
+ * Test scenarios:
+ * - Missing required fields return 400
+ * - Service errors are propagated
+ * - Successful upgrade returns user data
+ * 
+ * @controller authController.upgradeAccount
+ * @service authService.upgradeAccount
+ */
+
 jest.mock("../../src/services/authService", () => ({
   upgradeAccount: jest.fn()
 }));

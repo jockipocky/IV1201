@@ -1,3 +1,24 @@
+/**
+ * @file applicationControllerSubmission.test.js
+ * @description Unit tests for applicationController.applicationSubmission()
+ * 
+ * This file tests the job application submission controller function in isolation.
+ * It mocks the applicationService.Application class.
+ * 
+ * Controller responsibility: Validate request body, create ApplicationDTO,
+ * call service, handle errors, format response.
+ * 
+ * Test scenarios:
+ * - Empty competenceProfile returns 400
+ * - Empty availability returns 400
+ * - Service failure returns 401
+ * - Successful submission returns 200
+ * - Server errors return 500
+ * 
+ * @controller applicationController.applicationSubmission
+ * @service applicationService.Application
+ */
+
 jest.mock("../../src/services/applicationService", () => ({
   Application: jest.fn().mockImplementation(() => ({
     applicationSubmission: jest.fn()
@@ -21,7 +42,8 @@ describe("applicationController.applicationSubmission", () => {
         availability: [
           { from: "2024-01-01", to: "2024-01-31" }
         ]
-      }
+      },
+      user: { person_id: 1 }
     };
     mockRes = {
       status: jest.fn().mockReturnThis(),

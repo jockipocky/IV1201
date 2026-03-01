@@ -1,3 +1,22 @@
+/**
+ * @file applicationsServiceUpdateStatus.test.js
+ * @description Unit tests for applicationsService.updateApplicationStatus()
+ * 
+ * This file tests the update application status service in isolation.
+ * (For recruiters to accept/reject applications)
+ * It mocks applicationsQuery repository.
+ * 
+ * Service responsibility: Update application status in database.
+ * Handles race conditions by checking current status.
+ * 
+ * Test scenarios:
+ * - Update succeeds returns updated: true
+ * - Race condition returns updated: false with current status
+ * 
+ * @service applicationsService.updateApplicationStatus
+ * @repository applicationsQuery.updateApplicationStatus
+ */
+
 jest.mock("../../src/repository/applicationsQuery", () => ({
   updateApplicationStatus: jest.fn()
 }));

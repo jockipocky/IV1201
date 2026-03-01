@@ -1,3 +1,22 @@
+/**
+ * @file authControllerRegister.test.js
+ * @description Unit tests for authController.registerAccount()
+ * 
+ * This file tests the user registration controller function in isolation.
+ * It mocks the authService.registerAccount function.
+ * 
+ * Controller responsibility: Handle HTTP request, validate input,
+ * call service, format response.
+ * 
+ * Test scenarios:
+ * - Missing fields return 400
+ * - Service errors are propagated
+ * - Successful registration returns user data
+ * 
+ * @controller authController.registerAccount
+ * @service authService.registerAccount
+ */
+
 jest.mock("../../src/services/authService", () => ({
   registerAccount: jest.fn()
 }));

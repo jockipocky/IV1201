@@ -1,3 +1,22 @@
+/**
+ * @file applicationServiceFetch.test.js
+ * @description Unit tests for Application.getApplication()
+ * 
+ * This file tests the application fetch service in isolation.
+ * It mocks applicationQuery repository.
+ * 
+ * Service responsibility: Get application from repository
+ * and return formatted data.
+ * 
+ * Test scenarios:
+ * - Application found returns data
+ * - Application not found returns empty
+ * - Database error returns failure
+ * 
+ * @service Application.getApplication
+ * @repository applicationQuery.getApplication
+ */
+
 jest.mock("../../src/repository/applicationQuery", () => ({
   getApplication: jest.fn()
 }));

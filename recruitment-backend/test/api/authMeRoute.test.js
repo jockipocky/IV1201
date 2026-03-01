@@ -1,3 +1,18 @@
+/**
+ * @file authMeRoute.test.js
+ * @description Tests for GET /auth/me endpoint
+ * 
+ * This file tests the "get current user" HTTP endpoint using supertest.
+ * It mocks the authController.me function.
+ * 
+ * Test scenarios:
+ * - Unauthenticated request returns 401
+ * - Authenticated request returns 200 with user data
+ * 
+ * @route GET /auth/me
+ * @controller authController.me
+ */
+
 jest.mock("../../src/controllers/authController", () => ({
   me: jest.fn()
 }));

@@ -1,3 +1,22 @@
+/**
+ * @file applicationControllerFetch.test.js
+ * @description Unit tests for applicationController.fetchApplication()
+ * 
+ * This file tests the fetch application controller function in isolation.
+ * It mocks the applicationService.Application class.
+ * 
+ * Controller responsibility: Get person_id from params, call service,
+ * handle errors, format response.
+ * 
+ * Test scenarios:
+ * - Missing person_id returns 400
+ * - Successful fetch returns 200 with data
+ * - Server errors return 500
+ * 
+ * @controller applicationController.fetchApplication
+ * @service applicationService.Application
+ */
+
 jest.mock("../../src/services/applicationService", () => ({
   Application: jest.fn().mockImplementation(() => ({
     getApplication: jest.fn()
@@ -13,7 +32,8 @@ describe("applicationController.fetchApplication", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockReq = {
-      params: { person_id: "1" }
+      params: { person_id: "1" },
+      user: { person_id: 1 }
     };
     mockRes = {
       status: jest.fn().mockReturnThis(),

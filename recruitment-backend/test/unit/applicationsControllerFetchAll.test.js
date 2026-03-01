@@ -1,3 +1,23 @@
+/**
+ * @file applicationsControllerFetchAll.test.js
+ * @description Unit tests for applicationsController.fetchAllApplications()
+ * 
+ * This file tests the fetch all applications controller function in isolation.
+ * (For recruiters to see unhandled applications)
+ * It mocks the applicationsService.fetchAllApplications function.
+ * 
+ * Controller responsibility: Call service, handle empty results,
+ * handle errors, format response.
+ * 
+ * Test scenarios:
+ * - Returns applications array with 200
+ * - No applications returns 404
+ * - Server error returns 500
+ * 
+ * @controller applicationsController.fetchAllApplications
+ * @service applicationsService.fetchAllApplications
+ */
+
 jest.mock("../../src/services/applicationsService", () => ({
   fetchAllApplications: jest.fn()
 }));

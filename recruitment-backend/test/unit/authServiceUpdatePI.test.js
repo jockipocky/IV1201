@@ -1,3 +1,21 @@
+/**
+ * @file authServiceUpdatePI.test.js
+ * @description Unit tests for authService.updatePI()
+ * 
+ * This file tests the update personal information service function in isolation.
+ * It mocks authQuery repository.
+ * 
+ * Service responsibility: Business logic for updating user personal info.
+ * Update user fields in database.
+ * 
+ * Test scenarios:
+ * - Successful update returns success
+ * - Database error returns failure
+ * 
+ * @service authService.updatePI
+ * @repository authQuery.submitUpdatedPI
+ */
+
 jest.mock("../../src/repository/authQuery", () => ({
   submitUpdatedPI: jest.fn()
 }));

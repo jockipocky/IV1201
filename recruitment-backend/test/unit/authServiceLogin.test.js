@@ -1,3 +1,22 @@
+/**
+ * @file authServiceLogin.test.js
+ * @description Unit tests for authService.login()
+ * 
+ * This file tests the login service function in isolation.
+ * It mocks bcrypt, jsonwebtoken, and authQuery repository.
+ * 
+ * Service responsibility: Business logic for authentication.
+ * Find user, compare password, generate JWT token.
+ * 
+ * Test scenarios:
+ * - User not found returns null
+ * - Password mismatch returns null
+ * - Successful login returns user and token
+ * 
+ * @service authService.login
+ * @repository authQuery.searchForUser
+ */
+
 jest.mock("bcrypt", () => ({
   compare: jest.fn()
 }));

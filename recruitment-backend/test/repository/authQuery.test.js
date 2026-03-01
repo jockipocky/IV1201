@@ -1,3 +1,29 @@
+/**
+ * @file authQuery.test.js
+ * @description Unit tests for authQuery repository
+ * 
+ * This file tests the authQuery repository functions.
+ * Repository functions execute SQL queries directly.
+ * 
+ * Functions tested:
+ * - registerAccount: Insert new user into database
+ * - findUserById: Find user by person_id
+ * - findUserByUsername: Find user by username
+ * - searchForUser: Find user for login
+ * - findPersonForUpgrade: Find legacy user for upgrade
+ * - verifyUpgradeCode: Verify upgrade code
+ * - upgradePersonAccount: Upgrade legacy to full user
+ * 
+ * Test scenarios:
+ * - User registration inserts correctly
+ * - Finding users by various fields
+ * - Upgrade flow queries
+ * - Error handling
+ * 
+ * @repository authQuery
+ * @database db
+ */
+
 const { db, reset, getTables, mockQuery, mockConnect } = require('../setup/mockDb');
 
 jest.mock('../../src/db/db', () => ({

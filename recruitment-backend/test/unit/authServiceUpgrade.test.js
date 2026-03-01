@@ -1,3 +1,25 @@
+/**
+ * @file authServiceUpgrade.test.js
+ * @description Unit tests for authService.upgradeAccount()
+ * 
+ * This file tests the account upgrade service function in isolation.
+ * It mocks authQuery repository.
+ * 
+ * Service responsibility: Business logic for upgrading legacy accounts.
+ * Find user, verify upgrade code, update account to full user.
+ * 
+ * Test scenarios:
+ * - User not found returns 404
+ * - Already upgraded returns 409
+ * - Invalid upgrade code returns 401
+ * - Not a legacy user returns 403
+ * - Username already taken returns 409
+ * - Successful upgrade returns user data
+ * 
+ * @service authService.upgradeAccount
+ * @repository authQuery.findPersonForUpgrade, verifyUpgradeCode, upgradePersonAccount
+ */
+
 
 jest.mock("../../src/repository/authQuery", () => ({
   findPersonForUpgrade: jest.fn(),

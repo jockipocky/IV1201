@@ -1,3 +1,24 @@
+/**
+ * @file applicationsControllerUpdateStatus.test.js
+ * @description Unit tests for applicationsController.updateApplicationStatus()
+ * 
+ * This file tests the update application status controller function in isolation.
+ * (For recruiters to accept/reject applications)
+ * It mocks the applicationsService.updateApplicationStatus function.
+ * 
+ * Controller responsibility: Get personId and status from request,
+ * validate status, call service, handle conflicts, format response.
+ * 
+ * Test scenarios:
+ * - Invalid status returns 400
+ * - Successful update returns 200
+ * - Already handled (conflict) returns 409
+ * - Server error returns 500
+ * 
+ * @controller applicationsController.updateApplicationStatus
+ * @service applicationsService.updateApplicationStatus
+ */
+
 jest.mock("../../src/services/applicationsService", () => ({
   updateApplicationStatus: jest.fn()
 }));
