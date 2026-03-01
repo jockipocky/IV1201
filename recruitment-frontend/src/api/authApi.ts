@@ -35,7 +35,8 @@ export const login = async (username: string, password: string) => {
 }; //returns user row from db in backend
 
 export const fetchUser = async () => {
-  return apiClient.get("/auth/me");
+  const res = await apiClient.get("/auth/me");
+  return res;
 }; //called on page refresh to auto-login if we have cookie
 
 export const register = async (firstName: string, lastName: string, email: string, personalNumber: string, username: string, password: string) => {

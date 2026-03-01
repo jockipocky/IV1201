@@ -1,8 +1,8 @@
 class ApplicationDTO{
-    constructor({ person_id, competences, availability, handlingState}){
+    constructor({ person_id, competenceProfile  , availability, handlingState}){
         this.person_id = person_id //kan hända att detta måste ändras, idk
-        this.competenceProfile = Array.isArray(competences) 
-        ? competences.map(c => ({
+        this.competenceProfile = Array.isArray(competenceProfile) 
+        ? competenceProfile.map(c => ({
             competenceType: c.competenceType,
             competenceTime: Number(c.competenceTime)
         })) :[]

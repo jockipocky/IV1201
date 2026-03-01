@@ -23,7 +23,11 @@ export default {
   upgradeAccountUpgradeCodePlaceholder: "Uppgraderingskoden vi skickade till din e-post",
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
-
+  passwordTooShort : "Lösenordet måste vara minst 8 tecken.",
+  invalidEmail: "E-post måste innehålla @.",
+  registrationSuccess: "Registrering lyckades! Vänligen logga in.",
+  registrationFailed: "Registreringen misslyckades. Vänligen försök igen.",
+  
   //new labels for applications view 
   applicationsTitle: "Jobbansökningar",
   acceptButtonLabel: "Acceptera",
@@ -50,7 +54,7 @@ export default {
   apply: "Ansök",
   personalInfoLabel: "Personlig Information",
   genericError: "ett fel uppstod",
-  yearsOfExperience: "år av erfarenhet",
+  yearsOfExperienceLabel: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
     lotteriesLabel:"brush vettefan vad man ska översätta det här till",

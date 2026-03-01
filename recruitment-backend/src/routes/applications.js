@@ -1,39 +1,32 @@
 /**
- * applications.js (Route Layer)
- *
- * Defines Express routes for application-related endpoints.
- *
- * Responsibilities:
- * - Map HTTP routes to controller handlers
- * - Now without business logic
- * - And no response formatting, controller handles all that
- *
- * Flow:
- * Frontend -> Router -> Controller -> Service -> Repository
+ * application related routes
+ * handles application endpoints
  */
 
 var express = require("express");
 var router = express.Router();
 
+const { applicationSubmission, fetchApplication, updatePI } = require("../controllers/applicationController");
 const {
   fetchAllApplications,
   updateApplicationStatus
 } = require("../controllers/applicationsController");
 
 
-/**
- * GET /applications/all
- * Returns all unhandled job applications.
- * Handled entirely by the controller.
- */
-router.get("/all", fetchAllApplications);
+// POST /auth/login
 
-/**
- * PUT /applications/:personId/status
- * Updates the status of a specific application.
- * Body: { status: "ACCEPTED" | "REJECTED" }
- */
+// backend/routes/applications.js
+
+// Recruiter routes
+router.get("/all", fetchAllApplications);
 router.put("/:personId/status", updateApplicationStatus);
+
+// Applicant routes
+router.post("/", applicationSubmission); // For the full application
+router.get("/:person_id", fetchApplication);
+router.post("/personal-info", updatePI);
+
+
 
 
 module.exports = router;

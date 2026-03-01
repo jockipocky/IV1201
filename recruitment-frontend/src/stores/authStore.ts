@@ -36,7 +36,6 @@ export const useAuthStore = defineStore("auth", {
       try{
         const response = await login(username, password);
         this.user = response.data.user;
-        console.log("Login successful, user data:", this.user);
       } catch(err: any){
         console.log(err);
       }

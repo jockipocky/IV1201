@@ -4,6 +4,8 @@
  */
 const jwt = require("jsonwebtoken");
 const authSearch = require("../repository/authQuery")
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 12;
 /**
  * Attempts to authenticate a user.
  * 
@@ -14,9 +16,11 @@ const authSearch = require("../repository/authQuery")
 async function login(username, password) {
 
 
-
-  const user = await authSearch.searchForUser(username, password);
+  const user = await authSearch.searchForUser(username);
   if (!user) return null;
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) return null;
 
 
   // JWT minimal
@@ -72,7 +76,7 @@ async function upgradeAccount(userDto, upgradeCode) {
   if (!validCode) {
     return { ok: false, status: 401, error: { messageKey: "invalidUpgradeCode"}};
   }
-
+  userDto.password = await bcrypt.hash(userDto.password, SALT_ROUNDS);
   try {
     await authSearch.upgradePersonAccount(
       person.person_id,
@@ -127,7 +131,7 @@ async function getMe(token) {
   const user = await authSearch.findUserById(personId);
 
   if (!user) {
-    return { ok: false, status: 404, error: "User not found" };
+    return { ok: false, status: "User not found" };
   }
 
   return { ok: true, status: 200, user };
@@ -138,28 +142,52 @@ async function getMe(token) {
  * @returns 
  */
 async function registerAccount(userDto) {
+  
+  userDto.password = await bcrypt.hash(userDto.password, SALT_ROUNDS);
+
   try {
   const user = await authSearch.registerAccount(userDto);
   return { ok: true, user };
 
 } catch (err) {
-  console.error("[SERVICE ERROR]:", err);
   if (err.code === "23505") {
     if (err.constraint === "unique_username") {
-      return { ok: false, status: 409, error: "Username already taken" };
+      return { ok: false, status: 409, error: "usernameIsTaken" };
     }
 
     if (err.constraint === "unique_email") {
-      return { ok: false, status: 409, error: "Email already registered" };
+      return { ok: false, status: 409, error: "emailIsTaken" };
     }
 
     if (err.constraint === "unique_pnr") {
-      return { ok: false, status: 409, error: "Personal number already registered" };
+      return { ok: false, status: 409, error: "pnrIsTaken" };
     }
   }
-  // Unknown DB error
-  return { ok: false, status: 500, error: "Registration failed" };
+  
+  return { ok: false, status: 500, error: "registrationFailed" };
 }
 }
 
-module.exports = { login, upgradeAccount, registerAccount, getMe };
+
+async function updatePI(userDTO){
+  try{
+      const updated = await authSearch.submitUpdatedPI(userDTO)
+      
+      if(!updated || !updated.person_id){
+        return {
+          success: false,
+          error: "Could not update user"
+        }
+      }
+      return{success: true, message: "profile saved succesfully"}
+  }catch(error){
+    console.error("[SERVICE ERROR]:", error)
+    return{
+      
+      success: false,
+      error: error.message
+    }
+  }
+}
+
+module.exports = { login, upgradeAccount, registerAccount, getMe, updatePI };

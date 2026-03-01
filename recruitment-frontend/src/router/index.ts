@@ -6,6 +6,7 @@ import RecruiterView from "@/views/RecruiterView.vue";
 import ApplicationFormView from "@/views/ApplicationFormView.vue";
 import ApplicantView from "@/views/ApplicantView.vue";
 import { useAuthStore } from "@/stores/authStore";
+import ProfileView from "@/views/ProfileView.vue";
 
 
 //new routes structure, we declare meta: guestOnly if you can only access the page
@@ -21,6 +22,7 @@ const routes = [
   { path: "/recruiter", component: RecruiterView, meta: { requiresAuth: true, role: 1 } },
   { path: "/applicant", component: ApplicantView, meta: { requiresAuth: true, role: 2 } },
   { path: "/applicationform", component: ApplicationFormView, meta: { requiresAuth: true, role: 2 } },
+  { path: "/profile", component: ProfileView, meta: { requiresAuth: true, role: 2} },
 ];
 
 export const router = createRouter({
@@ -45,7 +47,7 @@ router.beforeEach((to, from, next) => {
       return next("/recruiter");
     }
     if (user?.role_id === 2) {
-      return next("/applicationform");
+      return next("/profile");
     }
   }
 

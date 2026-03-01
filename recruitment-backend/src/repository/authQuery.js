@@ -10,10 +10,10 @@ const db = require("../db/db");
  * @param {*} password - password from request
  * @returns - whole row from connected user.
  */
-async function searchForUser(username, password) {
+async function searchForUser(username) {
     const result = await db.query(
-        "SELECT person_id, username, name, surname, email, role_id, username FROM person WHERE username = $1 AND password = $2 LIMIT 1",
-        [username, password]
+        "SELECT person_id, username, name, surname, email, role_id, username, pnr, password FROM person WHERE username = $1",
+        [username]
     );
 
     if (result.rows.length === 0) return null;
@@ -80,7 +80,7 @@ async function upgradePersonAccount(personId, username, password) {
  */
 async function findUserById(person_id) {
   const res = await db.query(
-    `SELECT person_id, username, name, surname, email, role_id
+    `SELECT person_id, username, name, surname, email, role_id, pnr
      FROM person
      WHERE person_id = $1`,
     [person_id]
@@ -94,7 +94,7 @@ async function findUserById(person_id) {
  * @returns 
  */
 async function registerAccount(userDto) {
-  const { firstName, lastName, username, email, personalNumber, password, role_id } = userDto;
+  const { firstName, lastName, username, email, personalNumber, password,} = userDto;
   try {
       const res = await db.query(
       `INSERT INTO person (username, name, surname, email, pnr, password)
@@ -102,11 +102,9 @@ async function registerAccount(userDto) {
        RETURNING person_id, username, email`,
       [username, firstName, lastName, email, personalNumber, password]
     );
-    console.log("REGISTERED USER:", res.rows[0]);
     return res.rows[0];
 
   } catch (err) {
-    console.error("[DB ERROR]:", err);
     if (err.code === "23505") { // Unique violation for inserted row in db
      throw err; // Let the service layer handle this and return appropriate response
     }
@@ -114,12 +112,33 @@ async function registerAccount(userDto) {
   }
 }
 
+async function submitUpdatedPI(userDTO){
+  const client = await db.connect()
+  try{
+
+    const result = await client.query(`update person 
+      set name = $1, surname= $2, pnr = $3, email = $4 
+      where person_id=$5 
+      returning person_id`,
+                        [userDTO.firstName, userDTO.lastName, userDTO.personalNumber, userDTO.email, userDTO.person_id]
+    )
+
+      return result.rows[0];
+
+  } catch(error){
+    console.error("database error: ", error)
+    throw error
+  } finally{
+    client.release()
+  }
+}
  
-module.exports = {
+module.exports = {    
   findPersonForUpgrade,
   verifyUpgradeCode,
   upgradePersonAccount,
   searchForUser,
   findUserById,
-  registerAccount
+  registerAccount,
+  submitUpdatedPI
 };

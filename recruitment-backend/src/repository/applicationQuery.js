@@ -193,14 +193,15 @@ async function updateHandlingStatus(status, applicationDTO){
                 await client.query("commit")
                 return{
                     success: true,
-                    peron_id: applicationDTO.person_id,
+                    person_id: applicationDTO.person_id,
                     availability: availabilityRes.rows,
                     competenceProfile: competenceRes.rows
                 }
             } else{
                 return{
-                    success: true,
-                    message: "Person have not finished an application"
+                    success: false,
+                    availability: [],
+                    competenceProfile: []
                 }
 
             }
@@ -208,7 +209,7 @@ async function updateHandlingStatus(status, applicationDTO){
                 await client.query("rollback")
                 return{
                     success:false, 
-                    error: err.message
+                    error: error.message
                 }
 
             }finally{

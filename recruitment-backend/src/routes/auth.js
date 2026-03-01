@@ -19,7 +19,7 @@ router.post("/login", async function (req, res) {
     }
 
     res.cookie(result.cookie.name, result.cookie.value, result.cookie.options);
-
+    console.log("result: ", result);
     return res.status(200).json({ ok: true, user: result.user });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
