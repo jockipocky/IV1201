@@ -16,6 +16,15 @@ async function applicationSubmission(req,res){
         const dto = new ApplicationDTO(req.body)
         const application = new Application(dto)
 
+        //added this to force the user id of the dto to be the id of the auth cookie
+        //to prevent identity hijacking, added to the other functions on this page too.
+        if(dto.person_id !== req.user.person_id){
+            return res.status(403).json({
+                ok: false,
+                error: "provided user id does not belong to the cookie owner"
+            })
+        }
+
         console.log("req body: ", req.body)
         console.log("DTO: ", dto )
         if(
@@ -60,6 +69,14 @@ async function fetchApplication(req, res){
                 error: "no person_id provided"
             })
         }
+        //same identity hijacking check as earlier. compare cookie identity (req.user.person_id) to 
+        //purported identity (person_id).
+        if(Number(person_id) !== req.user.person_id){
+            return res.status(403).json({
+                ok: false,
+                error: "provided user id does not belong to the cookie owner"
+            })
+        }
         const application = new Application({})
         const result = await application.getApplication({person_id})
 
@@ -77,6 +94,15 @@ async function fetchApplication(req, res){
  async function updatePI(req, res) {
     try{
         const dto = new UserDTO(req.body)
+
+        //same identity hijacking check as earlier. compare cookie identity (req.user.person_id) to 
+        //purported identity (dto.person_id).
+        if(dto.person_id !== req.user.person_id){
+            return res.status(403).json({
+                ok: false,
+                error: "provided user id does not belong to the cookie owner"
+            })
+        }
 
         if(!dto.lastName || !dto.email ||
             !dto.firstName || !dto.personalNumber) {
