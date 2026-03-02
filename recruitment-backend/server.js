@@ -22,10 +22,10 @@ var app = express();
 const cors = require("cors");
 
 app.use(cors({
-  origin: "http://localhost:5173", // <-- put your frontend URL/port here
+  origin: process.env.FRONTEND_URL || "http://localhost:5173", // <-- put your frontend URL/port here
   credentials: true
 }));
-
+s
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
