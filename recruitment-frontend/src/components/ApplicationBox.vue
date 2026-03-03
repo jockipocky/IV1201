@@ -50,6 +50,8 @@
         </v-btn>
         
         <v-btn
+          v-if="applicationStore.hasApplication"
+          v-show="applicationStore.hasApplication"
           variant="outlined"
           color="red"
           class="flex-grow-1"
@@ -119,12 +121,9 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
         }
     };
 
+
     const cancelForm = () => {
-    applicationStore.competences = [];
-    applicationStore.availability = [];
-    
-    applicationStore.addEmptyCompetence();
-    applicationStore.addEmptyAvailability();
+      applicationStore.isEditingApplication = false
     
     error.value = null;
 };

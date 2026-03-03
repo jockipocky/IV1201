@@ -15,9 +15,9 @@
         variant="text"
         color="primary"
         prepend-icon="mdi-pencil"
-        @click="applicationStore.hasApplication = false"
+        @click="applicationStore.isEditingApplication = true"
       >
-        {{ t.editButtonLabel || "Edit" }}
+        {{ t.resubmitLabel || "Edit" }}
       </v-btn>
     </div>
 

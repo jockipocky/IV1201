@@ -11,7 +11,7 @@
         prepend-icon="mdi-pencil"
         @click="startEdit"
       >
-        {{ t.editButtonLabel || 'Edit' }}
+        {{ t.editLabel || 'Edit' }}
       </v-btn>
     </div>
 

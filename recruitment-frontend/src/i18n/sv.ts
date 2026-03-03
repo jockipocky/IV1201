@@ -57,7 +57,7 @@ export default {
   yearsOfExperienceLabel: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
-    lotteriesLabel:"brush vettefan vad man ska översätta det här till",
+    lotteriesLabel:"Lotteri Försäljare",
   backToLogin: "Gå tillbaka till login",
   allFieldsRequired: "Alla fält måste fyllas i",
   upgradeSuccess: "Kontot har uppgraderats, vänligen återvänd till login sida",
@@ -69,4 +69,7 @@ export default {
   acountAlreadyUpg:"Konto är redan uppgraderat",
   invalidPersonalNumberFormat:"Fel format på personnummber",
   notLegacy:"Inte en legacy user",
+  editLabel:"ÄNDRA",
+  resubmitLabel:"Ny Ansökan",
+  applicationInfo: "Ansökan",
 };

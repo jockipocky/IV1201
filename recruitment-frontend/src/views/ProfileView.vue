@@ -3,8 +3,8 @@
       <ApplicationInfo/>
     </v-container>
     <v-container>
-      <ProfileApplicationBox v-if="hasCompleteApplication && !isLoading"/>
-    <ApplicationBox v-else-if="!isLoading"/> 
+      <ProfileApplicationBox v-if="hasCompleteApplication && !isLoading && !applicationStore.isEditingApplication"/>
+    <ApplicationBox v-else-if="!isLoading && applicationStore.isEditingApplication"/> 
   </v-container>
 </template>
 
@@ -16,6 +16,7 @@ import { useApplicationStore } from "@/stores/applicationStore";
 import { onMounted, computed } from "vue";
 
 const applicationStore = useApplicationStore()
+
 
 onMounted(async () =>{
   

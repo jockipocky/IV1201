@@ -45,7 +45,8 @@ interface ApplicationState{
     successMessage: string |null,
     application:ApplicationDTO |null,
     hasApplication: boolean,
-    isLoading: boolean
+    isLoading: boolean,
+    isEditingApplication:boolean
 }
     interface ApplicationDTO {
         competences: {
@@ -75,6 +76,7 @@ export const useApplicationStore = defineStore("applicationForm", {
         application: null,
         hasApplication: false,
         isLoading: false,
+        isEditingApplication: true,
     }),
 
 
@@ -258,7 +260,7 @@ export const useApplicationStore = defineStore("applicationForm", {
                 })
 
                 if(res.data.success){
-                    this.successMessage =" profilen har sparats!"
+                    //this.successMessage = t.successMessage
                     setTimeout(() => {
                         this.successMessage = null;
                     }, 3000);
@@ -288,11 +290,9 @@ export const useApplicationStore = defineStore("applicationForm", {
 
         try {
             const res = await fetchApplication(this.personalInfo.person_id);
-
-
             if (res.data.success) {
             this.hasApplication = true;
-
+            this.isEditingApplication = false
             this.application = {
                 competences: res.data.competenceProfile.map((c: any) => ({
                 name: c.competenceType,
@@ -307,6 +307,7 @@ export const useApplicationStore = defineStore("applicationForm", {
 
             } else {
             this.hasApplication = false;
+            this.isEditingApplication = true
             this.application = null;
             }
 
