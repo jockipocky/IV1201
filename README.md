@@ -231,7 +231,7 @@ router.get(
 
 module.exports = router;
 ```
-As you can see in the example above, we add a .get function to our router for the endpoint "/all", and call the guard functions authenticate(), authorizeRoles(x), before then calling the actual endpoint function fetchAllApplications(). Then, in server.js where the application is mounted, we simply fetch that same router and make our app use it with a designated root endpoint such as /applications:
+Importantly, we export the router at the end of the document. As you can see in the example above, we add a .get function to our router for the endpoint "/all", and call the guard functions authenticate(), authorizeRoles(x), before then calling the actual endpoint function fetchAllApplications(). Then, in server.js where the application is mounted, we simply fetch that same router and make our app use it with a designated root endpoint such as /applications:
 
 ```text
 ....
@@ -242,7 +242,7 @@ app.use('/applications', applicationsRouter);
 
 Now, when the application is mounted (restarted), the Express router will be aware of the /applications endpoint and properly integrate the GET endpoint at /applications/all. All that remains to do now is the build the actual function in the controller layer that the endpoint maps to, while respecting the separation of concerns. The router points to the controller which handles HTTP logic, which points to the service layer which handles business logic, which points to the repository layer which performs actions on the database. Follow previous example files in these layers to see that you properly respect this separation of concerns.
 
-## How to build new pages in the front-end. We then export the router at the end of the document.
+## How to build new pages in the front-end.
 In order to create a new page on the front-end, we work from the component level and move up all the way to the router. First, create a desired component with its desired functionality in the src/components/ folder. These are .vue objects and intgrate the Vuetify.js library which make them trivial to build upon. Simply visit the documentation for Vuetify components online (https://vuetifyjs.com/en/introduction/why-vuetify) and browse for a desired combination of components in your component. Then, integrate that component in a separate more lean .vue file in the src/views folder. Lastly, add the new view (page) to the router table in src/router/index.ts, with a desired path name as well as set parameters for the required authentication level (login required or not) as well as role authorization (role: 1 means recruiter, role: 2 means applicant):
 
  ```text
