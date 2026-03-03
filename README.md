@@ -217,7 +217,7 @@ To be filled in. Not sure how we are doing this yet.
 # Continued development
 
 ## How to integrate new REST API endpoints
-In order to create a new REST API endpoint, developers must first create a new routing javascript page in the backend/routes folder. This page should exclusively be mapping endpoints such as /me, /login /logout to functions in the controller layer using Express, as well as implementing the authentication middleware guards to protect endpoints depending on the authorization level of the user. Example for getting all applications from the database through GET /applications/all:
+In order to create a new REST API endpoint, developers must first create a new routing javascript page in the backend/src/routes folder. This page should exclusively be mapping endpoints such as /me, /login /logout to functions in the controller layer using Express, as well as implementing the authentication middleware guards to protect endpoints depending on the authorization level of the user. Example for getting all applications from the database through GET /applications/all:
 
 ```text
 var router = express.Router();
