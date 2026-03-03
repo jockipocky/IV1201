@@ -31,6 +31,9 @@ async function login(username, password) {
     person_id: userRow.person_id,
     personalNumber: userRow.pnr,
   });
+
+  const isProduction = process.env.NODE_ENV === "production";
+
   return {
     ok: true,
     status: 200,
@@ -39,8 +42,8 @@ async function login(username, password) {
       value: result.token, 
       options: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 60 * 60 * 1000, // 1 hour
       },
     },
