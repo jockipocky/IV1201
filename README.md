@@ -108,17 +108,66 @@ We intend to host both the front-end and back-end using heroku but have not fina
     │   └── favicon.ico
     │
     ├── cypress/
+    │   ├── e2e/
+    │   │   └── example.cy.ts
+    │   ├── fixtures/
+    │   │   └── example.json
+    │   └── support/
+    │       ├── commands.ts
+    │       └── e2e.ts
+    │
     └── src/
         ├── main.ts
         ├── App.vue
+        │
         ├── api/
+        │   ├── http.ts
+        │   ├── applicationApi.ts
+        │   ├── applicationsApi.ts
+        │   └── authApi.ts
+        │
         ├── components/
+        │   ├── Header.vue
+        │   ├── Footer.vue
+        │   ├── LoginBox.vue
+        │   ├── ApplicationBox.vue
+        │   ├── ApplicationInfo.vue
+        │   ├── ApplicationList.vue
+        │   ├── ProfileApplicationBox.vue
+        │   ├── RegisterNewAccountBox.vue
+        │   └── UpgradeAccountBox.vue
+        │
         ├── views/
+        │   ├── ApplicantView.vue
+        │   ├── ApplicationFormView.vue
+        │   ├── LoginView.vue
+        │   ├── ProfileView.vue
+        │   ├── RecruiterView.vue
+        │   ├── RegisterAccount.vue
+        │   └── UpgradeAccount.vue
+        │
         ├── router/
+        │   └── index.ts
+        │
         ├── stores/
+        │   ├── authStore.ts
+        │   ├── applicationsStore.ts
+        │   ├── applicationStore.ts
+        │   ├── registerStore.ts
+        │   └── upgradeStore.ts
+        │
         ├── model/
+        │   └── ApplicationDTO.ts
+        │
         ├── i18n/
+        │   ├── index.ts
+        │   ├── en.ts
+        │   └── sv.ts
+        │
         ├── utility/
+        │   ├── applicationsResponseHandler.ts
+        │   └── personNumber.ts
+        │
         └── __tests__/
             └── App.spec.ts
 ```
