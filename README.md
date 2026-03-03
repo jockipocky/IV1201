@@ -162,7 +162,7 @@ We intend to host both the front-end and back-end using heroku but have not fina
         │   └── personNumber.ts
 ```
 
-# Local development setup
+# Local dev deployment
 
 ## Prerequisites
 Make sure you have Node.js installed as well as PostgreSQL. Make sure the PostgreSQL server is up and running and accepting connections. For this project, it is hosted on Heroku, and the connection string should have been handed over to you by your project responsible.
@@ -209,3 +209,7 @@ Then run your front-end, it should host on localhost:5173 by default:
 ```text
 npm run dev
 ```
+
+# Cloud deployment
+
+To be filled in. Not sure how we are doing this yet.
