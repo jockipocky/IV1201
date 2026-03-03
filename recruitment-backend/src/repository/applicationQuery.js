@@ -150,9 +150,12 @@ async function updateHandlingStatus(status, applicationDTO){
      * @returns alla availabilities för relevant person
      */
     async function getAvailability(client, applicationDTO){
-        const res= await client.query(`select from_date, to_date 
-                            from availability 
-                            where person_id = $1;`,
+        const res= await client.query(
+                                    `select 
+                                    from_date::text AS from_date,
+                                    to_date::text AS to_date
+                                    from availability 
+                                where person_id = $1;`,
                             [applicationDTO.person_id])
 
         return res
@@ -190,6 +193,8 @@ async function updateHandlingStatus(status, applicationDTO){
                 const availabilityRes= await getAvailability(client, applicationDTO)
                 const competenceRes = await getCompeteceProfile(client, applicationDTO)
 
+                console.log("availability: ", availabilityRes)
+
                 await client.query("commit")
                 return{
                     success: true,
@@ -216,5 +221,6 @@ async function updateHandlingStatus(status, applicationDTO){
                 client.release()
             }
 }
+
 
 module.exports = { submitApplication, updateHandlingStatus, getApplication}
