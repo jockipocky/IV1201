@@ -24,7 +24,9 @@ The frontend is responsible for presentation logic and user interaction, and com
 ### Backend (Express REST API)
 The backend is implemented as a stateless REST API and follows a layered architecture to clearly separate responsibilities:
 
-* Routes / Controller layer – Handles HTTP requests and responses
+* Routes / Communication layer – Routes endpoints to functions
+
+* Controller layer - Handles HTTP requests, responses and validates authentication and authorization
 
 * Service layer – Implements business logic
 
