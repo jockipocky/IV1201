@@ -36,13 +36,14 @@
       </v-row>
     </div>
 
-    <v-form v-else @submit.prevent="onSubmit">
+    <v-form ref="formRef" v-else @submit.prevent="onSubmit">
       <v-text-field
         v-model="applicationStore.personalInfo.firstName"
         :label="t.firstNameLabel"
         variant="outlined"
         density="comfortable"
         class="mb-2"
+          :rules="[requiredRule, nameRule]"
       />
       <v-text-field
         v-model="applicationStore.personalInfo.lastname"
@@ -50,10 +51,12 @@
         variant="outlined"
         density="comfortable"
         class="mb-2"
+          :rules="[requiredRule, nameRule]"
       />
       <v-text-field
         v-model="applicationStore.personalInfo.email"
         :label="t.emailLabel"
+          :rules="[requiredRule, emailRule]"
         variant="outlined"
         density="comfortable"
         class="mb-2"
@@ -61,6 +64,10 @@
       <v-text-field
         v-model="applicationStore.personalInfo.personalNumber"
         :label="t.personalNumberLabel"
+        :rules="[personNumberRule]"
+         @update:modelValue="
+        applicationStore.personalInfo.personalNumber =
+        formatPersonNumber($event) ?? $event"
         variant="outlined"
         density="comfortable"
         class="mb-4"
@@ -115,18 +122,54 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, inject } from "vue";
 import { useApplicationStore } from "@/stores/applicationStore";
+import { formatPersonNumber, isValidPersonNumberFormatted } from "@/utility/personNumber";
 
 const applicationStore = useApplicationStore();
 const t = inject<any>("t");
 const error = ref<string | null>(null);
 const isEditing = ref(false); 
-
 const originalPersonalInfo = ref<any>(null);
+  const formRef = ref();
 
   const startEdit = () => {
     saveOriginalState()
     isEditing.value = true
   }
+
+  const requiredRule = (v: string) =>
+  !!v?.trim() || t.value?.allFieldsRequired;
+  
+  const nameRule = (v: string) => {
+  if (!v?.trim()) return t.value?.allFieldsRequired;
+
+  const nameRegex = /^[A-Za-zÅÄÖåäö\s-]+$/;
+  return (
+    nameRegex.test(v) ||
+    t.value?.invalidName || "Name cannot contain numbers."
+  );
+};
+
+const emailRule = (v: string) => {
+  if (!v?.trim()) return t.value?.allFieldsRequired;
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return (
+    emailRegex.test(v) ||
+    t.value?.invalidEmail || "Invalid email format."
+  );
+};
+
+const personNumberRule = (v: string) => {
+  if (!v || !v.trim()) return t.value?.allFieldsRequired;
+
+  const formatted = formatPersonNumber(v);
+  if (!formatted) return t.value?.invalidPersonalNumberFormat;
+
+  return (
+    isValidPersonNumberFormatted(formatted) ||
+    t.value?.invalidPersonalNumber
+  );
+};
 
 const saveOriginalState = () => {
   originalPersonalInfo.value = JSON.parse(
@@ -149,6 +192,9 @@ const cancelEdit = () => {
 };
 
 const onSubmit = async () => {
+  const { valid } = await formRef.value.validate();
+
+  if (!valid) return;
   try {
     await applicationStore.submitPersonalInfo();
     saveOriginalState(); // Update the "original" to the new values

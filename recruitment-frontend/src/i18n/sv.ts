@@ -24,7 +24,7 @@ export default {
   upgradeButtonLabel: "Uppgradera nu",
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
   passwordTooShort : "Lösenordet måste vara minst 8 tecken.",
-  invalidEmail: "E-post måste innehålla @.",
+  invalidEmail: "Ogiltigt Email format",
   registrationSuccess: "Registrering lyckades! Vänligen logga in.",
   registrationFailed: "Registreringen misslyckades. Vänligen försök igen.",
   
@@ -72,5 +72,7 @@ export default {
   editLabel:"ÄNDRA",
   resubmitLabel:"Ny Ansökan",
   applicationInfo: "Ansökan",
-  successMessagePI:"Ändringar Sparade!"
+  successMessage:"Ändringar sparade",
+  cancelLabel: "Avbryt",
+  changePersonalInfo:"Spara Ändringar",
 };
