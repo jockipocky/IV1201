@@ -16,14 +16,12 @@ async function applicationSubmission(req,res){
         const dto = new ApplicationDTO(req.body)
         const application = new Application(dto)
 
-        console.log("req body: ", req.body)
-        console.log("DTO: ", dto )
         if(
             dto.competenceProfile.length === 0  || 
             dto.availability.length === 0 
             ){
                 return res.status(400).json({
-                    ok:false,
+                    success:false,
                     error:"All fields must be filled"
                 })
         }
@@ -31,16 +29,16 @@ async function applicationSubmission(req,res){
         const result = await application.applicationSubmission(dto)
 
         if(!result.success){
-            return res.status(401).json({
-                ok: false,
-                error: "All fields must be filled"
+            return res.status(400).json({
+                success: false,
+                error: result.error || "Application submission failed"
             })
         }
         
         return res.status(200).json(result);
     }catch(err){
         console.error("APPLICATION SUBMISSION ERROR: ", err)
-        return res.status(500).json({ok: false, error: "Server Error"})
+        return res.status(500).json({success: false, error: "Server Error"})
     }
 }
 
@@ -56,19 +54,25 @@ async function fetchApplication(req, res){
         const {person_id} = req.params
         if(!person_id){
             return res.status(400).json({
-                ok: false,
+                success: false,
                 error: "no person_id provided"
             })
         }
         const application = new Application({})
         const result = await application.getApplication({person_id})
 
+        if(!result.success){
+            return res.status(404).json({
+                success: false,
+                error: "Application not found"
+            })
+        }
 
         return res.status(200).json(result)
     }catch(error){
         console.error("ERROR: ", error)
         return res.status(500).json({
-            ok: false,
+            success: false,
             error: "server error"
         })
     }
@@ -76,15 +80,36 @@ async function fetchApplication(req, res){
 
  async function updatePI(req, res) {
     try{
-        const dto = new UserDTO(req.body)
-
-        if(!dto.lastName || !dto.email ||
-            !dto.firstName || !dto.personalNumber) {
+        if (!req.body) {
             return res.status(400).json({
-                ok: false,
-                error: "please fill in the complete form"
+                success: false,
+                error: "INVALID_INPUT"
             })
         }
+
+        const { firstName, lastName, email, personalNumber } = req.body
+
+        if (!firstName || typeof firstName !== "string" ||
+            !lastName || typeof lastName !== "string" ||
+            !email || typeof email !== "string" ||
+            !personalNumber || typeof personalNumber !== "string") {
+
+            return res.status(400).json({
+                success: false,
+                error: "INVALID_INPUT"
+            })
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({
+                success: false,
+                error: "INVALID_EMAIL"
+            })
+        }
+
+
+        const dto = new UserDTO(req.body)
         
         const result = await authService.updatePI(dto);
 
@@ -103,7 +128,7 @@ async function fetchApplication(req, res){
     }catch(error){
         console.error("Error: ", error)
         return res.status(500).json({
-            ok: false,
+            success: false,
             error: "server error"
         })
     }

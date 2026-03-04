@@ -72,4 +72,5 @@ export default {
   editLabel:"ÄNDRA",
   resubmitLabel:"Ny Ansökan",
   applicationInfo: "Ansökan",
+  successMessagePI:"Ändringar Sparade!"
 };

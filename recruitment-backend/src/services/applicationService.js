@@ -55,11 +55,18 @@ class Application{
      * @returns ett siffer id som motsvarar competenceType
      */
     mapCompetenceToId(type){
-        const id = COMPETENCE_TYPE_MAP[type.toLowerCase()]
-        if(!id) throw new Error(`Invalid competence type: ${type}`)
+    if (!type || typeof type !== "string") {
+        throw new Error("INVALID_COMPETENCE_TYPE")
+    }
 
-            return id
-        }
+    const id = COMPETENCE_TYPE_MAP[type.toLowerCase()]
+
+    if (!id) {
+        throw new Error("INVALID_COMPETENCE_TYPE")
+    }
+
+    return id
+    }
 
 
     /**

@@ -83,5 +83,6 @@ export default {
   applicationInfo: "Application Information",
   editLabel: "EDIT",
   resubmitLabel: "RESUBMIT",
+  successMessagePI:"Information Changed successfully!"
   
 };

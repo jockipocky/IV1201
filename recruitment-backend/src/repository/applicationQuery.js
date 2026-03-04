@@ -39,10 +39,11 @@ async function submitApplication(applicationDTO){
         }
     }catch (err){
         await client.query("rollback")
-        console.error("database fail: ", err)
+        console.error("DATABASE ERROR submitApplication:", err)
+
         return{
             success: false,
-            error: err.message
+            error: "DATABASE_ERROR"
         }
     } finally {
         client.release()
@@ -91,11 +92,12 @@ async function updateHandlingStatus(status, applicationDTO){
             person_id: applicationDTO.person_id
         }
     }catch(error){
+        console.error("DATABASE ERROR updateHandlingStatus:", error)
+
         return{
             success: false,
-            error: error.message
+            error: "DATABASE_ERROR"
         }
-
     } finally{
         client.release()
     }
@@ -193,7 +195,6 @@ async function updateHandlingStatus(status, applicationDTO){
                 const availabilityRes= await getAvailability(client, applicationDTO)
                 const competenceRes = await getCompeteceProfile(client, applicationDTO)
 
-                console.log("availability: ", availabilityRes)
 
                 await client.query("commit")
                 return{
@@ -211,13 +212,14 @@ async function updateHandlingStatus(status, applicationDTO){
 
             }
         } catch(error){
-                await client.query("rollback")
-                return{
-                    success:false, 
-                    error: error.message
-                }
+            await client.query("rollback")
+            console.error("DATABASE ERROR getApplication:", error)
 
-            }finally{
+            return{
+                success:false, 
+                error: "DATABASE_ERROR"
+            }
+        }finally{
                 client.release()
             }
 }

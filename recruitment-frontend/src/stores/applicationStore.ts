@@ -193,26 +193,33 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @returns object with personal information
          */
         async fetchUserInfo(){
-            const authStore = useAuthStore();
+            this.error = null
 
-            if(!authStore.user){
-                await authStore.fetchUser();
-            }
+            try {
+                const authStore = useAuthStore();
 
-            if(!authStore.user){
-                this.error = "User not logged in";
-                return;
-            }
+                if(!authStore.user){
+                    await authStore.fetchUser();
+                }
 
-            // bara mappa från authStore
-            this.personalInfo = {
-                firstName: authStore.user.firstName,
-                lastname: authStore.user.lastName,
-                email: authStore.user.email,
-                personalNumber: authStore.user.personalNumber,
-                person_id: authStore.user.person_id
-                //eventuellt lägg till så att dem skickar personnummer till a
-                //og fetch user i auth
+                if(!authStore.user){
+                    this.error = "User not logged in";
+                    return false;
+                }
+
+                this.personalInfo = {
+                    firstName: authStore.user.firstName,
+                    lastname: authStore.user.lastName,
+                    email: authStore.user.email,
+                    personalNumber: authStore.user.personalNumber,
+                    person_id: authStore.user.person_id
+                };
+
+                return true;
+
+            } catch (e) {
+                this.error = "Failed to fetch user info";
+                return false;
             }
         },
 
@@ -223,23 +230,28 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @returns sets the relevant information and makes sure the database fills in a new entry
          */
         async submitApplicationForm(){
+            this.error = null
+
             try{
                 const res = await submitApplication({
                     competenceProfile: this.competences,
                     availability: this.availability,
                     person_id: this.personalInfo.person_id
-                })
+                });
+
                 if(res.data.success){
-                    this.hasApplication = true
-                    return true
+                    this.hasApplication = true;
+                    return true;
                 } else {
-                    this.hasApplication = false
-                    return false
+                    this.error = "Application submission failed";
+                    this.hasApplication = false;
+                    return false;
                 }
-            }catch(error){
-                console.error("submission failed:, ", error)
-                this.hasApplication = false
-                return false 
+
+            } catch(error){
+                this.error = "Network error while submitting application";
+                this.hasApplication = false;
+                return false;
             }
         },
         /**
@@ -260,7 +272,7 @@ export const useApplicationStore = defineStore("applicationForm", {
                 })
 
                 if(res.data.success){
-                    //this.successMessage = t.successMessage
+                    this.successMessage = "Profile updated successfully"
                     setTimeout(() => {
                         this.successMessage = null;
                     }, 3000);
@@ -312,9 +324,10 @@ export const useApplicationStore = defineStore("applicationForm", {
             }
 
         } catch (e) {
+            this.error = "Failed to fetch application";
             this.hasApplication = false;
             this.application = null;
-        } finally {
+        }finally {
             this.isLoading = false;
         }
         }

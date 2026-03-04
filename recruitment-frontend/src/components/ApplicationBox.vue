@@ -21,10 +21,18 @@
           @update:model-value="applicationStore.updateCompetence(index, {competenceTime: $event})"
           :label="t.yearsOfExperienceLabel"
           :model-value="competence.competenceTime"
-          :append-inner-icon="index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete"
-          @click:append-inner="handleCompIconClick(index)"
+          variant="outlined"
+          density="compact"
           class="mb-2"
         />
+
+        <v-btn icon 
+          @click="handleCompIconClick(index)"
+          class="mb-6">
+          <v-icon>
+            {{ index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete }}
+          </v-icon>
+        </v-btn>
       </div> 
       
       <div v-for="(availability, index) in applicationStore.availability" :key="index" class="mb-4">
