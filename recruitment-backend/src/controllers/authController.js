@@ -139,7 +139,7 @@ async function me(req) {
 
   //convert to values in the shape needed by frontend (established by login)
   const sendResult= {
-      username : result.user.username,
+      username : result.user?.username,
       password : null,
       firstName : result.user.name,
       lastName : result.user.surname,
