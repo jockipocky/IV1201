@@ -25,39 +25,30 @@ const routes = [
   { path: "/profile", component: ProfileView, meta: { requiresAuth: true, role: 2} },
 ];
 
+
+
+// ...imports + routes
+
+export function authGuard(to: any, from: any, next: any) {
+  const authStore = useAuthStore();
+  const isLoggedIn = authStore.isLoggedIn;
+  const user = authStore.user;
+
+  if (to.meta.requiresAuth && !isLoggedIn) return next("/login");
+
+  if (to.meta.guestOnly && isLoggedIn) {
+    if (user?.role_id === 1) return next("/recruiter");
+    if (user?.role_id === 2) return next("/profile");
+  }
+
+  if (to.meta.role && user?.role_id !== to.meta.role) return next("/login");
+
+  return next();
+}
+
 export const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
-//this new section is about protecting endpoints based on authentication level
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  const isLoggedIn = authStore.isLoggedIn;
-  const user = authStore.user;
-
-  //route requires authentication, we are not authenticated so we go back to login
-  if (to.meta.requiresAuth && !isLoggedIn) {
-    return next("/login");
-  }
-
-  //route is guest-only but user is already logged in
-  if (to.meta.guestOnly && isLoggedIn) {
-    if (user?.role_id === 1) {
-      return next("/recruiter");
-    }
-    if (user?.role_id === 2) {
-      return next("/profile");
-    }
-  }
-
-  //role-based restrictions, recruiters cant go to /applicant
-  //and applicants cant go to /recruiter, so this will send us
-  //back to login if we go to the wrong one - but login already
-  //redirects us if we're logged in to the correct one. wicked smaaht
-  if (to.meta.role && user?.role_id !== to.meta.role) {
-    return next("/login");
-  }
-
-  next();
-});
+router.beforeEach(authGuard);
