@@ -30,7 +30,7 @@
           <v-expansion-panels variant="accordion">
             <v-expansion-panel>
               <!-- Header -->
-              <v-expansion-panel-title class="d-flex justify-space-between align-center">
+              <v-expansion-panel-title class="d-flex justify-space-between align-center" data-cy="application-header">
                 <span>
                   {{ application.applicant.firstName }}
                   {{ application.applicant.lastName }}
@@ -79,6 +79,7 @@
                 <!-- Manage applications -->
                 <div class="mt-4">
                   <v-btn
+                  data-cy="accept-button"
                   height="32"
                   min-width="164"
                   color="green"
@@ -88,7 +89,8 @@
                   {{ t.acceptButtonLabel }}
                 </v-btn>
                 <v-btn
-                  height="32"
+                data-cy="decline-button"  
+                height="32"
                   min-width="164"
                   color="red"
                   @click="handleApplication(application.applicationId, 'decline')"
@@ -143,7 +145,7 @@
    *
    * The component relies on:
    * - useApplicationsStore (Pinia store) for state management and API interaction
-   * - Injected translation dictionary (`t`) for localized UI labels and messages
+   * - Injected translation dictionary (t) for localized UI labels and messages
    * - Vuetify components for layout and styling
    */
 

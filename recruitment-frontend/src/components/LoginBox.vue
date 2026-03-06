@@ -32,6 +32,7 @@
 
     <!-- Login button -->
     <v-btn
+      data-cy="login-button"
       class="mb-8"
       color="blue"
       size="large"

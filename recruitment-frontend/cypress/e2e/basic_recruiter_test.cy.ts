@@ -1,20 +1,9 @@
-/// <reference types="cypress" />
+describe("Recruiter view", () => {
 
-// Custom command to log in
-Cypress.Commands.add("login", (role: number = 2) => {
-  // Always return a logged-in user for /auth/me
-  cy.intercept("GET", "/auth/me", {
-    statusCode: 200,
-    body: {
-      user: {
-        id: 1,
-        username: "testuser",
-        role_id: role
-      }
-    }
-  }).as("getAuth");
+  beforeEach(() => {
 
-  
+    cy.login(1) // recruiter login
+
     cy.intercept("GET", "/applications/all", {
       statusCode: 200,
       body: {
@@ -65,27 +54,72 @@ Cypress.Commands.add("login", (role: number = 2) => {
       }
     }).as("getApplications")
 
-  // Visit profile directly
-  cy.visit(role === 1 ? "/recruiter" : "/profile");
+    cy.intercept("PUT", "/applications/*/status", {
+      statusCode: 200
+    }).as("handleApplication")
 
-  // Wait for the auto-auth fetch to finish
-  cy.wait("@getAuth");
+  })
 
-  cy.url().should("include", role=== 1? "/recruiter":"/profile");
-});
 
-// --- TypeScript support ---
-// This tells TypeScript that `cy.login()` exists
-declare global {
-  namespace Cypress {
-    interface Chainable<Subject = any> {
-      /**
-       * Custom command to log in a test user
-       */
-      login(role?:number): Chainable<void>;
-    }
-  }
-}
+  it("loads and displays applications", () => {
 
-// Make this file a module to apply the global augmentation
-export {};
+    //cy.visit("/recruiter")
+
+    cy.wait("@getApplications")
+
+    cy.contains("John Doe")
+    cy.contains("Jane Smith")
+
+  })
+
+
+  it("expands an application", () => {
+
+    cy.visit("/recruiter")
+
+    cy.wait("@getApplications")
+
+    cy.contains("John Doe").click()
+
+    cy.contains("19900101-1234")
+    cy.contains("john@test.com")
+    cy.contains("Lotteries")
+    cy.contains("2025-06-01")
+
+  })
+
+
+  it("accepts an application", () => {
+
+    cy.visit("/recruiter")
+
+    cy.wait("@getApplications")
+
+    cy.contains("John Doe").click()
+
+    cy.get('[data-cy="accept-button"]').click()
+
+    cy.wait("@handleApplication")
+
+    cy.contains("accepted", { matchCase: false })
+
+  })
+
+
+  it("declines an application", () => {
+
+    cy.visit("/recruiter")
+
+    cy.wait("@getApplications")
+
+    cy.contains("Jane Smith").click()
+
+    cy.contains("button", "Decline").click()
+
+    cy.wait("@handleApplication")
+
+    cy.contains("rejected", { matchCase: false })
+
+  })
+
+})
