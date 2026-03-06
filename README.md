@@ -40,7 +40,7 @@ The backend is responsible for authentication and authorization, account and ses
 
 The system is designed to be deployed as separate cloud services (frontend and backend), enabling horizontal scaling and independent updates. The backend acts as the single entry point to the data layer and enforces business rules. This architecture also allows for future expansion, such as adding a mobile client that can reuse the same REST API without any issues. Vue applications can also be compiled to run as Android and Desktop applications using frameworks such as Electron.
 
-We intend to host both the front-end and back-end using heroku but have not finalized this as of writing this README.
+More about the cloud deployment later in this file. We have chosen to host the frontend using Vercel and backend using Railway. This is combined with our database which is hosted on Heroku.
 
 # Project structure and file hierarchy
 ```text
@@ -339,3 +339,49 @@ const applications = computed<ApplicationDTO[] | null>(() => store.applicationsR
 ```
 
 This assures that the const "applications" exposed to the template section of the Vue component is both fetched from the store and updated whenever changed, such that those changes are immediately reflected on the page where the applications are displayed.
+
+# Browser testing using Cypress
+
+In order to perform browser testing for this project we use Cypress for the front-end for Chrome, Edge and Firefox, found in recruiment-frontend/cypress , as well as manual testing for Safari and mac users. In order to run the automatic Cypress tests, simply make sure you have installed all dependencies:
+
+ ```text
+npm install
+```
+
+And then run either the visual browser-tester showing you a playback of the tests being performed:
+
+ ```text
+npx cypress open
+```
+
+Or simply run all tests found in the cypress/e2e folder for a specific browser. Options here include Chrome, Firefox, Edge and Electron. Note that the browser in question needs to be locally installed on your computer for this command to work.
+
+ ```text
+npx cypress run --browser=chrome
+```
+
+## To add new tests
+
+In order to add new tests to the repertoir of Cypress scripts, simply make a new *.cy.ts file in the e2e folder, following the same structure as the previous ones. Note that you need to intercept request sent to the backend and return dummy respses instead, since the tests will not run using real user data. Make note of the shape of incoming responses and structure your dummy response accordingly. After having created this Cypress script, it will automatically run together with all other scrips in the folder upon issuing the previously listed command.
+
+## Checklist for manual testing for Safari
+
+Cypress does not support Safari as a browser for automatic tests, and our project group only had one Mac user. For this reason we thought it would be better, considering the small size of the project, to let Mac testing be done manually. As a rule, these tests should be performed before any build is shipped to the deployed product. To properly perform Mac testing, use the following step by step guide to make sure everything works as it should:
+
+1. Navigate to the base/login page. Verify that: the URL endpoints / and /login both take you here. The url endpoints /profile and /recruiter both also take you here since you are not yet logged in.
+2. Then, attempt to login using bogus login info. Verify that an error message appeared and that it appeared in the correct chosen language. Verify that you did not leave the login page.
+3. Then, attempt to click on "Sign up now". Verify that it takes you to the endpoint /register. Verify that upon refreshing the page, you are still on this page.
+4. Then, attempt to submit an empty request. Verify that you receive the appropriate error about all fields needing to be filled and in your chosen language.
+5. Then, attempt to fill in your request. Verify that the personal number field only accepts personal numbers in the correct shape. Verify that the password field requires you to submit a password with at least 8 characters.
+6. Then, submit your application and verify that (given correct shaped inputs) you receive a confirmation message and are redirected to the login page.
+7. Then, click on the "Upgrade legacy account" button on the login page and verify that it takes you to the /upgrade endpoint in the URL on screen. Verify that upon refreshing the page, you stay on this screen.
+8. Then, attempt to submit an empty form on this upgrade page. Verify that you get an error message indicating that all fields are required. Attempt to submit the form missing any field, and verify that it won't let you. Then, verify that you can't upgrade an account for which you do not have a legacy code by submitting a dummy code for a real upgradable account. Then, verify with the help of a dummy account in the database that you can in fact upgrade an account if the information is correct. Verify that you receive confirmation on the page that the upgrade worked.
+9. Then, use the "Return to login" button and verify that it correctly takes you back to the login page, and log in using your created account.
+10. Then, verify that the user you created has their personal info displayed on the top of the page, that you can edit that info, and that the updated info persists upon refreshing the page.
+11. Then, attempt to submit competence profile and availability and verify that it properly updates and persists upon refresh.
+12. Then, verify that if you manually navigate to /login or / or /register or /upgrade - the page redirects you to /profile since you are currently logged in with an auth cookie.
+13. Then, log out using the header and verify that it directs you to the login page. Check your cookie storage and make sure it has been emptied. Refresh the page and verify that you stay logged out.
+14. Then, log in to a recruit account (create one in the database or use a login you know) and verify that it redirects you to /recruiter. Manually visit /, /register and /upgrade again to make sure they redirect you to /recruiter.
+15. Then, verify that applications appear in the list, that their info is displayed properly when expanded, and that you can properly accept or decline applications.
+16. Then, set the person_application_status of a user to REJECTED in the database manually, before attempting to accept them locally in your app. Verify that you get the appropriate error message saying that another recruiter has already handled that application, and verify that the status field on the page has been updated to their already-handled status.
+17. Lastly, log out using the header and verify again that the cookie has been deleted from your cookie storage and that refreshing the page does not log you back in.

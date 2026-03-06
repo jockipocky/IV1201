@@ -4,13 +4,13 @@ const { Application } = require("../services/applicationService");
 const authService = require("../services/authService");
 
 /**
- * denna funktion dubbellkollar så att sanvändaren har fyllt 
- * in formuläret i korrekt format och skickar sedan det vidare
- * till service
- * @param {*} req innehåller competenceProfile och availability
- * @param {*} res resultatet blir en check
- * @returns    status på förfrågan beroende på hur allt blev
- */
+ *  This function double‑checks that the user has filled
+ *  out the form in the correct format and then passes it
+ *  on to the service
+ *  @param {*} req contains competenceProfile and availability
+ *  @param {*} res the result is a check
+ *  @returns status of the request depending on how things went 
+ *  */
 async function applicationSubmission(req,res){
     try{
         const dto = new ApplicationDTO(req.body)

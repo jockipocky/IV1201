@@ -74,6 +74,12 @@
 </template>
 
 <script lang="ts">
+/**
+ * This component renders the registration form for new users. 
+ * It includes fields for first name, last name, email, personal number, username, and password. 
+ * The component handles form validation, displays error messages, and shows a success message upon successful registration.
+ * It also provides a button to navigate back to the login page.
+ */
 import { defineComponent, ref, reactive } from "vue";
 import { useRegisterStore } from "@/stores/registerStore";
 import { inject } from 'vue' //for dictionary

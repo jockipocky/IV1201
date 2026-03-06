@@ -68,6 +68,14 @@
 </template>
 
 <script lang="ts">
+/**
+ * UpgradeAccountBox.vue
+ *
+ * This component renders a form that allows users to upgrade their account. 
+ * It includes fields for email, personal number, upgrade code, new username, and new password. 
+ * The component handles form validation, displays error messages, and shows a success message upon successful upgrade.
+ * It also provides a button to navigate back to the login page.
+ */
 import { defineComponent, ref, reactive } from "vue";
 import { useUpgradeStore } from "@/stores/upgradeStore"; // Or create a separate register store
 import { inject } from 'vue' //for dictionary
@@ -104,10 +112,8 @@ export default defineComponent({
     const router = useRouter();
 
     const goToLogin = () => {
-      router.push("/login"); // change if needed
+      router.push("/login");
     };
-
-    //const t = inject<any>('t') //this is our dictionary
     
 
     const tRef = inject<any>("t")!;

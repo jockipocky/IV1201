@@ -19,6 +19,13 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * Header.vue
+ *
+ * This component renders the header of the application, which includes the title,
+ * a language toggle button, and user information with a logout button if the user is logged in. 
+ * With the title aligned to the left and the actions (language toggle and user info) aligned to the right.
+ */
 import { inject, computed } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 
