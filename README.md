@@ -40,7 +40,7 @@ The backend is responsible for authentication and authorization, account and ses
 
 The system is designed to be deployed as separate cloud services (frontend and backend), enabling horizontal scaling and independent updates. The backend acts as the single entry point to the data layer and enforces business rules. This architecture also allows for future expansion, such as adding a mobile client that can reuse the same REST API without any issues. Vue applications can also be compiled to run as Android and Desktop applications using frameworks such as Electron.
 
-We intend to host both the front-end and back-end using heroku but have not finalized this as of writing this README.
+More about the cloud deployment later in this file. We have chosen to host the frontend using Vercel and backend using Railway. This is combined with our database which is hosted on Heroku.
 
 # Project structure and file hierarchy
 ```text
