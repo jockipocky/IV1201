@@ -132,14 +132,19 @@ export default defineComponent({
           error.value = t.value?.allFieldsRequired;
           return;
           }
+      
+      if (!/^[a-zA-Z]+$/.test(state.firstName) || !/^[a-zA-Z]+$/.test(state.lastName)) {
+          error.value = t.value?.invalidName || "First and last name must contain only letters.";
+        return;
+        }
 
       if (state.password.length < 8) {
           error.value = t.value?.passwordTooShort || "Password must be at least 8 characters.";
           return;
           }
 
-      if (!state.email.includes("@")) {
-        error.value = t.value?.invalidEmail || "Email must contain @.";
+      if (!state.email.includes("@") || !state.email.includes(".")) {
+        error.value = t.value?.invalidEmail || "Invalid email format.";
         return;
       }
 

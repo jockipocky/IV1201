@@ -25,6 +25,7 @@ export default {
   loginError: "Ett fel skedde vid inloggning. Vänligen försök igen.",
   passwordTooShort : "Lösenordet måste vara minst 8 tecken.",
   invalidEmail: "Ogiltigt Email format",
+  invalidName: "För- och efternamn får endast innehålla bokstäver.",
   registrationSuccess: "Registrering lyckades! Vänligen logga in.",
   registrationFailed: "Registreringen misslyckades. Vänligen försök igen.",
   
@@ -57,7 +58,7 @@ export default {
   yearsOfExperienceLabel: "år av erfarenhet",
   ticketSalesLabel: "Biljett Försäljare",
   rollerCoasterOperatorLabel:"Attraktionsvärd" ,
-    lotteriesLabel:"Lotteri Försäljare",
+  lotteriesLabel:"Lotteri Försäljare",
   backToLogin: "Gå tillbaka till login",
   allFieldsRequired: "Alla fält måste fyllas i",
   upgradeSuccess: "Kontot har uppgraderats, vänligen återvänd till login sida",
