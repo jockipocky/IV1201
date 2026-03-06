@@ -7,19 +7,22 @@
         v-model="state.firstName"
         :label="t.firstNameLabel"
         required
+        data-cy="register-firstname"
       ></v-text-field>
 
       <v-text-field
         v-model="state.lastName"
         :label="t.lastNameLabel"
         required
+        data-cy="register-lastname"
       ></v-text-field>
 
       <v-text-field
         v-model="state.email"
         :label="t.emailLabel"
         type="email"
-        required
+        required 
+        data-cy="register-email"
       ></v-text-field>
 
       <v-text-field
@@ -29,12 +32,14 @@
         required
         placeholder="YYYYMMDD-XXXX"
         :rules="[personNumberRule]"
+        data-cy="register-personnumber"
       ></v-text-field>
 
       <v-text-field
         v-model="state.username"
         :label="t.usernameLabel"
         required
+        data-cy="register-username"
       ></v-text-field>
 
       <v-text-field
@@ -45,21 +50,22 @@
       :prepend-inner-icon="mdiLock"
       @click:append-inner="visible = !visible"
       required
+      data-cy="register-password"
     ></v-text-field>
 
-      <v-alert v-if="error" type="error" class="mt-4" dense>
+      <v-alert v-if="error" type="error" class="mt-4" dense data-cy="register-error">
         {{ error }}
       </v-alert>
 
-      <v-alert v-if="success" type="success" class="mt-4" dense>
+      <v-alert v-if="success" type="success" class="mt-4" dense data-cy="register-success">
         {{ success }}
       </v-alert>
 
-      <v-btn class="mt-6 mb-4" color="blue" block @click="handleRegister">
+      <v-btn class="mt-6 mb-4" color="blue" block @click="handleRegister" data-cy="register-button">
         {{t.registerButtonLabel}}
       </v-btn>
 
-      <v-btn class="mt-6 mb-4" variant="tonal" block @click="goToLogin">
+      <v-btn class="mt-6 mb-4" variant="tonal" block @click="goToLogin" data-cy="register-back">
         {{t.backToLogin}}
       </v-btn>
 

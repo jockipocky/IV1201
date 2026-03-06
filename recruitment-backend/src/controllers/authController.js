@@ -134,9 +134,16 @@ if (![email, personalNumber, upgradeCode, username, password].every(isNonEmptySt
 
 async function me(req) {
   const token = req.cookies?.auth;
+  //if no cookie, its still OK we just dont return a user.
+  if(!token){
+    return {
+    ok: true,
+    status: 401,
+    user: null,
+  };
+  }
 
   const result = await authService.getMe(token);
-
   //convert to values in the shape needed by frontend (established by login)
   const sendResult= {
       username : result.user?.username,

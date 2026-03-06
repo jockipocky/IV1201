@@ -5,6 +5,7 @@
     <form @submit.prevent>
       <div v-for="(competence ,index) in applicationStore.competences" :key="index">
         <v-select
+        data-cy="competence-select"
           :label="t.competence"
           :items="[t.ticketSalesLabel, t.rollerCoasterOperatorLabel, t.lotteriesLabel]"
           :model-value="competence.competenceType"
@@ -15,6 +16,7 @@
         />     
 
         <v-text-field
+        data-cy="experience-input"
           @keydown.prevent
           type="number"
           step="0.1"
@@ -42,6 +44,7 @@
 
       <div class="d-flex ga-3">
         <v-btn
+        data-cy="apply-button"
           color="primary"
           class="flex-grow-1"
           @click="onApply"
@@ -51,6 +54,7 @@
         
         <v-btn
           variant="outlined"
+          data-cy="cancel-button"
           color="red"
           class="flex-grow-1"
           @click="cancelForm"

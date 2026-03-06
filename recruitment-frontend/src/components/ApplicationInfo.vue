@@ -6,6 +6,7 @@
       
       <v-btn 
         v-if="!isEditing" 
+        data-cy="edit-profile"
         variant="text" 
         color="primary" 
         prepend-icon="mdi-pencil"
@@ -38,6 +39,7 @@
 
     <v-form v-else @submit.prevent="onSubmit">
       <v-text-field
+      data-cy="firstname-input"
         v-model="applicationStore.personalInfo.firstName"
         :label="t.firstNameLabel"
         variant="outlined"
@@ -68,6 +70,7 @@
 
     <div class="d-flex ga-3">
       <v-btn
+      data-cy="save-profile"
         color="primary"
         class="flex-grow-1"
         :disabled="!isDirty"

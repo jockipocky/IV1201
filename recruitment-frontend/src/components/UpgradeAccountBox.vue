@@ -10,6 +10,7 @@
         :label="t.upgradeAccountEmailPlaceholder"
         type="email"
         :rules="[requiredRule, emailRule]"
+        data-cy="upgrade-email"
       ></v-text-field>
       <v-text-field
         :model-value="state.personNumber"
@@ -17,6 +18,7 @@
         :label="t.personalNumberLabel"
         placeholder="YYYYMMDD-XXXX"
         :rules="[personNumberRule]"
+        data-cy="upgrade-personnumber"
       ></v-text-field>
 
 
@@ -25,12 +27,14 @@
         :label="t.upgradeAccountUpgradeCodePlaceholder"
         :placeholder="t.upgradeCodeLabel"
         :rules="[requiredRule]"
+        data-cy="upgrade-code"
       ></v-text-field>
 
       <v-text-field
         v-model="state.username"
         :label="t.newUsernameLabel"
         :rules="[requiredRule]"
+        data-cy="upgrade-username"
       ></v-text-field>
 
       <v-text-field
@@ -40,22 +44,23 @@
         :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
         @click:append-inner="visible = !visible"
         :rules="[requiredRule, passwordMinRule]"
+        data-cy="upgrade-password"
       ></v-text-field>
 
-      <v-alert v-if="error" type="error" class="mt-4" dense>
+      <v-alert v-if="error" type="error" class="mt-4" dense data-cy="upgrade-error">
         {{ error }}
       </v-alert>
 
-      <v-alert v-if="success" type="success" class="mt-4" dense>
+      <v-alert v-if="success" type="success" class="mt-4" dense data-cy="upgrade-success">
         {{ success }}
       </v-alert>
 
-      <v-btn class="mt-3" variant="tonal" block type="button" @click="goToLogin">
+      <v-btn class="mt-3" variant="tonal" block type="button" @click="goToLogin" data-cy="upgrade-back">
         {{ t.backToLogin}}
       </v-btn>
 
 
-      <v-btn class="mt-6 mb-4" color="blue" block type="submit" :loading="loading" :disabled="loading">
+      <v-btn class="mt-6 mb-4" color="blue" block type="submit" :loading="loading" :disabled="loading" data-cy="upgrade-submit">
         {{t.upgradeButtonLabel}}
       </v-btn>
     </v-form>
@@ -142,7 +147,7 @@ export default defineComponent({
 
       const result = await formRef.value?.validate();
       if (!result?.valid) {
-        //errorKey.value = "allFieldsRequired";
+        errorKey.value = "allFieldsRequired";
         return;
       }
 

@@ -11,6 +11,7 @@
       </h2>
 
       <v-btn
+      data-cy="edit-application"
         v-if="!isEditing"
         variant="text"
         color="primary"
