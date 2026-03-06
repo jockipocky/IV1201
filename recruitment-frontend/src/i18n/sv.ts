@@ -67,6 +67,6 @@ export default {
   userNotFound:"Användaren kunde inte hittas",
   invalidUpgradeCode:"Ogiltlig kod",
   acountAlreadyUpg:"Konto är redan uppgraderat",
-  invalidPersonalNumberFormat:"Fel format på personnummber",
+  invalidPersonalNumberFormat:"Fel format på personnummer",
   notLegacy:"Inte en legacy user",
 };

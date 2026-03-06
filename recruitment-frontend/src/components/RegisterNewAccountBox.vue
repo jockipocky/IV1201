@@ -132,7 +132,20 @@ export default defineComponent({
       }
 
       try {
-        await registerStore.register(state.firstName, state.lastName, state.email, state.personNumber, state.username, state.password); // implement a register action in your store
+
+        const formattedPersonNumber = formatPersonNumber(state.personNumber);
+        if (!formattedPersonNumber) {
+          error.value = t.value?.invalidPersonalNumberFormat;
+          return;
+        }
+        await registerStore.register(
+          state.firstName,
+          state.lastName,
+          state.email,
+          state.personNumber,
+          state.username,
+          state.password
+        );
         error.value = null;
         success.value = t.value?.registrationSuccess;
         setTimeout(() => router.push("/login"), 2000);

@@ -130,11 +130,11 @@ export default defineComponent({
 
     const emailRule = (v: string | null | undefined) =>
       (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ||
-      "Enter a valid email"
+      (t.value?.invalidEmail ?? "Enter a valid email");
 
     const passwordMinRule = (v: string | null | undefined) =>
       (!!v && v.length >= 8) ||
-      "Password must be at least 8 characters"
+      (t.value?.passwordTooShort ?? "Password must be at least 8 characters");
 
     const handleUpgrade = async () => {
       errorKey.value = null;
