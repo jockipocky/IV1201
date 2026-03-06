@@ -211,8 +211,72 @@ npm run dev
 ```
 
 # Cloud deployment
+The system follows a **client–server architecture** where the frontend, backend, and database are deployed on separate cloud platforms.
 
-To be filled in. Not sure how we are doing this yet.
+- The **frontend** is a Vue.js **Single Page Application (SPA)** hosted on **Vercel**.
+- The **backend** is a **Node.js Express REST API** hosted on **Railway**.
+- The **database** is a **PostgreSQL instance** hosted on **Heroku**.
+
+API requests from the frontend are routed through a **Vercel proxy (`/api`)**, which forwards requests to the backend service. This allows the frontend and backend to communicate securely while enabling **authentication cookies** to function correctly.
+
+---
+
+### Production URLs
+
+#### Frontend
+```
+https://frontend-deploy-coral.vercel.app
+```
+
+#### Backend API
+```
+https://iv1201-production.up.railway.app
+```
+
+---
+
+### Environment Variables
+
+Both **Vercel** and **Railway** use environment variables to configure the deployed services.
+
+These correspond to the `.env` variables used in local development. When deploying the system, these variables must also be added in the respective cloud platform dashboards.
+
+---
+
+### Frontend (Vercel)
+
+```
+VITE_API_BASE_URL=/api
+```
+
+This ensures the frontend sends API requests through the **Vercel proxy**, which then forwards them to the backend.
+
+---
+
+### Backend (Railway)
+
+```
+DATABASE_URL=<postgres connection string>
+JWT_SECRET=<secret used to sign authentication tokens>
+NODE_ENV=production
+```
+
+- **DATABASE_URL** – connection string used to access the PostgreSQL database  
+- **JWT_SECRET** – secret key used for signing authentication tokens  
+- **NODE_ENV** – ensures the backend runs in production mode
+
+---
+
+### Deployment Process
+
+Both the frontend and backend are configured for **automatic deployment**.
+
+When changes are pushed to the **deployment branch on GitHub**:
+
+1. **Vercel** automatically rebuilds and deploys the frontend.
+2. **Railway** automatically rebuilds and deploys the backend.
+
+This ensures that the **latest version of the system is deployed without manual intervention**.
 
 # Continued development
 
