@@ -23,7 +23,12 @@ const cors = require("cors");
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || "http://localhost:5173", // <-- put your frontend URL/port here
-  credentials: true
+  credentials: true,
+   methods: [
+    "GET",
+    "PUT",
+    "POST"
+  ]
 }));
 
 
