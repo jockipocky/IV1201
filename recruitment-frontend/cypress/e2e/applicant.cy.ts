@@ -3,7 +3,7 @@ describe("Application form", () => {
   beforeEach(() => {
     cy.login(); // ensures user is logged in and on /profile
 
-    // Stub the POST /applications (submit) to succeed
+    // stub the POST /applications (submit) to succeed
     cy.intercept("POST", "/applications", {
       statusCode: 200,
       body: { success: true }
@@ -20,7 +20,7 @@ describe("Application form", () => {
       }
     }).as("auth/me");
 
-    // Stub the GET /applications/* (fetch after reload)
+    // stub the GET /applications/* (fetch after reload)
     cy.intercept("GET", "/applications/*", {
       statusCode: 200,
       body: {
