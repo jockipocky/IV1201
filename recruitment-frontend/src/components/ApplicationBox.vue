@@ -2,7 +2,7 @@
   <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="500" rounded="lg">
     <div class="text-subtitle-1 text-medium-emphasis mb-4">{{t.competenceProfile}}</div>
 
-    <form @submit.prevent>
+    <v-form @submit.prevent="onApply" ref="formRef">
       <div v-for="(competence ,index) in applicationStore.competences" :key="index">
         <v-select
         data-cy="competence-select"
@@ -13,6 +13,7 @@
           variant="outlined"
           density="compact"
           class="mb-6"
+          :rules="[requiredRule]"
         />     
 
         <v-text-field
@@ -23,10 +24,19 @@
           @update:model-value="applicationStore.updateCompetence(index, {competenceTime: $event})"
           :label="t.yearsOfExperienceLabel"
           :model-value="competence.competenceTime"
-          :append-inner-icon="index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete"
-          @click:append-inner="handleCompIconClick(index)"
+          variant="outlined"
+          density="compact"
           class="mb-2"
+          :rules="[requiredRule, experienceRule]"
         />
+
+        <v-btn icon 
+          @click="handleCompIconClick(index)"
+          class="mb-6">
+          <v-icon>
+            {{ index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete }}
+          </v-icon>
+        </v-btn>
       </div> 
       
       <div v-for="(availability, index) in applicationStore.availability" :key="index" class="mb-4">
@@ -53,6 +63,8 @@
         </v-btn>
         
         <v-btn
+          v-if="applicationStore.hasApplication"
+          v-show="applicationStore.hasApplication"
           variant="outlined"
           data-cy="cancel-button"
           color="red"
@@ -63,29 +75,41 @@
         </v-btn>
       </div>
 
-      <v-alert v-if="error" type="error" class="mt-4" dense>
-        {{ error }}
-      </v-alert>
-    </form>
+    </v-form>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { useApplicationStore } from "@/stores/applicationStore"; // Or create a separate register store
-import { inject } from 'vue' //for dictionary
+import { useApplicationStore } from "@/stores/profileStore"; // Or create a separate register store
+import { inject,computed } from 'vue' //for dictionary
 import { mdiPlus, mdiDelete } from "@mdi/js"
 
 
 
 
 
-    const error = ref<string | null>(null);
     const t = inject<any>("t");
 
-    const availability = ref<string[]>([])
 
     const applicationStore = useApplicationStore()
+    const formRef = ref()
+
+    const requiredRule = (v: any) =>
+      !!v || t.value?.allFieldsRequired || "Required";
+
+    const experienceRule = (v: any) => {
+      if (!v) return t.value?.allFieldsRequired;
+
+      const num = Number(v);
+      if (isNaN(num)) return t.value?.numberCheck;
+
+      if (num < 0) return t.value?.numberCheck;
+
+
+      return true;
+    };
+
 
     if(applicationStore.competences.length === 0){
         applicationStore.addEmptyCompetence()
@@ -113,24 +137,43 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
         }
     };
 
+    const isValid = computed(() => {
+      if (applicationStore.competences.length === 0) return false;
+      if (applicationStore.availability.length === 0) return false;
+
+      const competencesValid = applicationStore.competences.every(c =>
+        c.competenceType && c.competenceTime
+      );
+
+      const availabilityValid = applicationStore.availability.every(a =>
+        a.from && a.to
+      );
+
+      return competencesValid && availabilityValid;
+    });
+
 
     const onApply = async() =>{
+      const {valid} = await formRef.value.validate()
+
+      if(!valid) return
         try {
             await applicationStore.submitApplicationForm();
-            window.location.reload()
-        } catch (e) {
-            error.value = t.genericError
+
+            await applicationStore.fetchApplication()
+
+            applicationStore.isEditingApplication = false
+
+          } catch (e) {
+          applicationStore.error="genericError"
         }
     };
 
+
     const cancelForm = () => {
-    applicationStore.competences = [];
-    applicationStore.availability = [];
+      applicationStore.isEditingApplication = false
     
-    applicationStore.addEmptyCompetence();
-    applicationStore.addEmptyAvailability();
-    
-    error.value = null;
+      applicationStore.error = null;
 };
 
 

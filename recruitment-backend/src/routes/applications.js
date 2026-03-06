@@ -7,7 +7,7 @@ var express = require("express");
 var router = express.Router();
 const { authenticate, authorizeRoles } = require("../middleware/authMiddleware"); //to authenticate and authorize
 
-const { applicationSubmission, fetchApplication, updatePI } = require("../controllers/applicationController");
+const { applicationSubmission, fetchApplication, updatePI } = require("../controllers/profileController");
 const {
   fetchAllApplications,
   updateApplicationStatus

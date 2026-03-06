@@ -73,6 +73,7 @@ export const useApplicationsStore = defineStore("register", {
     }, //end of async login
 
 
+    
    /**
    * Handles updating the status of a specific application in the recruiter view.
    * Sends an update request to the backend to either accept or decline

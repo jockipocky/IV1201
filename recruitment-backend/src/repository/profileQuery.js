@@ -39,10 +39,11 @@ async function submitApplication(applicationDTO){
         }
     }catch (err){
         await client.query("rollback")
-        console.error("database fail: ", err)
+        console.error("DATABASE ERROR submitApplication:", err)
+
         return{
             success: false,
-            error: err.message
+            error: "DATABASE_ERROR"
         }
     } finally {
         client.release()
@@ -91,11 +92,12 @@ async function updateHandlingStatus(status, applicationDTO){
             person_id: applicationDTO.person_id
         }
     }catch(error){
+        console.error("DATABASE ERROR updateHandlingStatus:", error)
+
         return{
             success: false,
-            error: error.message
+            error: "DATABASE_ERROR"
         }
-
     } finally{
         client.release()
     }
@@ -109,15 +111,25 @@ async function updateHandlingStatus(status, applicationDTO){
      * @returns true if records exist else false
      */
     async function checkForApplication(client, applicationDTO){
-        
+        try{
+            const result = await client.query(
+                `select 1 from person_application_status where person_id=$1`,
+                [applicationDTO.person_id]
+            )
 
-            const result = await client.query(`select * from person_application_status where person_id=$1`, 
-                [applicationDTO.person_id])
-                return{
-                    success: true,
-                    exists: result.rows.length > 0
-                }
-        
+            return {
+                success: true,
+                exists: result.rows.length > 0
+            }
+
+        } catch(error){
+            console.error("DATABASE ERROR checkForApplication:", error)
+
+            return {
+                success: false,
+                error: "DATABASE_ERROR"
+            }
+        }
     }
 
 
@@ -150,12 +162,29 @@ async function updateHandlingStatus(status, applicationDTO){
      * @returns alla availabilities för relevant person
      */
     async function getAvailability(client, applicationDTO){
-        const res= await client.query(`select from_date, to_date 
-                            from availability 
-                            where person_id = $1;`,
-                            [applicationDTO.person_id])
+        try{
+            const res = await client.query(
+                `select 
+                    from_date::text AS from_date,
+                    to_date::text AS to_date
+                from availability 
+                where person_id = $1`,
+                [applicationDTO.person_id]
+            )
 
-        return res
+            return {
+                success: true,
+                rows: res.rows
+            }
+
+        } catch(error){
+            console.error("DATABASE ERROR getAvailability:", error)
+
+            return {
+                success: false,
+                error: "DATABASE_ERROR"
+            }
+        }
     }
 
     /**
@@ -165,11 +194,27 @@ async function updateHandlingStatus(status, applicationDTO){
      * @returns all competence profile för relevant person
      */
     async function getCompeteceProfile(client, applicationDTO){
-       const res=  await client.query(`select competence_id, years_of_experience 
-                            from competence_profile 
-                            where person_id = $1;`,
-                            [applicationDTO.person_id])
-        return res
+        try{
+            const res = await client.query(
+                `select competence_id, years_of_experience 
+                from competence_profile 
+                where person_id = $1`,
+                [applicationDTO.person_id]
+            )
+
+            return {
+                success: true,
+                rows: res.rows
+            }
+
+        }catch(error){
+            console.error("DATABASE ERROR getCompetenceProfile:", error)
+
+            return {
+                success:false,
+                error:"DATABASE_ERROR"
+            }
+        }
     }
 
     /**
@@ -190,6 +235,7 @@ async function updateHandlingStatus(status, applicationDTO){
                 const availabilityRes= await getAvailability(client, applicationDTO)
                 const competenceRes = await getCompeteceProfile(client, applicationDTO)
 
+
                 await client.query("commit")
                 return{
                     success: true,
@@ -206,15 +252,17 @@ async function updateHandlingStatus(status, applicationDTO){
 
             }
         } catch(error){
-                await client.query("rollback")
-                return{
-                    success:false, 
-                    error: error.message
-                }
+            await client.query("rollback")
+            console.error("DATABASE ERROR getApplication:", error)
 
-            }finally{
+            return{
+                success:false, 
+                error: "DATABASE_ERROR"
+            }
+        }finally{
                 client.release()
             }
 }
+
 
 module.exports = { submitApplication, updateHandlingStatus, getApplication}

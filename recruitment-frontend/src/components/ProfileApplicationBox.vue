@@ -16,9 +16,9 @@
         variant="text"
         color="primary"
         prepend-icon="mdi-pencil"
-        @click="applicationStore.hasApplication = false"
+        @click="applicationStore.isEditingApplication = true"
       >
-        {{ t.editButtonLabel || "Edit" }}
+        {{ t.resubmitLabel || "Edit" }}
       </v-btn>
     </div>
 
@@ -58,45 +58,17 @@
       </v-list>
     </div>
 
-    <v-alert
-      v-if="error"
-      type="error"
-      class="mt-4"
-      variant="tonal"
-    >
-      {{ error }}
-    </v-alert>
-
-    <v-alert
-      v-if="applicationStore.successMessage"
-      type="success"
-      variant="tonal"
-      class="mt-4"
-      closable
-    >
-      {{ t.successMessage }}
-    </v-alert>
-
-    <v-alert
-      v-if="applicationStore.error"
-      type="error"
-      variant="tonal"
-      class="mt-4"
-      closable
-    >
-      {{ t.profileError }}
-    </v-alert>
+    
   </v-card>
 </template>
 
 
 <script setup lang="ts">
 import { ref, computed, onMounted, inject } from "vue";
-import { useApplicationStore } from "@/stores/applicationStore";
+import { useApplicationStore } from "@/stores/profileStore";
 
 const applicationStore = useApplicationStore();
 const t = inject<any>("t");
-const error = ref<string | null>(null);
 const isEditing = ref(false); // Controls the view toggle
 const application = computed(() => applicationStore.application)
 
