@@ -144,7 +144,7 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
             applicationStore.removeAvailability(index);
         }
     };
-/*
+
     const isValid = computed(() => {
       if (applicationStore.competences.length === 0) return false;
       if (applicationStore.availability.length === 0) return false;
@@ -159,7 +159,7 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
 
       return competencesValid && availabilityValid;
     });
-*/
+
 
     const onApply = async() =>{
       const {valid} = await formRef.value.validate()

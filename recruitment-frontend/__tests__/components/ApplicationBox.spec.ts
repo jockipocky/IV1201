@@ -173,12 +173,23 @@ describe('ApplicationBox.vue', () => {
 
 
   it('onApply: success submits, fetches application, and exits editing', async () => {
+    mockApplicationStore.competences = [
+      { competenceType: 'Ticket Sales', competenceTime: '2' },
+    ]
+    mockApplicationStore.availability = [
+      { from: '2026-01-01', to: '2026-02-01' },
+    ]
+    mockApplicationStore.getAvailabilityRange.mockReturnValue(['2026-01-01', '2026-02-01'])
+
     mockApplicationStore.submitApplicationForm.mockResolvedValueOnce(true)
     mockApplicationStore.fetchApplication.mockResolvedValueOnce(true)
     mockApplicationStore.isEditingApplication = true
 
     const wrapper = mountWithStubs()
     const vm = wrapper.vm as any
+    vm.formRef = {
+      validate: vi.fn().mockResolvedValue({ valid: true }),
+    }
 
     await vm.onApply()
 
@@ -188,10 +199,21 @@ describe('ApplicationBox.vue', () => {
   })
 
   it('onApply: failure sets generic error', async () => {
+    mockApplicationStore.competences = [
+      { competenceType: 'Ticket Sales', competenceTime: '2' },
+    ]
+    mockApplicationStore.availability = [
+      { from: '2026-01-01', to: '2026-02-01' },
+    ]
+    mockApplicationStore.getAvailabilityRange.mockReturnValue(['2026-01-01', '2026-02-01'])
+
     mockApplicationStore.submitApplicationForm.mockRejectedValueOnce(new Error('Failed'))
 
     const wrapper = mountWithStubs()
     const vm = wrapper.vm as any
+    vm.formRef = {
+      validate: vi.fn().mockResolvedValue({ valid: true }),
+    }
 
     await vm.onApply()
 
