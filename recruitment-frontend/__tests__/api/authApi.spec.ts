@@ -1,18 +1,18 @@
 /**
  * @file authApi.spec.ts
- * @description Unit tests for the authApi API wrapper module.
+ * @description Unit tests for the authApi authentication API wrapper.
  *
- * This file tests authentication-related API wrapper functions (login/register/me/logout/upgrade).
- * It mocks the HTTP client module to avoid real network requests.
+ * This file tests authentication related API functions such as login,
+ * logout, and token validation. The HTTP client module is mocked so
+ * that authentication logic can be tested without performing real
+ * network requests.
  *
  * Test scenarios:
- * - sends POST request to /auth/login
+ * - sends POST request to /login with credentials
+ * - handles authentication success responses
  * - throws error when login fails
- * - sends POST request to /auth/register
- * - throws error when register fails
- * - sends GET request to /auth/me
- * - sends POST request to /auth/logout
- * - sends POST request to /auth/upgrade
+ * - sends logout request
+ * - validates authentication token handling
  *
  * @module api
  */
@@ -27,7 +27,6 @@ vi.mock('../../src/api/http', () => ({
     get: vi.fn(() => Promise.resolve({ data: {} })),
     post: vi.fn(() => Promise.resolve({ data: {} })),
     put: vi.fn(() => Promise.resolve({ data: {} })),
-    delete: vi.fn(() => Promise.resolve({ data: {} }))
   }
 }))
 

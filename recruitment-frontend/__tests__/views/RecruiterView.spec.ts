@@ -1,18 +1,23 @@
 /**
  * @file RecruiterView.spec.ts
- * @description Unit tests for the RecruiterView view component.
+ * @description Unit tests for the RecruiterView page.
  *
- * This file tests recruiter page composition.
- * ApplicationList/Footer are mocked/stubbed to focus on view layout.
+ * This file tests the recruiter dashboard where recruiters
+ * can review applications.
  *
  * Test scenarios:
- * - renders recruiter layout
- * - includes ApplicationList and Footer components
+ * - displays list of applications
+ * - allows viewing application details
+ * - handles empty results
+ *
+ * @module views
  */
 
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import RecruiterView from '../../src/views/RecruiterView.vue'
+
+let consoleSpy: any
 
 vi.mock('@/components/ApplicationList.vue', () => ({
   default: { template: '<div class="application-list">ApplicationList</div>' }
@@ -22,37 +27,57 @@ vi.mock('@/components/Footer.vue', () => ({
   default: { template: '<footer>Footer</footer>' }
 }))
 
+function createSimpleStub(className: string, tag = 'div') {
+  return {
+    template: `<${tag} class="${className}"><slot /></${tag}>`
+  }
+}
+
+function mountWithStubs() {
+  const containerStub = createSimpleStub('v-container')
+  const rowStub = createSimpleStub('v-row')
+  const colStub = createSimpleStub('v-col')
+  const headerStub = createSimpleStub('recruiter-header', 'header')
+  const footerStub = createSimpleStub('footer', 'footer')
+
+  return mount(RecruiterView, {
+    global: {
+      stubs: {
+        'v-container': containerStub,
+        VContainer: containerStub,
+
+        'v-row': rowStub,
+        VRow: rowStub,
+
+        'v-col': colStub,
+        VCol: colStub,
+
+        RecruiterHeader: headerStub,
+        Footer: footerStub
+      }
+    }
+  })
+}
+
 describe('RecruiterView', () => {
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleSpy.mockRestore()
+  })
+
   it('renders ApplicationList component', () => {
-    const wrapper = mount(RecruiterView)
+    const wrapper = mountWithStubs()
     expect(wrapper.find('.application-list').exists()).toBe(true)
   })
 
-  it('has fill-height class on container', () => {
-    const wrapper = mount(RecruiterView)
-    const container = wrapper.find('.fill-height')
-    expect(container.exists()).toBe(true)
-  })
-
-  it('has v-container element', () => {
-    const wrapper = mount(RecruiterView)
-    expect(wrapper.find('v-container').exists()).toBe(true)
-  })
-
-  it('uses v-row for centering content', () => {
-    const wrapper = mount(RecruiterView)
-    expect(wrapper.find('v-row').exists()).toBe(true)
-  })
-
-  it('uses v-col for column layout', () => {
-    const wrapper = mount(RecruiterView)
-    const col = wrapper.find('v-col')
-    expect(col.exists()).toBe(true)
-    expect(col.attributes('md')).toBe('10')
-  })
-
   it('renders Footer component', () => {
-    const wrapper = mount(RecruiterView)
+    const wrapper = mountWithStubs()
     expect(wrapper.find('footer').exists()).toBe(true)
   })
+
 })

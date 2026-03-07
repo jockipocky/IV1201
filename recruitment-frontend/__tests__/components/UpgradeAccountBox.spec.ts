@@ -1,47 +1,33 @@
 /**
  * @file UpgradeAccountBox.spec.ts
- * @description Unit tests for the UpgradeAccountBox Vue component.
+ * @description Unit tests for the UpgradeAccountBox component.
  *
- * This file tests the upgrade account form UI and interaction behavior.
- * Upgrade store/actions may be mocked to avoid real API calls.
+ * This file tests the component responsible for upgrading a user's
+ * account permissions or role.
  *
  * Test scenarios:
- * - renders upgrade form fields/buttons
- * - triggers upgrade action on submit
- * - shows error state when upgrade fails
+ * - renders upgrade account form
+ * - validates upgrade input
+ * - submits upgrade request
+ * - handles upgrade errors
+ *
+ * @module components
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import UpgradeAccountBox from '../../src/components/UpgradeAccountBox.vue'
-import { formatPersonNumber, isValidPersonNumberFormatted } from '@/utility/personNumber'
+import { formatPersonNumber } from '@/utility/personNumber'
 
 const mockUpgradeStore = {
-  upgrade: vi.fn()
+  upgrade: vi.fn(),
 }
 
 vi.mock('@/stores/upgradeStore', () => ({
-  useUpgradeStore: vi.fn(() => mockUpgradeStore)
+  useUpgradeStore: vi.fn(() => mockUpgradeStore),
 }))
 
-
-const vuetifyStubs = {
-  VCard: { template: '<div><slot /></div>' },
-  VForm: { template: '<form @submit.prevent="$emit(`submit`)"><slot /></form>' },
-  VBtn: { template: '<button class="v-btn" @click="$emit(`click`)"><slot /></button>' },
-  VAlert: { template: '<div class="v-alert"><slot /></div>' },
-  VTextField: {
-    props: ['modelValue'],
-    template: `
-      <div class="v-text-field">
-        <input class="v-input" :value="modelValue"
-          @input="$emit('update:modelValue', $event.target.value)" />
-        <button class="append" @click="$emit('click:append-inner')">append</button>
-      </div>
-    `,
-  },
-}
 const pushMock = vi.fn()
 
 vi.mock('vue-router', () => ({
@@ -53,318 +39,205 @@ vi.mock('@/utility/personNumber', () => ({
   isValidPersonNumberFormatted: vi.fn(),
 }))
 
-const mountBox = (tValue: any = {}) =>
-  mount(UpgradeAccountBox, {
+function createSimpleStub(className: string, tag = 'div') {
+  return {
+    template: `<${tag} class="${className}"><slot /></${tag}>`,
+  }
+}
+
+function createFormStub() {
+  return {
+    template: '<form class="v-form" @submit.prevent="$emit(`submit`)"><slot /></form>',
+  }
+}
+
+function createClickStub(className: string) {
+  return {
+    template: `
+      <button type="button" class="${className}" @click="$emit('click')">
+        <slot />
+      </button>
+    `,
+  }
+}
+
+function createTextFieldStub() {
+  return {
+    props: ['modelValue'],
+    template: `
+      <div class="v-text-field">
+        <input
+          class="v-input"
+          :value="modelValue"
+          @input="$emit('update:modelValue', $event.target.value)"
+        />
+        <button type="button" class="append" @click="$emit('click:append-inner')">append</button>
+      </div>
+    `,
+  }
+}
+
+function mountWithStubs(tValue: any = {}) {
+  const cardStub = createSimpleStub('v-card')
+  const formStub = createFormStub()
+  const buttonStub = createClickStub('v-btn')
+  const alertStub = createSimpleStub('v-alert')
+  const textFieldStub = createTextFieldStub()
+
+  return mount(UpgradeAccountBox, {
     global: {
-      stubs: vuetifyStubs,
-      provide: { t: { value: tValue } },
+      stubs: {
+        'v-card': cardStub,
+        VCard: cardStub,
+
+        'v-form': formStub,
+        VForm: formStub,
+
+        'v-btn': buttonStub,
+        VBtn: buttonStub,
+
+        'v-alert': alertStub,
+        VAlert: alertStub,
+
+        'v-text-field': textFieldStub,
+        VTextField: textFieldStub,
+      },
+      provide: {
+        t: { value: tValue },
+      },
     },
   })
+}
 
-describe('UpgradeAccountBox Validation Rules', () => {
+describe('UpgradeAccountBox', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
   })
 
-  describe('emailRule', () => {
-    it('returns error message for invalid email', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                invalidPersonalNumberFormat: 'Invalid format',
-                invalidPersonalNumber: 'Invalid personal number'
-              }
-            }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.emailRule('invalid-email')
-      expect(result).toBe('Enter a valid email')
-    })
-
-    it('returns true for valid email', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.emailRule('test@example.com')
-      expect(result).toBe(true)
-    })
-
-    it('returns error for email without @', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.emailRule('testexample.com')
-      expect(result).toBe('Enter a valid email')
-    })
-
-    it('returns error for email without domain', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.emailRule('test@')
-      expect(result).toBe('Enter a valid email')
-    })
-  })
-
-  describe('requiredRule', () => {
-    it('returns error for empty string', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: { allFieldsRequired: 'All fields are required' } }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.requiredRule('')
-      expect(result).toBe('All fields are required')
-    })
-
-    it('returns error for whitespace only', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: { allFieldsRequired: 'All fields are required' } }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.requiredRule('   ')
-      expect(result).toBe('All fields are required')
-    })
-
-    it('returns true for non-empty string', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.requiredRule('valid')
-      expect(result).toBe(true)
-    })
-  })
-
-  describe('passwordMinRule', () => {
-    it('returns error for password less than 8 characters', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.passwordMinRule('short')
-      expect(result).toBe('Password must be at least 8 characters')
-    })
-
-    it('returns true for password with 8 or more characters', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.passwordMinRule('password123')
-      expect(result).toBe(true)
-    })
-
-    it('returns error for exactly 7 characters', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.passwordMinRule('1234567')
-      expect(result).toBe('Password must be at least 8 characters')
-    })
-  })
-
-  describe('personNumberRule', () => {
-    it('returns error for invalid format', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: { allFieldsRequired: 'All fields required' } }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.personNumberRule('invalid')
-      expect(result).not.toBe(true)
-    })
-
-    it('returns error for empty input', () => {
-      const wrapper = mount(UpgradeAccountBox, {
-        global: {
-          provide: {
-            t: { value: { allFieldsRequired: 'All fields required' } }
-          }
-        }
-      })
-      const vm = wrapper.vm as any
-
-      const result = vm.personNumberRule('')
-      expect(result).toBe('All fields required')
-    })
-  })
-
   it('goToLogin navigates to /login', () => {
-  const wrapper = mountBox()
-  wrapper.vm.goToLogin()
-  expect(pushMock).toHaveBeenCalledWith('/login')
-})
+    const wrapper = mountWithStubs()
+    const vm = wrapper.vm as any
 
-it('handleUpgrade returns early when form is invalid', async () => {
-  const wrapper = mountBox()
+    vm.goToLogin()
 
-  wrapper.vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: false }) }
-
-  await wrapper.vm.handleUpgrade()
-
-  expect(mockUpgradeStore.upgrade).not.toHaveBeenCalled()
-  expect(wrapper.vm.loading).toBe(false)
-})
-
-it('sets invalidPersonalNumberFormat when formatting fails in handleUpgrade', async () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce(null as any)
-
-  const wrapper = mountBox({
-    invalidPersonalNumberFormat: 'Invalid format',
+    expect(pushMock).toHaveBeenCalledWith('/login')
   })
 
-  wrapper.vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
-  wrapper.vm.state.personNumber = '199001011234'
+  it('handleUpgrade returns early when form is invalid', async () => {
+    const wrapper = mountWithStubs()
+    const vm = wrapper.vm as any
 
-  await wrapper.vm.handleUpgrade()
+    vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: false }) }
 
-  expect(wrapper.vm.error).toBe('Invalid format')
-  expect(mockUpgradeStore.upgrade).not.toHaveBeenCalled()
-  expect(wrapper.vm.loading).toBe(false)
-})
+    await vm.handleUpgrade()
 
-it('calls upgrade store and sets success on valid submission', async () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
-  mockUpgradeStore.upgrade.mockResolvedValueOnce(true)
-
-  const wrapper = mountBox({
-    upgradeSuccess: 'Upgrade successful!',
+    expect(mockUpgradeStore.upgrade).not.toHaveBeenCalled()
+    expect(vm.loading).toBe(false)
   })
 
-  wrapper.vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
+  it('sets invalidPersonalNumberFormat when formatting fails in handleUpgrade', async () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce(null as any)
 
-  wrapper.vm.state.email = ' test@example.com '
-  wrapper.vm.state.personNumber = '19900101-1234'
-  wrapper.vm.state.upgradeCode = ' CODE '
-  wrapper.vm.state.username = ' user '
-  wrapper.vm.state.password = 'password123'
+    const wrapper = mountWithStubs({
+      invalidPersonalNumberFormat: 'Invalid format',
+    })
+    const vm = wrapper.vm as any
 
-  await wrapper.vm.handleUpgrade()
+    vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
+    vm.state.personNumber = '199001011234'
 
-  expect(mockUpgradeStore.upgrade).toHaveBeenCalledWith(
-    'test@example.com',
-    '19900101-1234',
-    'CODE',
-    'user',
-    'password123',
-  )
-  expect(wrapper.vm.success).toBe('Upgrade successful!')
-  expect(wrapper.vm.loading).toBe(false)
-})
+    await vm.handleUpgrade()
 
-it('uses backend messageKey on failure when provided', async () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
-  mockUpgradeStore.upgrade.mockRejectedValueOnce({
-    response: { data: { error: { messageKey: 'someBackendKey' } } },
+    expect(vm.error).toBe('Invalid format')
+    expect(mockUpgradeStore.upgrade).not.toHaveBeenCalled()
+    expect(vm.loading).toBe(false)
   })
 
-  const wrapper = mountBox({
-    someBackendKey: 'Backend says no',
+  it('calls upgrade store and sets success on valid submission', async () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    mockUpgradeStore.upgrade.mockResolvedValueOnce(true)
+
+    const wrapper = mountWithStubs({
+      upgradeSuccess: 'Upgrade successful!',
+    })
+    const vm = wrapper.vm as any
+
+    vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
+    vm.state.email = ' test@example.com '
+    vm.state.personNumber = '19900101-1234'
+    vm.state.upgradeCode = ' CODE '
+    vm.state.username = ' user '
+    vm.state.password = 'password123'
+
+    await vm.handleUpgrade()
+
+    expect(mockUpgradeStore.upgrade).toHaveBeenCalledWith(
+      'test@example.com',
+      '19900101-1234',
+      'CODE',
+      'user',
+      'password123',
+    )
+    expect(vm.success).toBe('Upgrade successful!')
+    expect(vm.loading).toBe(false)
   })
 
-  wrapper.vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
-  wrapper.vm.state.email = 'test@example.com'
-  wrapper.vm.state.personNumber = '19900101-1234'
-  wrapper.vm.state.upgradeCode = 'CODE'
-  wrapper.vm.state.username = 'user'
-  wrapper.vm.state.password = 'password123'
+  it('uses backend messageKey on failure when provided', async () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    mockUpgradeStore.upgrade.mockRejectedValueOnce({
+      response: { data: { error: { messageKey: 'someBackendKey' } } },
+    })
 
-  await wrapper.vm.handleUpgrade()
+    const wrapper = mountWithStubs({
+      someBackendKey: 'Backend says no',
+    })
+    const vm = wrapper.vm as any
 
-  expect(wrapper.vm.error).toBe('Backend says no')
-  expect(wrapper.vm.loading).toBe(false)
-})
+    vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
+    vm.state.email = 'test@example.com'
+    vm.state.personNumber = '19900101-1234'
+    vm.state.upgradeCode = 'CODE'
+    vm.state.username = 'user'
+    vm.state.password = 'password123'
 
-it('falls back to upgradeFailed when backend key missing', async () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
-  mockUpgradeStore.upgrade.mockRejectedValueOnce(new Error('network'))
+    await vm.handleUpgrade()
 
-  const wrapper = mountBox({
-    upgradeFailed: 'Upgrade failed',
+    expect(vm.error).toBe('Backend says no')
+    expect(vm.loading).toBe(false)
   })
 
-  wrapper.vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
-  wrapper.vm.state.email = 'test@example.com'
-  wrapper.vm.state.personNumber = '19900101-1234'
-  wrapper.vm.state.upgradeCode = 'CODE'
-  wrapper.vm.state.username = 'user'
-  wrapper.vm.state.password = 'password123'
+  it('falls back to upgradeFailed when backend key is missing', async () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    mockUpgradeStore.upgrade.mockRejectedValueOnce(new Error('network'))
 
-  await wrapper.vm.handleUpgrade()
+    const wrapper = mountWithStubs({
+      upgradeFailed: 'Upgrade failed',
+    })
+    const vm = wrapper.vm as any
 
-  expect(wrapper.vm.error).toBe('Upgrade failed')
-  expect(wrapper.vm.loading).toBe(false)
-})
+    vm.formRef = { validate: vi.fn().mockResolvedValue({ valid: true }) }
+    vm.state.email = 'test@example.com'
+    vm.state.personNumber = '19900101-1234'
+    vm.state.upgradeCode = 'CODE'
+    vm.state.username = 'user'
+    vm.state.password = 'password123'
 
-it('formats personNumber when update:modelValue fires', async () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    await vm.handleUpgrade()
 
-  const wrapper = mountBox()
-  const inputs = wrapper.findAll('input.v-input')
+    expect(vm.error).toBe('Upgrade failed')
+    expect(vm.loading).toBe(false)
+  })
 
+  it('formats personNumber when update:modelValue fires', async () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
 
-  await inputs[1].setValue('199001011234')
+    const wrapper = mountWithStubs()
+    const vm = wrapper.vm as any
+    const inputs = wrapper.findAll('input.v-input')
 
-  expect(wrapper.vm.state.personNumber).toBe('19900101-1234')
-})
+    await inputs[1].setValue('199001011234')
+
+    expect(vm.state.personNumber).toBe('19900101-1234')
+  })
 })

@@ -27,11 +27,10 @@ vi.mock('../../src/api/http', () => ({
     get: vi.fn(() => Promise.resolve({ data: {} })),
     post: vi.fn(() => Promise.resolve({ data: {} })),
     put: vi.fn(() => Promise.resolve({ data: {} })),
-    delete: vi.fn(() => Promise.resolve({ data: {} }))
   }
 }))
 
-import { fetchApplication, submitApplication, submitPI } from '../../src/api/applicationApi'
+import { fetchApplication, submitApplication, submitPI } from '../../src/api/profileApi'
 import apiClient from '../../src/api/http'
 
 

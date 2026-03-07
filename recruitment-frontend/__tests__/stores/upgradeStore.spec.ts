@@ -1,14 +1,16 @@
 /**
  * @file upgradeStore.spec.ts
- * @description Unit tests for the upgradeStore Pinia store.
+ * @description Unit tests for the upgrade account store.
  *
- * This file tests upgrade-account state management and API integration.
- * API modules are mocked so no real network calls occur.
+ * This file tests the logic responsible for upgrading user roles
+ * and permissions.
  *
  * Test scenarios:
- * - submits upgrade request successfully
- * - handles upgrade errors
- * - manages upgrade form state
+ * - submits upgrade request
+ * - updates store state after upgrade
+ * - handles upgrade failures
+ *
+ * @module stores
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest'
@@ -53,7 +55,7 @@ describe('upgradeStore', () => {
       expect(result).toEqual(mockResponse.data)
     })
 
-    it('sets error on failure', async () => {
+    it('sets backend error message on failure', async () => {
       ;(upgradeAccount as ReturnType<typeof vi.fn>).mockRejectedValue({
         response: { data: { message: 'Invalid upgrade code' } }
       })

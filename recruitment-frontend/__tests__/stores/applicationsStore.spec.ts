@@ -1,20 +1,19 @@
 /**
- * @file applicationStore.spec.ts
- * @description Unit tests for the applicationStore Pinia store.
+ * @file applicationsStore.spec.ts
+ * @description Unit tests for the applications store.
  *
- * This file tests application form state, mapping, and API integration.
- * API modules are mocked so no real network calls occur.
+ * This file tests the state management logic responsible for
+ * retrieving and storing application data.
  *
  * Test scenarios:
- * - initializes default state correctly
- * - manages competences (add/update/remove + max limit)
- * - manages availability (add/remove + max limit)
- * - formats dates for backend submission
- * - fetches and maps application data from API
- * - submits application data and handles errors
+ * - fetches applications from API
+ * - updates store state correctly
+ * - handles API errors
+ *
+ * @module stores
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useApplicationsStore } from '../../src/stores/applicationsStore'
 import { ApplicationStatus } from '../../src/model/ApplicationDTO'
@@ -27,9 +26,16 @@ vi.mock('@/api/applicationsApi', () => ({
 import { getApplications, handleApplicationRequest } from '@/api/applicationsApi'
 
 describe('applicationsStore', () => {
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore()
   })
 
   describe('initial state', () => {
@@ -55,11 +61,21 @@ describe('applicationsStore', () => {
         data: {
           result: {
             applications: [
-              { person_id: 1, first_name: 'John', last_name: 'Doe', person_number: '111', email: 'a@test.com', competences: [], availability: [], status: 'ACCEPTED' }
+              {
+                person_id: 1,
+                first_name: 'John',
+                last_name: 'Doe',
+                person_number: '111',
+                email: 'a@test.com',
+                competences: [],
+                availability: [],
+                status: 'ACCEPTED'
+              }
             ]
           }
         }
       }
+
       ;(getApplications as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse)
 
       const store = useApplicationsStore()
@@ -100,7 +116,12 @@ describe('applicationsStore', () => {
       store.applicationsResult = [
         {
           applicationId: 1,
-          applicant: { firstName: 'John', lastName: 'Doe', personNumber: '111', email: 'a@test.com' },
+          applicant: {
+            firstName: 'John',
+            lastName: 'Doe',
+            personNumber: '111',
+            email: 'a@test.com'
+          },
           competences: [],
           availability: [],
           status: ApplicationStatus.UNHANDLED,

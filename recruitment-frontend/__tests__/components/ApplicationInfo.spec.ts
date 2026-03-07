@@ -1,215 +1,237 @@
 /**
- * @file ApplicationInfo.spec.ts
- * @description Unit tests for the ApplicationInfo Vue component.
+ * @file ApplicationList.spec.ts
+ * @description Unit tests for the ApplicationList component.
  *
- * This file mounts the ApplicationInfo component and verifies rendering of expected UI sections.
- * Dependencies may be stubbed to keep the test focused on the component.
+ * This file tests the component responsible for rendering a list
+ * of applications retrieved from the store or API.
  *
  * Test scenarios:
- * - renders the component successfully
- * - displays expected labels/sections
+ * - renders a list of applications
+ * - handles empty application list
+ * - renders ApplicationBox components correctly
+ *
+ * @module components
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
-import ApplicationInfo from '../../src/components/ApplicationInfo.vue'
+import ApplicationList from '../../src/components/ApplicationList.vue'
+import { ApplicationStatus } from '../../src/model/ApplicationDTO'
 
-const mockApplicationStore: any = {
-  personalInfo: {
-    firstName: 'John',
-    lastname: 'Doe',
-    email: 'john@example.com',
-    personalNumber: '19900101-1234',
-  },
-  successMessage: null as string | null,
+const mockApplicationsStore = {
+  applicationsResult: [
+    {
+      applicationId: 1,
+      applicant: {
+        firstName: 'John',
+        lastName: 'Doe',
+        personNumber: '19900101-1234',
+        email: 'john@example.com',
+      },
+      competences: [{ name: 'Ticket Sales', yearsOfExperience: 2 }],
+      availability: [{ fromDate: '2026-01-01', toDate: '2026-02-01' }],
+      status: ApplicationStatus.UNHANDLED,
+    },
+  ],
   error: null as string | null,
-  submitPersonalInfo: vi.fn(),
+  fetchAllApplications: vi.fn(),
+  handleApplication: vi.fn(),
+  handlingError: null as string | null,
 }
 
 const tMock = {
-  personalInfoLabel: 'Personal Info',
-  firstNameLabel: 'First Name',
-  lastNameLabel: 'Last Name',
+  applicationsTitle: 'Applications',
+  applicationAcceptedMessage: 'Application accepted',
+  applicationDeclinedMessage: 'Application declined',
+  applicationAlreadyHandledMessage: 'Already handled',
+  applicationNotFoundMessage: 'Not found',
+  applicationUnauthorizedMessage: 'Unauthorized',
+  personNumberLabel: 'Person Number',
   emailLabel: 'Email',
-  personalNumberLabel: 'Personal Number',
-  editButtonLabel: 'Edit',
-  changePersonalInfo: 'Save',
-  cancelLabel: 'Cancel',
-  genericError: 'An error occurred',
-  successMessage: 'Success!',
+  competenceProfileTitle: 'Competence Profile',
+  availabilityTitle: 'Availability',
+  yearsUnit: 'years',
+  acceptButtonLabel: 'Accept',
+  declineButtonLabel: 'Decline',
+  statusUnhandled: 'Unhandled',
+  statusAccepted: 'Accepted',
+  statusRejected: 'Rejected',
 }
 
-const mountInfo = () =>
-  mount(ApplicationInfo, {
-    global: { provide: { t: tMock } },
-  })
+function createSimpleStub(className: string, tag = 'div') {
+  return {
+    template: `<${tag} class="${className}"><slot /></${tag}>`,
+  }
+}
 
-vi.mock('@/stores/applicationStore', () => ({
-  useApplicationStore: vi.fn(() => mockApplicationStore)
+function createClickStub(className: string) {
+  return {
+    template: `
+      <button type="button" class="${className}" @click="$emit('click')">
+        <slot />
+      </button>
+    `,
+  }
+}
+
+function createPaginationStub() {
+  return {
+    props: ['modelValue'],
+    template: '<div class="v-pagination" />',
+  }
+}
+
+function mountWithStubs(translations = tMock) {
+  const containerStub = createSimpleStub('v-container')
+  const rowStub = createSimpleStub('v-row')
+  const colStub = createSimpleStub('v-col')
+  const alertStub = createSimpleStub('v-alert')
+  const progressStub = createSimpleStub('v-progress-circular')
+  const chipStub = createSimpleStub('v-chip')
+  const listStub = createSimpleStub('v-list')
+  const listItemStub = createSimpleStub('v-list-item')
+  const buttonStub = createClickStub('v-btn')
+  const expansionPanelsStub = createSimpleStub('v-expansion-panels')
+  const expansionPanelStub = createSimpleStub('v-expansion-panel')
+  const expansionPanelTitleStub = createSimpleStub('v-expansion-panel-title')
+  const expansionPanelTextStub = createSimpleStub('v-expansion-panel-text')
+  const paginationStub = createPaginationStub()
+  const snackbarStub = createSimpleStub('v-snackbar')
+
+  return mount(ApplicationList, {
+    global: {
+      provide: {
+        t: { value: translations },
+      },
+      stubs: {
+        'v-container': containerStub,
+        VContainer: containerStub,
+
+        'v-row': rowStub,
+        VRow: rowStub,
+
+        'v-col': colStub,
+        VCol: colStub,
+
+        'v-alert': alertStub,
+        VAlert: alertStub,
+
+        'v-progress-circular': progressStub,
+        VProgressCircular: progressStub,
+
+        'v-chip': chipStub,
+        VChip: chipStub,
+
+        'v-list': listStub,
+        VList: listStub,
+
+        'v-list-item': listItemStub,
+        VListItem: listItemStub,
+
+        'v-btn': buttonStub,
+        VBtn: buttonStub,
+
+        'v-expansion-panels': expansionPanelsStub,
+        VExpansionPanels: expansionPanelsStub,
+
+        'v-expansion-panel': expansionPanelStub,
+        VExpansionPanel: expansionPanelStub,
+
+        'v-expansion-panel-title': expansionPanelTitleStub,
+        VExpansionPanelTitle: expansionPanelTitleStub,
+
+        'v-expansion-panel-text': expansionPanelTextStub,
+        VExpansionPanelText: expansionPanelTextStub,
+
+        'v-pagination': paginationStub,
+        VPagination: paginationStub,
+
+        'v-snackbar': snackbarStub,
+        VSnackbar: snackbarStub,
+      },
+    },
+  })
+}
+
+vi.mock('@/stores/applicationsStore', () => ({
+  useApplicationsStore: vi.fn(() => mockApplicationsStore),
 }))
 
-describe('ApplicationInfo Component', () => {
+describe('ApplicationList Component', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
-    mockApplicationStore.successMessage = null
-    mockApplicationStore.error = null
+    mockApplicationsStore.handlingError = null
+    mockApplicationsStore.error = null
   })
 
-  describe('view mode', () => {
-    it('displays personal info in view mode', () => {
-      const wrapper = mount(ApplicationInfo, {
-        global: {
-          provide: {
-            t: {
-              personalInfoLabel: 'Personal Info',
-              firstNameLabel: 'First Name',
-              lastNameLabel: 'Last Name',
-              emailLabel: 'Email',
-              personalNumberLabel: 'Personal Number',
-              editButtonLabel: 'Edit'
-            }
-          }
-        }
-      })
+  describe('handleApplication', () => {
+    it('handles accept and decline actions successfully', async () => {
+      mockApplicationsStore.handleApplication.mockResolvedValue(true)
+
+      const wrapper = mountWithStubs()
+      const vm = wrapper.vm as any
+
+      await vm.handleApplication(1, 'accept')
+      await vm.handleApplication(1, 'decline')
+
+      expect(mockApplicationsStore.handleApplication).toHaveBeenNthCalledWith(1, 1, 'accept')
+      expect(mockApplicationsStore.handleApplication).toHaveBeenNthCalledWith(2, 1, 'decline')
+    })
+
+    it('handles conflict error (409)', async () => {
+      mockApplicationsStore.handlingError = 'CONFLICT'
+
+      const wrapper = mountWithStubs()
+      const vm = wrapper.vm as any
+
+      await vm.handleApplication(1, 'accept')
+
+      expect(vm.snackbarMessage).toBe(tMock.applicationAlreadyHandledMessage)
+    })
+
+    it('handles not found error (404)', async () => {
+      mockApplicationsStore.handlingError = 'NOT_FOUND'
+
+      const wrapper = mountWithStubs()
+      const vm = wrapper.vm as any
+
+      await vm.handleApplication(1, 'accept')
+
+      expect(vm.snackbarMessage).toBe(tMock.applicationNotFoundMessage)
+    })
+
+    it('handles unauthorized error (401)', async () => {
+      mockApplicationsStore.handlingError = 'UNAUTHORIZED'
+
+      const wrapper = mountWithStubs()
+      const vm = wrapper.vm as any
+
+      await vm.handleApplication(1, 'accept')
+
+      expect(vm.snackbarMessage).toBe(tMock.applicationUnauthorizedMessage)
+    })
+  })
+
+  describe('rendering', () => {
+    it('displays loading indicator when fetching', () => {
+      mountWithStubs()
+      expect(mockApplicationsStore.fetchAllApplications).toHaveBeenCalled()
+    })
+
+    it('displays error message on failure', () => {
+      mockApplicationsStore.error = 'Failed to load'
+
+      const wrapper = mountWithStubs()
+      expect(wrapper.text()).toContain('Failed to load')
+    })
+
+    it('displays applications when loaded', () => {
+      const wrapper = mountWithStubs()
 
       expect(wrapper.text()).toContain('John')
       expect(wrapper.text()).toContain('Doe')
-      expect(wrapper.text()).toContain('john@example.com')
     })
-
-    it('shows edit button in view mode', () => {
-      const wrapper = mount(ApplicationInfo, {
-        global: {
-          provide: {
-            t: {
-              personalInfoLabel: 'Personal Info',
-              editButtonLabel: 'Edit'
-            }
-          }
-        }
-      })
-
-      expect(wrapper.text()).toContain('Edit')
-    })
-  })
-
-  describe('edit mode', () => {
-it('enters edit mode when edit button clicked', async () => {
-const wrapper = mountInfo()
-const vm = wrapper.vm as any
-
-vm.isEditing = true
-await wrapper.vm.$nextTick()
-
-expect(vm.isEditing).toBe(true)
-})
-
-it('displays controls in edit mode', async () => {
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  await wrapper.vm.$nextTick()
-
-  expect(wrapper.text()).toContain('Save')
-  expect(wrapper.text()).toContain('Cancel')
-})
-  })
-
-  describe('isDirty computed', () => {
-it('isDirty is false when no changes', async () => {
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  vm.originalPersonalInfo = structuredClone(mockApplicationStore.personalInfo)
-  await wrapper.vm.$nextTick()
-
-  expect(vm.isDirty).toBe(false)
-})
-
-it('isDirty is true when data is modified', async () => {
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  vm.originalPersonalInfo = structuredClone(mockApplicationStore.personalInfo)
-
-  // IMPORTANT: change the *editable copy*, not the store
-  // One of these names will match your component:
-  if (vm.editedPersonalInfo) vm.editedPersonalInfo.firstName = 'Jane'
-  else if (vm.formPersonalInfo) vm.formPersonalInfo.firstName = 'Jane'
-  else if (vm.localPersonalInfo) vm.localPersonalInfo.firstName = 'Jane'
-  else {
-    // fallback: if the component edits store directly
-    mockApplicationStore.personalInfo.firstName = 'Jane'
-  }
-
-  await wrapper.vm.$nextTick()
-
-  expect(vm.isDirty).toBe(true)
-})
-  })
-
-  describe('form submission', () => {
-it('submits personal info on save', async () => {
-  mockApplicationStore.submitPersonalInfo.mockResolvedValueOnce(true)
-
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  vm.originalPersonalInfo = structuredClone(mockApplicationStore.personalInfo)
-
-  await vm.onSubmit()
-
-  expect(mockApplicationStore.submitPersonalInfo).toHaveBeenCalledTimes(1)
-})
-it('cancels and restores original data', async () => {
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  const original = structuredClone(mockApplicationStore.personalInfo)
-  vm.isEditing = true
-  vm.originalPersonalInfo = original
-
-  mockApplicationStore.personalInfo.firstName = 'Changed'
-
-  await vm.cancelEdit()
-
-  expect(vm.isEditing).toBe(false)
-})
-
-it('shows success message on save', async () => {
-  mockApplicationStore.submitPersonalInfo.mockResolvedValueOnce(true)
-  mockApplicationStore.successMessage = 'Saved!'
-
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  vm.originalPersonalInfo = structuredClone(mockApplicationStore.personalInfo)
-
-  await vm.onSubmit()
-
-  expect(mockApplicationStore.submitPersonalInfo).toHaveBeenCalledTimes(1)
-})
-
-
-it('shows error on failure', async () => {
-  mockApplicationStore.submitPersonalInfo.mockRejectedValueOnce(new Error('Failed'))
-
-  const wrapper = mountInfo()
-  const vm = wrapper.vm as any
-
-  vm.isEditing = true
-  vm.originalPersonalInfo = structuredClone(mockApplicationStore.personalInfo)
-
-  await vm.onSubmit()
-
-  expect(vm.error).toBe('An error occurred')
-})
   })
 })

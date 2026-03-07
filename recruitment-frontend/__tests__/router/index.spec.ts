@@ -1,15 +1,16 @@
 /**
  * @file index.spec.ts
- * @description Unit tests for router guard logic (auth/role protection).
+ * @description Unit tests for the application router configuration.
  *
- * This file tests navigation outcomes based on route meta (requiresAuth, guestOnly, role).
- * It mocks the auth store and calls the guard with fake `to/from/next`.
+ * This file tests the router setup including route definitions,
+ * navigation guards, and route handling.
  *
  * Test scenarios:
- * - redirects unauthenticated users from protected routes
- * - redirects authenticated users away from guest-only routes
- * - enforces role-based access
- * - allows navigation when requirements are satisfied
+ * - routes resolve correctly
+ * - navigation guards trigger properly
+ * - protected routes require authentication
+ *
+ * @module router
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'

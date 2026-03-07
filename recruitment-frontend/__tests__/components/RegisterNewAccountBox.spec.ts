@@ -1,14 +1,17 @@
 /**
  * @file RegisterNewAccountBox.spec.ts
- * @description Unit tests for the RegisterNewAccountBox Vue component.
+ * @description Unit tests for the RegisterNewAccountBox component.
  *
- * This file tests the registration form UI and interaction behavior.
- * Register store/actions may be mocked to avoid real API calls.
+ * This file tests the user registration form component used to create
+ * new accounts.
  *
  * Test scenarios:
- * - renders registration form fields/buttons
- * - triggers register action on submit
- * - shows error state when register fails
+ * - renders registration form fields
+ * * validates required fields
+ * - submits registration data
+ * - handles registration errors
+ *
+ * @module components
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
@@ -26,13 +29,12 @@ const mockRegisterStore = {
 }
 
 let RegisterNewAccountBox: any
+
 vi.mock('@/stores/registerStore', () => ({
   useRegisterStore: vi.fn(() => mockRegisterStore),
 }))
 
-
-var pushMock: any
-pushMock = vi.fn()
+const pushMock = vi.fn()
 
 vi.mock('@/router', () => ({
   router: {
@@ -46,14 +48,24 @@ vi.mock('@/router/index', () => ({
   },
 }))
 
+function createSimpleStub(className: string, tag = 'div') {
+  return {
+    template: `<${tag} class="${className}"><slot /></${tag}>`,
+  }
+}
 
-const vuetifyStubs = {
-  VCard: { template: '<div><slot /></div>' },
-  VBtn: { template: '<button class="v-btn" @click="$emit(`click`)"><slot /></button>' },
-  VAlert: { template: '<div class="v-alert"><slot /></div>' },
+function createClickStub(className: string) {
+  return {
+    template: `
+      <button type="button" class="${className}" @click="$emit('click')">
+        <slot />
+      </button>
+    `,
+  }
+}
 
-
-  VTextField: {
+function createTextFieldStub() {
+  return {
     props: ['modelValue'],
     template: `
       <div class="v-text-field">
@@ -62,22 +74,48 @@ const vuetifyStubs = {
           :value="modelValue"
           @input="$emit('update:modelValue', $event.target.value)"
         />
-        <button class="append" @click="$emit('click:append-inner')">append</button>
+        <button type="button" class="append" @click="$emit('click:append-inner')">append</button>
       </div>
     `,
-  },
+  }
+}
+
+function mountWithStubs(tValue: any = {}) {
+  const cardStub = createSimpleStub('v-card')
+  const buttonStub = createClickStub('v-btn')
+  const alertStub = createSimpleStub('v-alert')
+  const textFieldStub = createTextFieldStub()
+
+  return mount(RegisterNewAccountBox, {
+    global: {
+      stubs: {
+        'v-card': cardStub,
+        VCard: cardStub,
+
+        'v-btn': buttonStub,
+        VBtn: buttonStub,
+
+        'v-alert': alertStub,
+        VAlert: alertStub,
+
+        'v-text-field': textFieldStub,
+        VTextField: textFieldStub,
+      },
+      provide: {
+        t: { value: tValue },
+      },
+    },
+  })
 }
 
 function setStateField(wrapper: any, key: string, value: any) {
   const s = wrapper.vm.state
   if (!s) throw new Error('state is not exposed on wrapper.vm')
 
-
   if (typeof s === 'object' && !('value' in s)) {
     s[key] = value
     return
   }
-
 
   if (s && 'value' in s) {
     s.value[key] = value
@@ -88,62 +126,43 @@ function setStateField(wrapper: any, key: string, value: any) {
 }
 
 describe('RegisterNewAccountBox Validation Rules', () => {
-beforeEach(async () => {
-  setActivePinia(createPinia())
-  vi.clearAllMocks()
-  pushMock.mockClear()
+  beforeEach(async () => {
+    setActivePinia(createPinia())
+    vi.clearAllMocks()
+    pushMock.mockClear()
 
-  RegisterNewAccountBox = (await import('../../src/components/RegisterNewAccountBox.vue')).default
-})
+    RegisterNewAccountBox = (await import('../../src/components/RegisterNewAccountBox.vue')).default
+  })
 
   describe('personNumberRule', () => {
     it('has validation function available', () => {
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: { value: {} },
-          },
-        },
-      })
-
+      const wrapper = mountWithStubs({})
       expect(wrapper.vm.personNumberRule).toBeDefined()
     })
   })
 
   describe('registration validation', () => {
     it('validates required fields before submission', async () => {
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
       })
 
-      await wrapper.vm.handleRegister()
-      expect(wrapper.vm.error).toBe('All fields are required')
+      const vm = wrapper.vm as any
+
+      await vm.handleRegister()
+      expect(vm.error).toBe('All fields are required')
     })
 
     it('validates password minimum 8 characters', async () => {
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
       })
+
+      const vm = wrapper.vm as any
 
       setStateField(wrapper, 'firstName', 'John')
       setStateField(wrapper, 'lastName', 'Doe')
@@ -152,24 +171,18 @@ beforeEach(async () => {
       setStateField(wrapper, 'username', 'johndoe')
       setStateField(wrapper, 'password', 'short')
 
-      await wrapper.vm.handleRegister()
-      expect(wrapper.vm.error).toBe('Password must be at least 8 characters')
+      await vm.handleRegister()
+      expect(vm.error).toBe('Password must be at least 8 characters')
     })
 
     it('validates email contains @', async () => {
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
       })
+
+      const vm = wrapper.vm as any
 
       setStateField(wrapper, 'firstName', 'John')
       setStateField(wrapper, 'lastName', 'Doe')
@@ -178,30 +191,25 @@ beforeEach(async () => {
       setStateField(wrapper, 'username', 'johndoe')
       setStateField(wrapper, 'password', 'password123')
 
-      await wrapper.vm.handleRegister()
-      expect(wrapper.vm.error).toBe('Invalid email')
+      await vm.handleRegister()
+      expect(vm.error).toBe('Invalid email')
     })
   })
 
   describe('form submission', () => {
     it('calls register store on valid submission', async () => {
       mockRegisterStore.register.mockResolvedValue(true)
+      vi.mocked(formatPersonNumber).mockReturnValue('19900101-1234')
 
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-                registrationSuccess: 'Registration successful!',
-                errors: {},
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
+        registrationSuccess: 'Registration successful!',
+        errors: {},
       })
+
+      const vm = wrapper.vm as any
 
       setStateField(wrapper, 'firstName', 'John')
       setStateField(wrapper, 'lastName', 'Doe')
@@ -210,7 +218,7 @@ beforeEach(async () => {
       setStateField(wrapper, 'username', 'johndoe')
       setStateField(wrapper, 'password', 'password123')
 
-      await wrapper.vm.handleRegister()
+      await vm.handleRegister()
 
       expect(mockRegisterStore.register).toHaveBeenCalledWith(
         'John',
@@ -224,22 +232,17 @@ beforeEach(async () => {
 
     it('shows success message on registration', async () => {
       mockRegisterStore.register.mockResolvedValue(true)
+      vi.mocked(formatPersonNumber).mockReturnValue('19900101-1234')
 
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-                registrationSuccess: 'Registration successful!',
-                errors: {},
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
+        registrationSuccess: 'Registration successful!',
+        errors: {},
       })
+
+      const vm = wrapper.vm as any
 
       setStateField(wrapper, 'firstName', 'John')
       setStateField(wrapper, 'lastName', 'Doe')
@@ -248,30 +251,27 @@ beforeEach(async () => {
       setStateField(wrapper, 'username', 'johndoe')
       setStateField(wrapper, 'password', 'password123')
 
-      await wrapper.vm.handleRegister()
-      expect(wrapper.vm.success).toBe('Registration successful!')
+      await vm.handleRegister()
+      expect(vm.success).toBe('Registration successful!')
     })
 
     it('shows error on registration failure', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+
       mockRegisterStore.register.mockRejectedValue({
         response: { data: { error: 'USER_EXISTS' } },
       })
+      vi.mocked(formatPersonNumber).mockReturnValue('19900101-1234')
 
-      const wrapper = mount(RegisterNewAccountBox, {
-        global: {
-          provide: {
-            t: {
-              value: {
-                allFieldsRequired: 'All fields are required',
-                passwordTooShort: 'Password must be at least 8 characters',
-                invalidEmail: 'Invalid email',
-                registrationSuccess: 'Registration successful!',
-                errors: { USER_EXISTS: 'User already exists' },
-              },
-            },
-          },
-        },
+      const wrapper = mountWithStubs({
+        allFieldsRequired: 'All fields are required',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidEmail: 'Invalid email',
+        registrationSuccess: 'Registration successful!',
+        errors: { USER_EXISTS: 'User already exists' },
       })
+
+      const vm = wrapper.vm as any
 
       setStateField(wrapper, 'firstName', 'John')
       setStateField(wrapper, 'lastName', 'Doe')
@@ -280,95 +280,94 @@ beforeEach(async () => {
       setStateField(wrapper, 'username', 'johndoe')
       setStateField(wrapper, 'password', 'password123')
 
-      await wrapper.vm.handleRegister()
-      expect(wrapper.vm.error).toBe('User already exists')
+      await vm.handleRegister()
+
+      expect(vm.error).toBe('User already exists')
+
+      consoleErrorSpy.mockRestore()
     })
   })
+
   it('personNumberRule returns allFieldsRequired when empty', () => {
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: { provide: { t: { value: { allFieldsRequired: 'All fields are required' } } } },
+    const wrapper = mountWithStubs({
+      allFieldsRequired: 'All fields are required',
+    })
+
+    const vm = wrapper.vm as any
+
+    expect(vm.personNumberRule('')).toBe('All fields are required')
   })
 
-  expect(wrapper.vm.personNumberRule('')).toBe('All fields are required')
-})
+  it('personNumberRule returns invalidPersonalNumberFormat when formatting fails', () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce(null as any)
 
-it('personNumberRule returns invalidPersonalNumberFormat when formatting fails', () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce(null as any)
+    const wrapper = mountWithStubs({
+      allFieldsRequired: 'All fields are required',
+      invalidPersonalNumberFormat: 'Bad format',
+    })
 
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: {
-      provide: {
-        t: { value: { allFieldsRequired: 'All fields are required', invalidPersonalNumberFormat: 'Bad format' } },
-      },
-    },
+      const vm = wrapper.vm as any
+
+    expect(vm.personNumberRule('199001011234')).toBe('Bad format')
   })
 
-  expect(wrapper.vm.personNumberRule('199001011234')).toBe('Bad format')
-})
+  it('personNumberRule returns invalidPersonalNumber when formatted but invalid', () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    vi.mocked(isValidPersonNumberFormatted).mockReturnValueOnce(false as any)
 
-it('personNumberRule returns invalidPersonalNumber when formatted but invalid', () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
-  vi.mocked(isValidPersonNumberFormatted).mockReturnValueOnce(false as any)
+    const wrapper = mountWithStubs({
+      invalidPersonalNumber: 'Invalid personal number',
+      invalidPersonalNumberFormat: 'Bad format',
+    })
 
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: {
-      provide: {
-        t: { value: { invalidPersonalNumber: 'Invalid personal number', invalidPersonalNumberFormat: 'Bad format' } },
-      },
-    },
+      const vm = wrapper.vm as any
+
+    expect(vm.personNumberRule('199001011234')).toBe('Invalid personal number')
   })
 
-  expect(wrapper.vm.personNumberRule('199001011234')).toBe('Invalid personal number')
-})
+  it('personNumberRule returns true when formatted and valid', () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    vi.mocked(isValidPersonNumberFormatted).mockReturnValueOnce(true as any)
 
-it('personNumberRule returns true when formatted and valid', () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
-  vi.mocked(isValidPersonNumberFormatted).mockReturnValueOnce(true as any)
+    const wrapper = mountWithStubs({})
 
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: { provide: { t: { value: {} } } },
+    const vm = wrapper.vm as any
+
+    expect(vm.personNumberRule('199001011234')).toBe(true)
   })
 
-  expect(wrapper.vm.personNumberRule('199001011234')).toBe(true)
-})
+  it('goToLogin navigates to /login', () => {
+    const wrapper = mountWithStubs({})
 
-it('goToLogin navigates to /login', () => {
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: { provide: { t: { value: {} } } },
+    const vm = wrapper.vm as any
+
+    vm.goToLogin()
+    expect(pushMock).toHaveBeenCalledWith('/login')
   })
 
-  wrapper.vm.goToLogin()
-  expect(pushMock).toHaveBeenCalledWith('/login')
-})
+  it('formats personal number when helper returns formatted value', () => {
+    vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
 
-it('formats personal number when helper returns formatted value', () => {
-  vi.mocked(formatPersonNumber).mockReturnValueOnce('19900101-1234')
+    const wrapper = mountWithStubs({})
 
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: { provide: { t: { value: {} } } },
+    const vm = wrapper.vm as any
+
+    vm.state.personNumber = vm.formatPersonNumber('199001011234') ?? '199001011234'
+
+    expect(vm.state.personNumber).toBe('19900101-1234')
   })
 
+  it('toggles password visibility when append icon clicked', async () => {
+    const wrapper = mountWithStubs({})
 
-  wrapper.vm.state.personNumber = wrapper.vm.formatPersonNumber('199001011234') ?? '199001011234'
+    const vm = wrapper.vm as any
 
-  expect(wrapper.vm.state.personNumber).toBe('19900101-1234')
-})
+    expect(vm.visible).toBe(false)
 
-it('toggles password visibility when append icon clicked', async () => {
-  const wrapper = mount(RegisterNewAccountBox, {
-    global: {
-      stubs: vuetifyStubs,
-      provide: { t: { value: {} } },
-    },
+    const fields = wrapper.findAll('.v-text-field')
+    const passwordField = fields[5]
+
+    await passwordField.find('button.append').trigger('click')
+    expect(vm.visible).toBe(true)
   })
-
-  expect(wrapper.vm.visible).toBe(false)
-
-
-  const fields = wrapper.findAll('.v-text-field')
-  const passwordField = fields[5]
-
-  await passwordField.find('button.append').trigger('click')
-  expect(wrapper.vm.visible).toBe(true)
-})
 })

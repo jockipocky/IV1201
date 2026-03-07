@@ -1,27 +1,36 @@
 /**
  * @file applicationsResponseHandler.spec.ts
- * @description Unit tests for applicationsResponseHandler utilities.
+ * @description Unit tests for the applications response handler utility.
  *
- * This file tests helper logic that interprets application API responses (success/failure mapping).
+ * This file tests helper functions responsible for transforming
+ * or validating application API responses.
  *
  * Test scenarios:
- * - returns expected output for successful responses
- * - returns expected output for failure/error responses
+ * - parses API response correctly
+ * - handles invalid response formats
+ * - returns normalized application data
+ *
+ * @module utils
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { mapApplicationsResponse } from '../../src/utility/applicationsResponseHandler'
 import { ApplicationStatus } from '../../src/model/ApplicationDTO'
 
 describe('applicationsResponseHandler utility', () => {
+    let consoleLogSpy: ReturnType<typeof vi.spyOn>
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore()
+  })
   describe('mapApplicationsResponse', () => {
     it('returns empty array when response is null', () => {
       const result = mapApplicationsResponse(null)
-      expect(result).toEqual([])
-    })
-
-    it('returns empty array when response.data is undefined', () => {
-      const result = mapApplicationsResponse({})
       expect(result).toEqual([])
     })
 

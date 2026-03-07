@@ -1,15 +1,17 @@
 /**
  * @file personNumber.spec.ts
- * @description Unit tests for Swedish personnummer utility functions.
+ * @description Unit tests for the person number utility.
  *
- * This file tests formatting and validation helpers for Swedish personal identity numbers.
+ * This file tests validation and formatting functions for Swedish
+ * personal identity numbers.
  *
  * Test scenarios:
- * - formats personnummer into expected output
- * - validates correct inputs
- * - rejects invalid inputs
+ * - validates correct person numbers
+ * - rejects invalid numbers
+ * - formats person numbers correctly
+ *
+ * @module utils
  */
-
 import { describe, it, expect } from 'vitest'
 import { formatPersonNumber, isValidPersonNumberFormatted, validateAndFormatPNR } from '../../src/utility/personNumber'
 
@@ -70,5 +72,6 @@ describe('personNumber utility', () => {
     it('returns null for invalid format', () => {
       expect(validateAndFormatPNR('123')).toBeNull()
     })
+
   })
 })

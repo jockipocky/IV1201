@@ -1,22 +1,23 @@
 /**
- * @file applicationsStore.spec.ts
- * @description Unit tests for the applicationsStore Pinia store.
+ * @file profileStore.spec.ts
+ * @description Unit tests for the profile store.
  *
- * This file tests recruiter-side application list fetching and status updates.
- * API modules are mocked so no real network calls occur.
+ * This file tests state management for user profile information.
  *
  * Test scenarios:
- * - fetches applications list successfully
- * - updates application status successfully
- * - handles API failures gracefully
+ * - fetches profile data
+ * - updates profile state
+ * - handles API errors
+ *
+ * @module stores
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
-import { useApplicationStore } from '../../src/stores/applicationStore'
+import { useApplicationStore } from '../../src/stores/profileStore'
 import { useAuthStore } from '../../src/stores/authStore'
 
-vi.mock('@/api/applicationApi', () => ({
+vi.mock('@/api/profileApi', () => ({
   submitApplication: vi.fn(),
   fetchApplication: vi.fn(),
   submitPI: vi.fn()
@@ -26,14 +27,22 @@ vi.mock('@/api/authApi', () => ({
   fetchUser: vi.fn()
 }))
 
-import { submitApplication, fetchApplication, submitPI } from '@/api/applicationApi'
+import { submitApplication, fetchApplication, submitPI } from '@/api/profileApi'
 import { fetchUser } from '@/api/authApi'
 
-describe('applicationStore', () => {
+describe('profileStore', () => {
+  let consoleErrorSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
   })
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore()
+  })
+
 
   describe('initial state', () => {
     it('has empty competences array', () => {
@@ -277,7 +286,7 @@ describe('applicationStore', () => {
         personalNumber: '19900101-1234',
         person_id: '123'
       })
-      expect(store.successMessage).toContain('sparats')
+      expect(store.successMessage).toContain('successMessage')
       expect(store.error).toBeNull()
     })
 
@@ -290,7 +299,7 @@ describe('applicationStore', () => {
 
       await store.submitPersonalInfo()
 
-      expect(store.error).toBe('Något gick fel')
+      expect(store.error).toBe('submitPersonalInfoError')
     })
 
     it('handles submission error', async () => {
@@ -300,7 +309,7 @@ describe('applicationStore', () => {
 
       await store.submitPersonalInfo()
 
-      expect(store.error).toBe('kunde inte spara profilen')
+      expect(store.error).toBe('submitPersonalInfoError')
     })
   })
 

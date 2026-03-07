@@ -1,18 +1,19 @@
 /**
  * @file authStore.spec.ts
- * @description Unit tests for the authStore Pinia store.
+ * @description Unit tests for the authentication store.
  *
- * This file tests authentication state management and API integration (login/me/logout).
- * API modules are mocked so no real network calls occur.
+ * This file tests login state management, authentication logic,
+ * and token handling within the store.
  *
  * Test scenarios:
- * - logs in and stores user/session data
- * - fetches current user and updates state
- * - logs out and clears auth state
- * - handles authentication errors
+ * - logs user in successfully
+ * - stores authentication token
+ * - logs user out
+ * - handles login errors
+ *
+ * @module stores
  */
-
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useAuthStore } from '../../src/stores/authStore'
 
@@ -32,11 +33,17 @@ import { login, fetchUser, logout } from '@/api/authApi'
 import { router } from '@/router'
 
 describe('authStore', () => {
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
   })
 
+  afterEach(() => {
+    consoleLogSpy.mockRestore()
+  })
   describe('initial state', () => {
     it('has user as null initially', () => {
       const store = useAuthStore()

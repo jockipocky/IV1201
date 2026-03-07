@@ -1,17 +1,18 @@
 /**
  * @file registerStore.spec.ts
- * @description Unit tests for the registerStore Pinia store.
+ * @description Unit tests for the register store.
  *
- * This file tests registration state management and API integration.
- * API modules are mocked so no real network calls occur.
+ * This file tests the state management logic for user registration.
  *
  * Test scenarios:
- * - submits registration successfully
+ * - submits registration data
+ * - updates registration state
  * - handles registration errors
- * - manages registration form state
+ *
+ * @module stores
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useRegisterStore } from '../../src/stores/registerStore'
 
@@ -22,9 +23,16 @@ vi.mock('@/api/authApi', () => ({
 import { register } from '@/api/authApi'
 
 describe('registerStore', () => {
+  let consoleLogSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    consoleLogSpy.mockRestore()
   })
 
   describe('initial state', () => {

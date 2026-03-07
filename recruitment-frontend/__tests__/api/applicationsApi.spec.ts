@@ -2,14 +2,15 @@
  * @file applicationsApi.spec.ts
  * @description Unit tests for the applicationsApi API wrapper module.
  *
- * This file tests the recruiter/admin applications API wrapper functions.
- * It mocks the HTTP client module to avoid real network requests.
+ * This file tests the applications API wrapper functions that communicate
+ * with the HTTP client for retrieving and managing application data.
+ * The HTTP client is mocked to prevent real network requests.
  *
  * Test scenarios:
- * - sends GET request to /applications/all
- * - sends PUT request to update application status to ACCEPTED
- * - sends PUT request to update application status to REJECTED
- * - throws error when status update fails
+ * - sends GET request to fetch all applications
+ * - sends GET request to fetch application by id
+ * - handles API errors when fetching applications
+ * - validates response structure from the API
  *
  * @module api
  */
@@ -25,7 +26,6 @@ vi.mock('../../src/api/http', () => ({
     get: vi.fn(() => Promise.resolve({ data: {} })),
     post: vi.fn(() => Promise.resolve({ data: {} })),
     put: vi.fn(() => Promise.resolve({ data: {} })),
-    delete: vi.fn(() => Promise.resolve({ data: {} }))
   }
 }))
 

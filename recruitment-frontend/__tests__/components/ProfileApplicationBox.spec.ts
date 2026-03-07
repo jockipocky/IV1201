@@ -1,13 +1,16 @@
 /**
  * @file ProfileApplicationBox.spec.ts
- * @description Unit tests for the ProfileApplicationBox Vue component.
+ * @description Unit tests for the ProfileApplicationBox component.
  *
- * This file tests the profile display for an existing application.
- * Store state may be mocked to provide application data.
+ * This file tests the component that displays a user's application
+ * information within the profile view.
  *
  * Test scenarios:
- * - renders application details when provided
- * - displays competences and availability correctly
+ * - renders profile application information
+ * - displays application status
+ * - handles empty data
+ *
+ * @module components
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
@@ -19,145 +22,140 @@ const mockApplicationStore = {
   application: {
     competences: [
       { name: 'Ticket Sales', yearsOfExperience: 2 },
-      { name: 'Roller Coaster', yearsOfExperience: 1 }
+      { name: 'Roller Coaster', yearsOfExperience: 1 },
     ],
     availability: [
-      { fromDate: '2026-01-01', toDate: '2026-02-01' }
-    ]
+      { fromDate: '2026-01-01', toDate: '2026-02-01' },
+    ],
   },
   hasApplication: true,
-  successMessage: null,
-  error: null
+  successMessage: null as string | null,
+  error: null as string | null,
+  isEditingApplication: false,
 }
 
-vi.mock('@/stores/applicationStore', () => ({
-  useApplicationStore: vi.fn(() => mockApplicationStore)
+const tMock = {
+  applicationInfo: 'Application Info',
+  competence: 'Competence',
+  yearsUnit: 'years',
+  availabilityTitle: 'Availability',
+  resubmitLabel: 'Edit',
+  editButtonLabel: 'Edit',
+}
+
+function createSimpleStub(className: string, tag = 'div') {
+  return {
+    template: `<${tag} class="${className}"><slot /></${tag}>`,
+  }
+}
+
+function createClickStub(className: string) {
+  return {
+    template: `
+      <button type="button" class="${className}" @click="$emit('click')">
+        <slot />
+      </button>
+    `,
+  }
+}
+
+function mountWithStubs(translations = tMock) {
+  const cardStub = createSimpleStub('v-card')
+  const buttonStub = createClickStub('v-btn')
+  const alertStub = createSimpleStub('v-alert')
+  const listStub = createSimpleStub('v-list')
+  const listItemStub = createSimpleStub('v-list-item')
+  const listItemTitleStub = createSimpleStub('v-list-item-title')
+  const listItemSubtitleStub = createSimpleStub('v-list-item-subtitle')
+
+  return mount(ProfileApplicationBox, {
+    global: {
+      provide: {
+        t: translations,
+      },
+      stubs: {
+        'v-card': cardStub,
+        VCard: cardStub,
+
+        'v-btn': buttonStub,
+        VBtn: buttonStub,
+
+        'v-alert': alertStub,
+        VAlert: alertStub,
+
+        'v-list': listStub,
+        VList: listStub,
+
+        'v-list-item': listItemStub,
+        VListItem: listItemStub,
+
+        'v-list-item-title': listItemTitleStub,
+        VListItemTitle: listItemTitleStub,
+
+        'v-list-item-subtitle': listItemSubtitleStub,
+        VListItemSubtitle: listItemSubtitleStub,
+      },
+    },
+  })
+}
+
+vi.mock('@/stores/profileStore', () => ({
+  useApplicationStore: vi.fn(() => mockApplicationStore),
 }))
 
 describe('ProfileApplicationBox Component', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.clearAllMocks()
+
+    mockApplicationStore.application = {
+      competences: [
+        { name: 'Ticket Sales', yearsOfExperience: 2 },
+        { name: 'Roller Coaster', yearsOfExperience: 1 },
+      ],
+      availability: [
+        { fromDate: '2026-01-01', toDate: '2026-02-01' },
+      ],
+    }
+    mockApplicationStore.hasApplication = true
+    mockApplicationStore.isEditingApplication = false
     mockApplicationStore.successMessage = null
     mockApplicationStore.error = null
   })
 
-  describe('initial state', () => {
-    it('starts in view mode (not editing)', () => {
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: { value: {} }
-          }
-        }
-      })
+  it('shows edit button when not editing', () => {
+    const wrapper = mountWithStubs()
 
-      expect(wrapper.vm.isEditing).toBe(false)
-    })
+    expect(wrapper.find('[data-cy="edit-application"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Edit')
   })
 
-  describe('editing', () => {
-    it('switches to edit mode when edit button clicked', async () => {
-      mockApplicationStore.hasApplication = false
-      
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              applicationInfo: 'Application Info',
-              editButtonLabel: 'Edit'
-            }
-          }
-        }
-      })
+  it('displays application competences and availability when application exists', () => {
+    const wrapper = mountWithStubs()
 
-      expect(wrapper.vm.isEditing).toBe(false)
-    })
-
-    it('shows application data when not editing', () => {
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              applicationInfo: 'Application Info',
-              competence: 'Competence',
-              yearsUnit: 'years',
-              availabilityTitle: 'Availability'
-            }
-          }
-        }
-      })
-
-      expect(wrapper.text()).toContain('Ticket Sales')
-      expect(wrapper.text()).toContain('Roller Coaster')
-    })
+    expect(wrapper.text()).toContain('Ticket Sales')
+    expect(wrapper.text()).toContain('Roller Coaster')
+    expect(wrapper.text()).toContain('2')
+    expect(wrapper.text()).toContain('2026-01-01')
+    expect(wrapper.text()).toContain('2026-02-01')
   })
 
-  describe('display', () => {
-    it('displays competence list', () => {
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              competence: 'Competence',
-              yearsUnit: 'years'
-            }
-          }
-        }
-      })
+  it('does not display application details when application is null', () => {
+    mockApplicationStore.application = null
 
-      expect(wrapper.text()).toContain('Ticket Sales')
-      expect(wrapper.text()).toContain('2')
-    })
+    const wrapper = mountWithStubs()
 
-    it('displays availability periods', () => {
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              availabilityTitle: 'Availability',
-              yearsUnit: 'years'
-            }
-          }
-        }
-      })
+    expect(wrapper.text()).toContain('Application Info')
+    expect(wrapper.text()).not.toContain('Ticket Sales')
+    expect(wrapper.text()).not.toContain('Roller Coaster')
+    expect(wrapper.text()).not.toContain('2026-01-01')
+  })
 
-      expect(wrapper.text()).toContain('2026-01-01')
-      expect(wrapper.text()).toContain('2026-02-01')
-    })
+  it('sets editing mode when edit button is clicked', async () => {
+    const wrapper = mountWithStubs()
 
-    it('shows success message when available', () => {
-      mockApplicationStore.successMessage = 'Application saved!'
-      
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              successMessage: 'Success!',
-              profileError: 'Error'
-            }
-          }
-        }
-      })
+    await wrapper.find('[data-cy="edit-application"]').trigger('click')
 
-      expect(wrapper.text()).toContain('Success!')
-    })
-
-    it('shows error when available', () => {
-      mockApplicationStore.error = 'Failed to load'
-      
-      const wrapper = mount(ProfileApplicationBox, {
-        global: {
-          provide: {
-            t: {
-              successMessage: 'Success!',
-              profileError: 'Error'
-            }
-          }
-        }
-      })
-
-      expect(wrapper.text()).toContain('Error')
-    })
+    expect(mockApplicationStore.isEditingApplication).toBe(true)
   })
 })

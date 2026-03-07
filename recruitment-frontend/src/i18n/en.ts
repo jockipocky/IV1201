@@ -1,5 +1,5 @@
 export default {
-  loginButtonLabel: "Log in",
+  loginButtonLabel: "Login",
   logoutButtonLabel: "Log out",
   passwordFieldPlaceholder: "Enter your password",
   loginBoxTitle: "Account",

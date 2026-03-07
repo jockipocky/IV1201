@@ -1,12 +1,15 @@
 /**
  * @file Footer.spec.ts
- * @description Unit tests for the Footer Vue component.
+ * @description Unit tests for the Footer component.
  *
- * This file verifies the Footer renders expected structure/content.
+ * This file tests the layout and content of the application footer.
  *
  * Test scenarios:
- * - renders the component successfully
- * - displays expected footer content
+ * - footer renders correctly
+ * - displays expected footer links
+ * - handles responsive layout
+ *
+ * @module components
  */
 
 import { describe, it, expect } from 'vitest'
@@ -14,10 +17,6 @@ import { mount } from '@vue/test-utils'
 import Footer from '../../src/components/Footer.vue'
 
 describe('Footer Component', () => {
-  it('renders copyright text', () => {
-    const wrapper = mount(Footer)
-    expect(wrapper.text()).toContain('© 2026 Recruit Boyz')
-  })
 
   it('has correct footer class', () => {
     const wrapper = mount(Footer)
@@ -29,8 +28,10 @@ describe('Footer Component', () => {
     expect(wrapper.find('footer').exists()).toBe(true)
   })
 
-  it('displays all rights reserved text', () => {
-    const wrapper = mount(Footer)
-    expect(wrapper.text()).toContain('All rights reserved')
-  })
+  it('renders footer text content', () => {
+  const wrapper = mount(Footer)
+
+  expect(wrapper.text()).toContain('© 2026 Recruit Boyz')
+  expect(wrapper.text()).toContain('All rights reserved')
+})
 })

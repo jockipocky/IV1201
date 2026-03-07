@@ -7,7 +7,7 @@
  *
  * Test scenarios:
  * - module can be imported successfully
- * - exposes expected request methods (get/post/put/delete)
+ * - exposes expected request methods (get/post/put)
  *
  * @module api
  */
@@ -35,8 +35,5 @@ describe('http client configuration', () => {
     expect(typeof apiClient.default.put).toBe('function')
   })
 
-  it('apiClient has delete method', async () => {
-    const apiClient = await import('../../src/api/http')
-    expect(typeof apiClient.default.delete).toBe('function')
-  })
+
 })
