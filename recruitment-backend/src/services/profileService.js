@@ -113,8 +113,6 @@ class Application{
                 competenceProfile: mappedCompetences
             }
 
-
-            
             return await submitApplication(updateDTO)
             }catch (error){
                 return{
@@ -133,7 +131,8 @@ class Application{
      */
     async getApplication(applicationDTO){
         try{
-            const res = await getApplication(applicationDTO)
+            console.log("applicationDTO.person_id: ", applicationDTO.person_id)
+            const res = await getApplication(applicationDTO.person_id)
             if(!res.success) return res
 
             if(!res.competenceProfile || !res.availability){

@@ -163,7 +163,7 @@ async function registerAccount(userDto) {
       return { ok: false, status: 409, error: "pnrIsTaken" };
     }
   }
-  
+  console.log(err, err.message, err.msg);
   return { ok: false, status: 500, error: "registrationFailed" };
 }
 }
