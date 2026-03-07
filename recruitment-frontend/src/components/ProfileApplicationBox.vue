@@ -15,7 +15,6 @@
         v-if="!isEditing"
         variant="text"
         color="primary"
-        prepend-icon="mdi-pencil"
         @click="applicationStore.isEditingApplication = true"
       >
         {{ t.resubmitLabel || "Edit" }}

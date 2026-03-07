@@ -13,6 +13,11 @@
 
 const db = require("../db/db");
 
+const {
+  assertPersonId,
+  assertStatus,
+} = require("./repositoryGuard.js");
+
 /**
  * Fetches all applicant applications with competences and availabilities included.
  * the query looks small but we have made a non-materialized view in the database called
@@ -48,6 +53,7 @@ async function fetchAllApplications() {
  * - { updated: false, currentStatus: string|null } if conflict occurred
  */
 async function updateApplicationStatus(personId, status) {
+  assertPersonId(assertPersonId);
 
   //this query is race condition safe since it checks to see that status is Unhandled
   const result = await db.query(

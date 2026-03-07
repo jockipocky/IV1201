@@ -1,15 +1,33 @@
 const db = require("../db/db")
 
+//guards
+const {
+  assertPersonId,
+  assertStatus,
+
+  assertUsername,
+  assertPassword,
+  assertEmail,
+  assertPersonalNumber,
+  assertUpgradeCode,
+
+  assertUserDTO,
+  assertApplicationDTO
+} = require("./repositoryGuard.js");
+
+
 /**
  * denna funktion skapar sql queryn som skapar en ny ansökan
  * relevanta fält uppdateras
  */
 async function submitApplication(applicationDTO){
-        const client = await db.connect()
-    
+    const client = await db.connect()
+
     try{
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA:", applicationDTO);
+        assertApplicationDTO(applicationDTO);
         await client.query("begin")
-        const hasApplied = await checkForApplication(client, applicationDTO)
+        const hasApplied = await checkForApplication(client, applicationDTO.person_id)
 
 
         if(hasApplied.exists){
@@ -110,11 +128,11 @@ async function updateHandlingStatus(status, applicationDTO){
      * @param {*} applicationDTO relevant användarinfo
      * @returns true if records exist else false
      */
-    async function checkForApplication(client, applicationDTO){
+    async function checkForApplication(client, person_id){
         try{
             const result = await client.query(
                 `select 1 from person_application_status where person_id=$1`,
-                [applicationDTO.person_id]
+                [Number(person_id)]
             )
 
             return {
@@ -161,7 +179,7 @@ async function updateHandlingStatus(status, applicationDTO){
      * @param {*} applicationDTO relevant användarinfo
      * @returns alla availabilities för relevant person
      */
-    async function getAvailability(client, applicationDTO){
+    async function getAvailability(client, person_id){
         try{
             const res = await client.query(
                 `select 
@@ -169,7 +187,7 @@ async function updateHandlingStatus(status, applicationDTO){
                     to_date::text AS to_date
                 from availability 
                 where person_id = $1`,
-                [applicationDTO.person_id]
+                [Number(person_id)]
             )
 
             return {
@@ -193,13 +211,13 @@ async function updateHandlingStatus(status, applicationDTO){
      * @param {*} applicationDTO relevant användar info
      * @returns all competence profile för relevant person
      */
-    async function getCompeteceProfile(client, applicationDTO){
+    async function getCompeteceProfile(client, person_id){
         try{
             const res = await client.query(
                 `select competence_id, years_of_experience 
                 from competence_profile 
                 where person_id = $1`,
-                [applicationDTO.person_id]
+                [Number(person_id)]
             )
 
             return {
@@ -223,23 +241,25 @@ async function updateHandlingStatus(status, applicationDTO){
      * @param {*} applicationDTO relevant användar info
      * @returns databas entries av competence_profile och availability
      */
-    async function getApplication(applicationDTO){
-        const client = await db.connect()
+    async function getApplication(person_id){
+        assertPersonId(Number(person_id));
 
+        const client = await db.connect()
+        console.log("här: ", person_id);
         try{
-            const hasApplied = await checkForApplication(client, applicationDTO)
+            const hasApplied = await checkForApplication(client, Number(person_id))
 
             if(hasApplied.exists){
                 await client.query("begin")
 
-                const availabilityRes= await getAvailability(client, applicationDTO)
-                const competenceRes = await getCompeteceProfile(client, applicationDTO)
+                const availabilityRes= await getAvailability(client, Number(person_id))
+                const competenceRes = await getCompeteceProfile(client, Number(person_id))
 
 
                 await client.query("commit")
                 return{
                     success: true,
-                    person_id: applicationDTO.person_id,
+                    person_id: person_id,
                     availability: availabilityRes.rows,
                     competenceProfile: competenceRes.rows
                 }
