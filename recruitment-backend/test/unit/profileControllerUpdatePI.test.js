@@ -1,6 +1,6 @@
 /**
- * @file applicationControllerUpdatePI.test.js
- * @description Unit tests for applicationController.updatePI()
+ * @file profileControllerUpdatePI.test.js
+ * @description Unit tests for profileController.updatePI()
  * 
  * This file tests the update personal information controller function in isolation.
  * It mocks the authService.updatePI function.
@@ -16,7 +16,7 @@
  * - Service failure returns 400
  * - Successful update returns 200
  * 
- * @controller applicationController.updatePI
+ * @controller profileController.updatePI
  * @service authService.updatePI
  */
 
@@ -25,9 +25,9 @@ jest.mock("../../src/services/authService", () => ({
 }));
 
 const authService = require("../../src/services/authService");
-const { updatePI } = require("../../src/controllers/applicationController");
+const { updatePI } = require("../../src/controllers/profileController");
 
-describe("applicationController.updatePI", () => {
+describe("profileController.updatePI", () => {
   let mockReq, mockRes;
 
   beforeEach(() => {
@@ -53,7 +53,9 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ ok: false }));
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "INVALID_INPUT" })
+    );
   });
 
   test("returns 400 if lastName is missing", async () => {
@@ -67,6 +69,9 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "INVALID_INPUT" })
+    );
   });
 
   test("returns 400 if email is missing", async () => {
@@ -80,6 +85,9 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "INVALID_INPUT" })
+    );
   });
 
   test("returns 400 if personalNumber is missing", async () => {
@@ -93,6 +101,9 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "INVALID_INPUT" })
+    );
   });
 
   test("returns 400 when service returns failure", async () => {
@@ -103,6 +114,7 @@ describe("applicationController.updatePI", () => {
       email: "test@example.com",
       personalNumber: "123"
     };
+
     authService.updatePI.mockResolvedValue({
       success: false,
       error: "Could not update"
@@ -111,7 +123,9 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ success: false }));
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: false, error: "Could not update" })
+    );
   });
 
   test("returns 200 on successful update", async () => {
@@ -122,6 +136,7 @@ describe("applicationController.updatePI", () => {
       email: "test@example.com",
       personalNumber: "123"
     };
+
     authService.updatePI.mockResolvedValue({
       success: true,
       message: "profile updated"
@@ -130,6 +145,8 @@ describe("applicationController.updatePI", () => {
     await updatePI(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({ success: true, message: "profile updated" })
+    );
   });
 });

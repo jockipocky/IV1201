@@ -1,9 +1,9 @@
 /**
- * @file applicationControllerSubmission.test.js
- * @description Unit tests for applicationController.applicationSubmission()
+ * @file profileControllerSubmission.test.js
+ * @description Unit tests for profileController.applicationSubmission()
  * 
  * This file tests the job application submission controller function in isolation.
- * It mocks the applicationService.Application class.
+ * It mocks the profileService.Application class.
  * 
  * Controller responsibility: Validate request body, create ApplicationDTO,
  * call service, handle errors, format response.
@@ -11,24 +11,24 @@
  * Test scenarios:
  * - Empty competenceProfile returns 400
  * - Empty availability returns 400
- * - Service failure returns 401
+ * - Service failure returns 400
  * - Successful submission returns 200
  * - Server errors return 500
  * 
- * @controller applicationController.applicationSubmission
- * @service applicationService.Application
+ * @controller profileController.applicationSubmission
+ * @service profileService.Application
  */
 
-jest.mock("../../src/services/applicationService", () => ({
+jest.mock("../../src/services/profileService", () => ({
   Application: jest.fn().mockImplementation(() => ({
     applicationSubmission: jest.fn()
   }))
 }));
 
-const { Application } = require("../../src/services/applicationService");
-const { applicationSubmission } = require("../../src/controllers/applicationController");
+const { Application } = require("../../src/services/profileService");
+const { applicationSubmission } = require("../../src/controllers/profileController");
 
-describe("applicationController.applicationSubmission", () => {
+describe("profileController.applicationSubmission", () => {
   let mockReq, mockRes;
 
   beforeEach(() => {
@@ -69,7 +69,7 @@ describe("applicationController.applicationSubmission", () => {
     expect(mockRes.status).toHaveBeenCalledWith(400);
   });
 
-  test("returns 401 when service returns failure", async () => {
+  test("returns 400 when service returns failure", async () => {
     const mockApplicationInstance = {
       applicationSubmission: jest.fn().mockResolvedValue({
         success: false,
@@ -80,7 +80,7 @@ describe("applicationController.applicationSubmission", () => {
 
     await applicationSubmission(mockReq, mockRes);
 
-    expect(mockRes.status).toHaveBeenCalledWith(401);
+    expect(mockRes.status).toHaveBeenCalledWith(400);
   });
 
   test("returns 200 when submission succeeds", async () => {

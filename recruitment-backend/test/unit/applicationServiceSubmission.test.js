@@ -17,12 +17,12 @@
  * @repository applicationQuery.submitApplication
  */
 
-jest.mock("../../src/repository/applicationQuery", () => ({
+jest.mock("../../src/repository/profileQuery", () => ({
   submitApplication: jest.fn()
 }));
 
-const applicationQuery = require("../../src/repository/applicationQuery");
-const { Application } = require("../../src/services/applicationService");
+const applicationQuery = require("../../src/repository/profileQuery");
+const { Application } = require("../../src/services/profileService");
 const ApplicationDTO = require("../../src/domain/ApplicationDTO");
 
 describe("Application.applicationSubmission", () => {
@@ -102,7 +102,7 @@ describe("Application.applicationSubmission", () => {
     ]);
   });
 
-  test("throws error for invalid competence type", async () => {
+  test("returns failure for invalid competence type", async () => {
     const dto = new ApplicationDTO({
       person_id: 1,
       competenceProfile: [
@@ -114,10 +114,9 @@ describe("Application.applicationSubmission", () => {
     });
 
     const application = new Application(dto);
-    
     const result = await application.applicationSubmission(dto);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe("Invalid competence type: invalid type");
+    expect(result.error).toBe("INVALID_COMPETENCE_TYPE");
   });
 });

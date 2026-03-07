@@ -17,12 +17,12 @@
  * @repository applicationQuery.getApplication
  */
 
-jest.mock("../../src/repository/applicationQuery", () => ({
+jest.mock("../../src/repository/profileQuery", () => ({
   getApplication: jest.fn()
 }));
 
-const applicationQuery = require("../../src/repository/applicationQuery");
-const { Application } = require("../../src/services/applicationService");
+const applicationQuery = require("../../src/repository/profileQuery");
+const { Application } = require("../../src/services/profileService");
 
 describe("Application.getApplication", () => {
   beforeEach(() => {
