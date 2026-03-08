@@ -136,29 +136,34 @@ export default defineComponent({
 
 
     const requiredRule = (v: string) =>
-      (typeof v === "string" && v.trim().length > 0) ||
-      (t.value?.allFieldsRequired ?? "All fields are required");
+        (typeof v === "string" && v.trim().length > 0) ||
+        (t.value?.allFieldsRequired ?? "All fields are required");
 
-    const emailRule = (v: string | null | undefined) =>
-      (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ||
-      (t.value?.invalidEmail ?? "Enter a valid email");
+      const emailRule = (v: string | null | undefined) =>
+        (!v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) ||
+        (t.value?.invalidEmail ?? "Enter a valid email");
 
-    const passwordMinRule = (v: string | null | undefined) =>
-      (!!v && v.length >= 8) ||
-      (t.value?.passwordTooShort ?? "Password must be at least 8 characters");
+      const passwordMinRule = (v: string | null | undefined) =>
+        (!!v && v.length >= 8) ||
+        (t.value?.passwordTooShort ?? "Password must be at least 8 characters");
 
-    const handleUpgrade = async () => {
+      const handleUpgrade = async () => {
       errorKey.value = null;
       successKey.value = null;
 
       const result = await formRef.value?.validate();
+
       if (!result?.valid) {
-        errorKey.value = "allFieldsRequired";
+        const firstErrorMessage =
+          result?.errors?.[0]?.errorMessages?.[0];
+
+        errorKey.value = firstErrorMessage ?? "allFieldsRequired";
         return;
       }
 
       try {
         loading.value = true;
+
         const formattedPersonNumber = formatPersonNumber(state.personNumber);
         if (!formattedPersonNumber) {
           errorKey.value = "invalidPersonalNumberFormat";
@@ -173,18 +178,14 @@ export default defineComponent({
           state.password
         );
 
-
         successKey.value = "upgradeSuccess";
       } catch (err: any) {
-        // If backend later returns messageKey, use it:
         const backendKey = err.response?.data?.error?.messageKey;
-
-        // Otherwise fallback to a known key:
         errorKey.value = backendKey ?? "upgradeFailed";
       } finally {
         loading.value = false;
       }
-    };
+  };
 
 
 
