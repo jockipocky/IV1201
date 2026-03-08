@@ -9,7 +9,6 @@
         data-cy="edit-profile"
         variant="text" 
         color="primary" 
-        prepend-icon="mdi-pencil"
         @click="startEdit"
       >
         {{ t.editLabel || 'Edit' }}

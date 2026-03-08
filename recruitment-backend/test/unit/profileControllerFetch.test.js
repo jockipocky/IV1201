@@ -1,32 +1,34 @@
 /**
- * @file applicationControllerFetch.test.js
- * @description Unit tests for applicationController.fetchApplication()
- * 
+ * @file profileControllerFetch.test.js
+ * @description Unit tests for profileController.fetchApplication()
+ *
  * This file tests the fetch application controller function in isolation.
- * It mocks the applicationService.Application class.
- * 
- * Controller responsibility: Get person_id from params, call service,
- * handle errors, format response.
- * 
+ * It mocks the profileService.Application class.
+ *
+ * Controller responsibility: Get person_id from params, validate ownership,
+ * call service, handle errors, format response.
+ *
  * Test scenarios:
  * - Missing person_id returns 400
+ * - Mismatched user/person_id returns 403
+ * - Service returns not found and controller returns 404
  * - Successful fetch returns 200 with data
  * - Server errors return 500
- * 
- * @controller applicationController.fetchApplication
- * @service applicationService.Application
+ *
+ * @controller profileController.fetchApplication
+ * @service profileService.Application
  */
 
-jest.mock("../../src/services/applicationService", () => ({
+jest.mock("../../src/services/profileService", () => ({
   Application: jest.fn().mockImplementation(() => ({
     getApplication: jest.fn()
   }))
 }));
 
-const { Application } = require("../../src/services/applicationService");
-const { fetchApplication } = require("../../src/controllers/applicationController");
+const { Application } = require("../../src/services/profileService");
+const { fetchApplication } = require("../../src/controllers/profileController");
 
-describe("applicationController.fetchApplication", () => {
+describe("profileController.fetchApplication", () => {
   let mockReq, mockRes;
 
   beforeEach(() => {
@@ -74,5 +76,38 @@ describe("applicationController.fetchApplication", () => {
     await fetchApplication(mockReq, mockRes);
 
     expect(mockRes.status).toHaveBeenCalledWith(500);
+  });
+  
+  test("returns 403 if person_id does not match logged in user", async () => {
+    mockReq.params.person_id = "2";
+    mockReq.user.person_id = 1;
+
+    await fetchApplication(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(403);
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        ok: false
+      })
+    );
+  });
+
+  test("returns 404 when application is not found", async () => {
+    const mockApplicationInstance = {
+      getApplication: jest.fn().mockResolvedValue({
+        success: false
+      })
+    };
+    Application.mockImplementation(() => mockApplicationInstance);
+
+    await fetchApplication(mockReq, mockRes);
+
+    expect(mockRes.status).toHaveBeenCalledWith(404);
+    expect(mockRes.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: "Application not found"
+      })
+    );
   });
 });

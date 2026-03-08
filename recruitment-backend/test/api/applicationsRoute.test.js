@@ -1,32 +1,28 @@
 /**
  * @file applicationsRoute.test.js
- * @description Integration tests for GET /applications/all, GET /applications/2, POST /applications, POST /applications/personal-info, PUT /applications/1/status
- * 
- * This file tests the applicationsRoute test suite.
+ * @description Integration tests for GET /applications/all, GET /applications/:person_id, POST /applications, POST /applications/personal-info, PUT /applications/:personId/status
+ *
+ * This file tests the applications route suite.
  * System under test: ../../src/routes/applications
- * 
+ *
  * Endpoints covered:
  * - GET /applications/all
- * - GET /applications/2
+ * - GET /applications/:person_id
  * - POST /applications
  * - POST /applications/personal-info
- * - PUT /applications/1/status
- * 
- * Functions/behaviors tested:
- * - (see describe blocks)
- * 
+ * - PUT /applications/:personId/status
+ *
  * Test scenarios:
  * - returns 200 with applications for recruiter
  * - returns 403 for applicant role
  * - returns 200 when status updated successfully
  * - returns 400 for invalid status
  * - returns 200 when application submitted successfully
- * - returns 200 with application data
+ * - returns 200 with application data when application exists
  * - returns 200 when personal info updated
- * 
+ *
  * @route applicationsRoute
  */
-
 
 process.env.JWT_SECRET = "test-secret";
 
@@ -47,10 +43,16 @@ jest.mock("../../src/services/applicationsService", () => ({
   updateApplicationStatus: () => Promise.resolve({ updated: true })
 }));
 
-jest.mock("../../src/services/applicationService", () => ({
+jest.mock("../../src/services/profileService", () => ({
   Application: jest.fn().mockImplementation(() => ({
     applicationSubmission: () => Promise.resolve({ success: true }),
-    getApplication: () => Promise.resolve({ id: 1, person_id: 2 })
+    getApplication: () =>
+      Promise.resolve({
+        success: true,
+        person_id: 2,
+        availability: [],
+        competenceProfile: []
+      })
   }))
 }));
 
@@ -110,7 +112,7 @@ describe("POST /applications", () => {
     const res = await request(app)
       .post("/applications")
       .set("Cookie", `auth=${applicantToken}`)
-      .send({ person_id: 2, competenceProfile: [{ competence_id: 1 }], availability: [{ from_date: "2024-01-01" }] });
+      .send({ person_id: 2, competenceProfile: [{ competenceType: "Lotteries", competenceTime: 5 }], availability: [{ from: "2024-01-01", to: "2024-01-02" }] });
     expect(res.status).toBe(200);
   });
 });

@@ -6,7 +6,8 @@
  * Repository functions execute SQL queries directly (or via an in-memory DB adapter).
  * 
  * Functions/behaviors tested:
- * - (see describe blocks)
+ * - fetchAllApplications
+ * - updateApplicationStatus
  * 
  * Test scenarios:
  * - returns all applications for recruiter/admin use-cases

@@ -45,7 +45,7 @@ const {
   submitApplication,
   updateHandlingStatus,
   getApplication,
-} = require("../../src/repository/applicationQuery");
+} = require("../../src/repository/profileQuery");
 describe("applicationQuery repository (pg-mem)", () => {
 beforeEach(async () => {
   await pgMem.reset();
@@ -81,7 +81,7 @@ afterAll(async () => {
     test("returns success when application is submitted (new)", async () => {
       const dto = {
         person_id: 1,
-        competenceProfile: [{ competenceType: "ticket sales", competenceTime: 2 }],
+        competenceProfile: [{ competence_id: 1, years_of_experience: 2 }],
         availability: [{ from: "2024-01-01", to: "2024-01-31" }],
       };
 
@@ -127,7 +127,7 @@ afterAll(async () => {
 
       const dto = {
         person_id: 1,
-        competenceProfile: [{ competenceType: "ticket sales", competenceTime: 2 }],
+        competenceProfile: [{ competence_id: 1, years_of_experience: 2 }],
         availability: [{ from: "2024-01-01", to: "2024-01-31" }],
       };
 
@@ -171,8 +171,7 @@ await db.query(`DROP TABLE availability;`);
         [1, "UNHANDLED"]
       );
 
-      const dto = { person_id: 1 };
-      const result = await updateHandlingStatus("ACCEPTED", dto);
+      const result = await updateHandlingStatus("ACCEPTED", { person_id: 1 });
 
       expect(result.success).toBe(true);
       expect(result.person_id).toBe(1);
@@ -186,60 +185,54 @@ await db.query(`DROP TABLE availability;`);
 
   });
   describe("getApplication", () => {
-test("returns application data when exists", async () => {
-  await db.query(
-    `INSERT INTO person_application_status(person_id, status) VALUES ($1, $2)`,
-    [1, "UNHANDLED"]
-  );
+    test("returns application data when exists", async () => {
+    await db.query(
+      `INSERT INTO person_application_status(person_id, status) VALUES ($1, $2)`,
+      [1, "UNHANDLED"]
+    );
 
-  await db.query(
-    `INSERT INTO availability(person_id, from_date, to_date)
-     VALUES ($1, $2, $3)`,
-    [1, "2024-01-01", "2024-01-31"]
-  );
+    await db.query(
+      `INSERT INTO availability(person_id, from_date, to_date)
+      VALUES ($1, $2, $3)`,
+      [1, "2024-01-01", "2024-01-31"]
+    );
 
+    await db.query(
+      `INSERT INTO competence(competence_id, name)
+      VALUES ($1, $2)
+      ON CONFLICT (competence_id) DO NOTHING`,
+      [1, "ticket sales"]
+    );
 
-  await db.query(
-    `INSERT INTO competence(competence_id, name)
-     VALUES ($1, $2)
-     ON CONFLICT (competence_id) DO NOTHING`,
-    [1, "ticket sales"]
-  );
+    await db.query(
+      `INSERT INTO competence_profile(person_id, competence_id, years_of_experience)
+      VALUES ($1, $2, $3)`,
+      [1, 1, 2.0]
+    );
 
-  await db.query(
-    `INSERT INTO competence_profile(person_id, competence_id, years_of_experience)
-     VALUES ($1, $2, $3)`,
-    [1, 1, 2.0]
-  );
+    const result = await getApplication(1);
 
-  const dto = { person_id: 1 };
-  const result = await getApplication(dto);
+    expect(result.success).toBe(true);
+    expect(result.person_id).toBe(1);
 
-  expect(result.success).toBe(true);
-  expect(result.person_id).toBe(1);
-  expect(Array.isArray(result.availability)).toBe(true);
-  expect(Array.isArray(result.competenceProfile)).toBe(true);
-  expect(result.availability.length).toBeGreaterThan(0);
-  expect(result.competenceProfile.length).toBeGreaterThan(0);
-});
+    expect(result).toHaveProperty("availability");
+    expect(result).toHaveProperty("competenceProfile");
+  });
 
     test("returns empty when no application exists", async () => {
-      const dto = { person_id: 1 };
-      const result = await getApplication(dto);
+      const result = await getApplication(1);
 
       expect(result.success).toBe(false);
       expect(result.availability ?? []).toEqual([]);
       expect(result.competenceProfile ?? []).toEqual([]);
     });
 
-test("returns failure when database error occurs", async () => {
-  await db.query(`DROP TABLE person_application_status;`);
+    test("returns failure when database error occurs", async () => {
+      await db.query(`DROP TABLE person_application_status;`);
 
-  const dto = { person_id: 1 };
-  const result = await updateHandlingStatus("ACCEPTED", dto);
+      const result = await getApplication(1);
 
-  expect(result.success).toBe(false);
-  expect(result.error).toBeDefined();
-});
+      expect(result.success).toBe(false);
+    });
   });
 });

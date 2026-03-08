@@ -8,8 +8,14 @@ var router = express.Router();
 
 const { login, upgradeAccount, registerAccount, me, } = require("../controllers/authController");
 
+const {
+  validateLogin,
+  validateRegister,
+  validateUpgrade
+} = require("../middleware/validateAuthInputData.js");
 
-router.post("/login", async function (req, res) {
+
+router.post("/login", validateLogin, async function (req, res) {
   try {
     const body = req.body ?? {};
     const result = await login(body.username, body.password);
@@ -38,7 +44,7 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ ok: true });
 });
 
-router.post("/upgrade", async function (req, res) {
+router.post("/upgrade", validateUpgrade, async function (req, res) {
   try {
     const result = await upgradeAccount(req.body);
 
@@ -68,7 +74,7 @@ router.get("/me", async function (req, res) {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 })
-router.post("/register", async (req, res) => {
+router.post("/register", validateRegister, async (req, res) => {
   console.log("ROUTE HIT");
     const result = await registerAccount(req.body);
 

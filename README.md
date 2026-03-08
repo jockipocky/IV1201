@@ -385,3 +385,209 @@ Cypress does not support Safari as a browser for automatic tests, and our projec
 15. Then, verify that applications appear in the list, that their info is displayed properly when expanded, and that you can properly accept or decline applications.
 16. Then, set the person_application_status of a user to REJECTED in the database manually, before attempting to accept them locally in your app. Verify that you get the appropriate error message saying that another recruiter has already handled that application, and verify that the status field on the page has been updated to their already-handled status.
 17. Lastly, log out using the header and verify again that the cookie has been deleted from your cookie storage and that refreshing the page does not log you back in.
+
+
+# Testing
+
+This project uses **Vitest** for front-end testing and **Jest** for back-end testing.
+
+The tests are structured in layers so that different parts of the application can be tested independently. This makes it easier to maintain the codebase and identify where issues occur.
+
+---
+
+# Back-end
+
+Back-end tests are structured in multiple layers to ensure that different parts of the application behave correctly.
+
+## API Layer
+
+The API layer tests verify that the server endpoints function correctly.
+
+These tests ensure that:
+
+- Endpoints receive HTTP requests correctly
+- Incoming request data is processed correctly
+- The correct HTTP status codes are returned
+- The response contains the expected data
+
+The purpose of these tests is to simulate real API requests and verify that the backend behaves as expected when interacting with the client.
+
+---
+
+## Repository Layer
+
+The repository layer interacts with a **mock database** using `pg-mem`.
+
+Using an in-memory database allows the tests to:
+
+- Mimic the structure and behaviour of the real PostgreSQL database
+- Run tests without connecting to the hosted database
+- Safely test database queries without modifying real data
+
+Repository tests focus on verifying that:
+
+- Queries are executed correctly
+- The expected data is returned
+- Tables and relationships behave correctly
+
+---
+
+## Unit Tests
+
+Unit tests focus on testing **individual functions in isolation**.
+
+These tests ensure that:
+
+- Each function performs its intended task
+- Edge cases are handled correctly
+- Dependencies can be mocked when needed
+
+This allows the business logic of the application to be tested independently from the API and database layers.
+
+---
+
+## Running Tests
+
+To run the back-end tests follow these steps:
+
+1. Navigate to the backend directory:
+2. Install dependencies: "npm install"
+3. Run the tests: "npm run test"
+
+
+---
+
+## Adding More Tests
+
+To add new tests to the backend: 
+
+1. Create a new file that ends with: ".test.js"
+
+2. Place the file in the correct folder depending on what is being tested.
+
+3. Follow the standard **Jest** test structure.
+
+If you are adding tests to an existing file, simply add another test block following the same structure.
+
+### Test Template Example
+
+Below is a general template showing how a test can be structured.
+
+```javascript
+test("should return a successful result when the operation completes correctly", async () => {
+
+  // Mock dependency or external service
+  dependencyFunction.mockResolvedValue({
+    id: 1
+  });
+
+  // Create input data
+  const inputData = {
+    id: 1,
+    name: "Example Name",
+    email: "example@email.com"
+  };
+
+  // Execute the function being tested
+  const result = await functionUnderTest(inputData);
+
+  // Verify the expected results
+  expect(result.success).toBe(true);
+  expect(result.message).toBe("operation completed successfully");
+
+});
+```
+# Front-end
+
+The front-end tests are structured in layers to ensure that different parts of the application are tested independently.  
+Most of the front-end tests are **unit tests**, while a few are **integration tests** that verify that multiple parts of the application work together correctly.
+
+---
+
+## API Layer
+
+The API layer tests verify that the front-end sends requests correctly to the back-end.
+
+These tests ensure that:
+
+- Requests are sent to the correct endpoints
+- The correct data is included in the request
+- Responses from the back-end are handled correctly
+
+The goal of these tests is to confirm that communication between the front-end and back-end works as expected.
+
+---
+
+## Component Layer
+
+The component layer tests focus on individual UI components.
+
+These tests verify that:
+
+- Components render correctly
+- Props are handled correctly
+- Component logic behaves as expected
+
+Components such as forms and other UI elements are tested to ensure that they function correctly when used within the application.
+
+---
+
+## Integration Layer
+
+The integration layer tests the flow of specific functionalities in the application.
+
+These tests simulate how a user interacts with the application and verify that multiple components work together correctly.
+
+Unlike unit tests, these tests do not rely heavily on mocked functions. This allows the full interaction between components to be tested and ensures that the overall functionality behaves as expected.
+
+---
+
+## Router Layer
+
+The router layer tests verify that the application's routing configuration works correctly.
+
+These tests ensure that:
+
+- The required routes exist
+- Navigation between routes works as intended
+- The correct views are loaded when navigating to a specific route
+
+---
+
+## Stores Layer
+
+The stores layer tests verify the state management logic used by the application.
+
+These tests ensure that:
+
+- Stores are initialized correctly
+- Store actions update the state as expected
+- Components can interact correctly with the stores
+
+This helps confirm that application state is managed consistently across the application.
+
+---
+
+## Utils Layer
+
+The utils layer tests helper functions used across the project.
+
+These tests ensure that utility functions behave correctly and return the expected results when used by other parts of the application.
+
+---
+
+## View Layer
+
+The view layer tests verify that the main application views render correctly.
+
+These tests ensure that:
+
+- The correct components are rendered within each view
+- The expected content is displayed
+- The view behaves correctly when loaded by the router
+
+---
+
+## App
+
+The App test ensures that the main application component initializes correctly and contains the required components for the application to function as intended.

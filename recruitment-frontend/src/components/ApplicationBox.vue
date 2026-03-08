@@ -7,7 +7,7 @@
         <v-select
         data-cy="competence-select"
           :label="t.competence"
-          :items="[t.ticketSalesLabel, t.rollerCoasterOperatorLabel, t.lotteriesLabel]"
+          :items="getAvailableCompetences(index)"
           :model-value="competence.competenceType"
           @update:model-value="applicationStore.updateCompetence(index, {competenceType: $event})"
           variant="outlined"
@@ -34,13 +34,14 @@
           @click="handleCompIconClick(index)"
           class="mb-6">
           <v-icon>
-            {{ index === applicationStore.competences.length - 1 ? mdiPlus : mdiDelete }}
+            {{ index === applicationStore.competences.length - 1 && canAddCompetence ? mdiPlus : mdiDelete }}
           </v-icon>
         </v-btn>
       </div> 
       
       <div v-for="(availability, index) in applicationStore.availability" :key="index" class="mb-4">
         <v-date-picker
+          data-cy="availability-picker"
           multiple="range"
           :model-value="applicationStore.getAvailabilityRange(index)"
           @update:model-value="applicationStore.setAvailabilityRange(index, $event)"
@@ -48,7 +49,7 @@
         ></v-date-picker> 
         
         <v-btn icon @click="handleAvailabilityIconClick(index)">
-          <v-icon>{{ index === applicationStore.availability.length-1 ? mdiPlus : mdiDelete }}</v-icon>
+          <v-icon>{{ index === applicationStore.availability.length-1 && canAddAvailability ? mdiPlus : mdiDelete }}</v-icon>
         </v-btn>
       </div>
 
@@ -57,6 +58,7 @@
         data-cy="apply-button"
           color="primary"
           class="flex-grow-1"
+          :disabled="!isValid"
           @click="onApply"
         >
           {{ t.apply }}
@@ -89,11 +91,49 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
 
 
 
-    const t = inject<any>("t");
-
+    const t = inject<any>("t")!;
+    const maxAvComp = 3
 
     const applicationStore = useApplicationStore()
     const formRef = ref()
+
+    const canAddCompetence = computed(() => {
+      return applicationStore.competences.length < maxAvComp
+    })
+
+    const allCompetences = computed(() => [
+      t.value.ticketSalesLabel,
+      t.value.rollerCoasterOperatorLabel,
+      t.value.lotteriesLabel
+    ])
+
+
+    const getAvailableCompetences = (index: number) => {
+      const selected = applicationStore.competences
+        .map(c => c.competenceType)
+
+      return allCompetences.value.filter(c =>
+        !selected.includes(c) || c === applicationStore.competences[index]?.competenceType
+      )
+    }
+
+    const canAddAvailability = computed(() => {
+      return applicationStore.availability.length < maxAvComp
+    })
+
+    const availabilityRule = (range: any[]) => {
+      if (!range || range.length !== 2) {
+        return t.value?.selectDateRange || "Please select a start and end date"
+      }
+
+      const from =range [0]
+      const to = range[1]
+    
+      if(from && to && from.getTime() === to.getTime()){
+        return "availabilityDifferentDates"
+      }
+      return true
+    }
 
     const requiredRule = (v: any) =>
       !!v || t.value?.allFieldsRequired || "Required";
@@ -117,7 +157,7 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
 
     const handleCompIconClick = (index: number) => {
         const isLast = index === applicationStore.competences.length -1;
-        if(isLast){
+        if(isLast && canAddCompetence.value){
             applicationStore.addEmptyCompetence();
         } else {
             applicationStore.removeCompetence(index);
@@ -130,7 +170,7 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
     const handleAvailabilityIconClick = (index: number) => {
         const isLast = index === applicationStore.availability.length-1;
 
-        if(isLast){
+        if(isLast && canAddAvailability){
             applicationStore.addEmptyAvailability()
         } else{
             applicationStore.removeAvailability(index);
@@ -146,7 +186,7 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
       );
 
       const availabilityValid = applicationStore.availability.every(a =>
-        a.from && a.to
+        a.from !== null && a.to !==null
       );
 
       return competencesValid && availabilityValid;
@@ -157,6 +197,23 @@ import { mdiPlus, mdiDelete } from "@mdi/js"
       const {valid} = await formRef.value.validate()
 
       if(!valid) return
+      if(!isValid.value){
+        applicationStore.error = "selectDateRange"
+        return
+      }
+
+      for(let i = 0; i < applicationStore.availability.length; i++){
+        const range = applicationStore.getAvailabilityRange(i)
+
+        const ruleResult = availabilityRule(range)
+
+        if(ruleResult !== true){
+          applicationStore.error = ruleResult
+          return
+        }
+      }
+
+  
         try {
             await applicationStore.submitApplicationForm();
 

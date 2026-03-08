@@ -142,7 +142,6 @@ export const useApplicationStore = defineStore("applicationForm", {
          */
         addEmptyAvailability() {
             if(this.availability.length >= 3) return
-            //kanske lägga till error eller nått sånt
             this.availability.push({ from: null, to: null });
         },
 

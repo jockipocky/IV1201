@@ -80,5 +80,6 @@ export default {
   fetchUserInfoError: "Kunde inte hämta dina personliga uppgifter",
   submitApplicationError: "Kunde inte spara din ansökan, var god försök igen",
   submitPersonalInfoError: "Kunde inte spara dina ändrade uppgifter, var god försök igen",
-  fetchApplicationError: "Kunde inte hämta tidigare ansökan.",
+  fetchApplicationError: "Ingen tidigare ansökan kunde hittas",
+  availabilityDifferentDates:"Start och slut datumet måste vara annorlunda"
 };

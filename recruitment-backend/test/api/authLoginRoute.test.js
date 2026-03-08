@@ -46,9 +46,9 @@ describe("POST /auth/login", () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toEqual({
-      ok: false,
-      error: "username and password are required"
-    });
+    ok: false,
+    error: "Invalid username"
+  });
   });
 
   test("returns 401 when credentials are invalid", async () => {
