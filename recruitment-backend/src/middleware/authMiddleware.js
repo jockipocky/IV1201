@@ -1,6 +1,14 @@
 const jwt = require("jsonwebtoken");
 const authSearch = require("../repository/authQuery"); // adjust path if needed
-
+/**
+ * Authenticates a request using a JWT token stored in an HTTP-only cookie.
+ * If the token is valid, the corresponding user is fetched from the database and attached to the request object.
+ * If the token is missing, invalid, or if the user no longer exists, an appropriate error response is sent.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 async function authenticate(req, res, next) {
   const token = req.cookies?.auth;
   console.log("Authenticating request to: ", req.method, req.originalUrl, "...");
@@ -34,7 +42,11 @@ async function authenticate(req, res, next) {
 
   next();
 }
-
+/**
+ * 
+ * @param  {...any} allowedRoles  - A list of allowed role IDs that can access the route. The user's role ID will be checked against this list.
+ * @returns  - A middleware function that checks if the authenticated user's role ID is included in the allowedRoles list. If the user is not authenticated or does not have the required role, an appropriate error response is sent.
+ */
 function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {
     console.log(`Attempting rolecheck for user: ${req.user?.username} (role ${req.user?.role_id}) against allowed roles: [${allowedRoles}]`);

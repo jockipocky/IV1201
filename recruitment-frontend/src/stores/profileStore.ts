@@ -1,7 +1,7 @@
 
 import { defineStore } from "pinia";
 import { register } from "@/api/authApi";
-import { submitApplication, fetchApplication , submitPI} from "@/api/applicationApi";
+import { submitApplication, fetchApplication , submitPI} from "@/api/profileAPI";
 import { renderToString } from "vue/server-renderer";
 import { useAuthStore } from "./authStore";
 
@@ -45,7 +45,8 @@ interface ApplicationState{
     successMessage: string |null,
     application:ApplicationDTO |null,
     hasApplication: boolean,
-    isLoading: boolean
+    isLoading: boolean,
+    isEditingApplication:boolean
 }
     interface ApplicationDTO {
         competences: {
@@ -75,6 +76,7 @@ export const useApplicationStore = defineStore("applicationForm", {
         application: null,
         hasApplication: false,
         isLoading: false,
+        isEditingApplication: true,
     }),
 
 
@@ -140,7 +142,6 @@ export const useApplicationStore = defineStore("applicationForm", {
          */
         addEmptyAvailability() {
             if(this.availability.length >= 3) return
-            //kanske lägga till error eller nått sånt
             this.availability.push({ from: null, to: null });
         },
 
@@ -191,26 +192,33 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @returns object with personal information
          */
         async fetchUserInfo(){
-            const authStore = useAuthStore();
+            this.error = null
 
-            if(!authStore.user){
-                await authStore.fetchUser();
-            }
+            try {
+                const authStore = useAuthStore();
 
-            if(!authStore.user){
-                this.error = "User not logged in";
-                return;
-            }
+                if(!authStore.user){
+                    await authStore.fetchUser();
+                }
 
-            // bara mappa från authStore
-            this.personalInfo = {
-                firstName: authStore.user.firstName,
-                lastname: authStore.user.lastName,
-                email: authStore.user.email,
-                personalNumber: authStore.user.personalNumber,
-                person_id: authStore.user.person_id
-                //eventuellt lägg till så att dem skickar personnummer till a
-                //og fetch user i auth
+                if(!authStore.user){
+                    this.error = "User not logged in";
+                    return false;
+                }
+
+                this.personalInfo = {
+                    firstName: authStore.user.firstName,
+                    lastname: authStore.user.lastName,
+                    email: authStore.user.email,
+                    personalNumber: authStore.user.personalNumber,
+                    person_id: authStore.user.person_id
+                };
+
+                return true;
+
+            } catch (e) {
+                this.error = "Failed to fetch user info";
+                return false;
             }
         },
 
@@ -221,23 +229,28 @@ export const useApplicationStore = defineStore("applicationForm", {
          * @returns sets the relevant information and makes sure the database fills in a new entry
          */
         async submitApplicationForm(){
+            this.error = null
+
             try{
                 const res = await submitApplication({
                     competenceProfile: this.competences,
                     availability: this.availability,
                     person_id: this.personalInfo.person_id
-                })
+                });
+
                 if(res.data.success){
-                    this.hasApplication = true
-                    return true
+                    this.hasApplication = true;
+                    return true;
                 } else {
-                    this.hasApplication = false
-                    return false
+                    this.error = "submitApplicationError";
+                    this.hasApplication = false;
+                    return false;
                 }
-            }catch(error){
-                console.error("submission failed:, ", error)
-                this.hasApplication = false
-                return false 
+
+            } catch(error){
+                this.error = "submitApplicationError";
+                this.hasApplication = false;
+                return false;
             }
         },
         /**
@@ -258,19 +271,15 @@ export const useApplicationStore = defineStore("applicationForm", {
                 })
 
                 if(res.data.success){
-                    this.successMessage =" profilen har sparats!"
+                    this.successMessage = "successMessage"
                     setTimeout(() => {
                         this.successMessage = null;
                     }, 3000);
                 } else{
-                        this.error = "Något gick fel";
-                        this.successMessage = null;
-                        setTimeout(() => {
-                        this.successMessage = null;
-                    }, 3000);
+                        this.error = "submitPersonalInfoError";
                 }
             }catch (error){
-                this.error = "kunde inte spara profilen"
+                this.error = "submitPersonalInfoError"
             }
         },
 
@@ -282,38 +291,39 @@ export const useApplicationStore = defineStore("applicationForm", {
         
 
             async fetchApplication() {
-        if (!this.personalInfo.person_id) return;
+                    this.error=null
+            if (!this.personalInfo.person_id) return;
 
-        this.isLoading = true;
+            this.isLoading = true;
 
-        try {
-            const res = await fetchApplication(this.personalInfo.person_id);
+            try {
+                const res = await fetchApplication(this.personalInfo.person_id);
+                if (res.data.success) {
+                this.hasApplication = true;
+                this.isEditingApplication = false
+                this.application = {
+                    competences: res.data.competenceProfile.map((c: any) => ({
+                    name: c.competenceType,
+                    yearsOfExperience: Number(c.competenceTime)
+                    })),
 
-
-            if (res.data.success) {
-            this.hasApplication = true;
-
-            this.application = {
-                competences: res.data.competenceProfile.map((c: any) => ({
-                name: c.competenceType,
-                yearsOfExperience: Number(c.competenceTime)
-                })),
-
-                availability: res.data.availability.map((a: any) => ({
-                fromDate: a.from_date.split("T")[0], // tar bort tid
-                toDate: a.to_date.split("T")[0]
-                }))
-            };
+                    availability: res.data.availability.map((a: any) => ({
+                    fromDate: a.from_date.split("T")[0], // tar bort tid
+                    toDate: a.to_date.split("T")[0]
+                    }))
+                };
 
             } else {
             this.hasApplication = false;
+            this.isEditingApplication = true
             this.application = null;
             }
 
         } catch (e) {
-            this.hasApplication = false;
-            this.application = null;
-        } finally {
+        this.error = "fetchApplicationError";
+        this.hasApplication = false;
+        this.application = null;
+    }finally {
             this.isLoading = false;
         }
         }

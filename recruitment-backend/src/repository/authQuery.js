@@ -4,6 +4,22 @@
 
 const db = require("../db/db");
 
+//guards
+const {
+  assertPersonId,
+  assertStatus,
+
+  assertUsername,
+  assertPassword,
+  assertEmail,
+  assertPersonalNumber,
+  assertUpgradeCode,
+  assertName,
+
+  assertUserDTO,
+  assertApplicationDTO
+} = require("./repositoryGuard.js");
+
 /**
  * 
  * @param {*} username - username from request
@@ -11,6 +27,7 @@ const db = require("../db/db");
  * @returns - whole row from connected user.
  */
 async function searchForUser(username) {
+  assertUsername(username);
     const result = await db.query(
         "SELECT person_id, username, name, surname, email, role_id, username, pnr, password FROM person WHERE username = $1",
         [username]
@@ -29,6 +46,9 @@ async function searchForUser(username) {
  * @returns - Table row for that user that contains person_id, username and password. 
  */
 async function findPersonForUpgrade(email, personalNumber) {
+  assertEmail(email);
+  assertPersonalNumber(personalNumber);
+
   const res = await db.query(
     `SELECT person_id, username, password
      FROM person
@@ -48,6 +68,8 @@ async function findPersonForUpgrade(email, personalNumber) {
  * @returns - Returns a boolean whether there is a matching user for that code
  */
 async function verifyUpgradeCode(personId, code) {
+  assertPersonId(personId);
+
   const res = await db.query(
     `SELECT 1
      FROM legacy_upgrade_codes
@@ -65,6 +87,10 @@ async function verifyUpgradeCode(personId, code) {
  * @param {*} password - inputed password
  */
 async function upgradePersonAccount(personId, username, password) {
+  assertPersonId(personId);
+  assertUsername(username);
+  assertPassword(password);
+
   await db.query(
     `UPDATE person
      SET username = $1, password = $2
@@ -79,6 +105,8 @@ async function upgradePersonAccount(personId, username, password) {
  * @returns - returns a user object with the user information
  */
 async function findUserById(person_id) {
+  assertPersonId(person_id);
+
   const res = await db.query(
     `SELECT person_id, username, name, surname, email, role_id, pnr
      FROM person
@@ -94,6 +122,12 @@ async function findUserById(person_id) {
  * @returns 
  */
 async function registerAccount(userDto) {
+  assertUsername(userDto.username);
+  assertEmail(userDto.email);
+  assertPersonalNumber(userDto.personalNumber);
+  assertName(userDto.firstName);
+  assertName(userDto.lastName);
+
   const { firstName, lastName, username, email, personalNumber, password,} = userDto;
   try {
       const res = await db.query(
@@ -113,6 +147,12 @@ async function registerAccount(userDto) {
 }
 
 async function submitUpdatedPI(userDTO){
+  assertEmail(userDTO.email);
+  assertPersonalNumber(userDTO.personalNumber);
+  assertName(userDTO.firstName);
+  assertName(userDTO.lastName);
+  assertPersonId(userDTO.person_id);
+
   const client = await db.connect()
   try{
 

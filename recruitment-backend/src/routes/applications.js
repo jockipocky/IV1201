@@ -6,8 +6,15 @@
 var express = require("express");
 var router = express.Router();
 const { authenticate, authorizeRoles } = require("../middleware/authMiddleware"); //to authenticate and authorize
+const {
+  validatePersonalInfo,
+  validateApplicationSubmission,
+  validateStatusUpdate,
+  validatePersonIdParam
+} = require("../middleware/validateApplicationsInputData.js");
 
-const { applicationSubmission, fetchApplication, updatePI } = require("../controllers/applicationController");
+
+const { applicationSubmission, fetchApplication, updatePI } = require("../controllers/profileController");
 const {
   fetchAllApplications,
   updateApplicationStatus
@@ -30,6 +37,8 @@ router.put(
   "/:personId/status",
   authenticate,
   authorizeRoles(1),
+  validatePersonIdParam,
+  validateStatusUpdate,
   updateApplicationStatus
 );
 
@@ -38,18 +47,21 @@ router.post(
   "/",
   authenticate,
   authorizeRoles(2),
+  validateApplicationSubmission,
   applicationSubmission
 ); //for the full application
 router.get(
   "/:person_id",
   authenticate,
   authorizeRoles(2),
+  validatePersonIdParam,
   fetchApplication
 );
 router.post(
   "/personal-info",
   authenticate,
   authorizeRoles(2),
+  validatePersonalInfo,
   updatePI
 );
 

@@ -2,7 +2,7 @@
 
 
 import { defineStore } from "pinia";
-import { register} from "@/api/authApi";
+import { register as registerApi} from "@/api/authApi";
 
 export const useRegisterStore = defineStore("register", {
 
@@ -21,7 +21,7 @@ export const useRegisterStore = defineStore("register", {
       username: string, 
       password: string,
       ) {
-        const response = await register(firstName, lastName, email, personalNumber, username, password);
+        const response = await registerApi(firstName, lastName, email, personalNumber, username, password);
         console.log("[RegisterStore] Registration successful, response data:", response);
         this.registeringResult = response.data;
     },

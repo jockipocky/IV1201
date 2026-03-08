@@ -7,19 +7,22 @@
         v-model="state.firstName"
         :label="t.firstNameLabel"
         required
+        data-cy="register-firstname"
       ></v-text-field>
 
       <v-text-field
         v-model="state.lastName"
         :label="t.lastNameLabel"
         required
+        data-cy="register-lastname"
       ></v-text-field>
 
       <v-text-field
         v-model="state.email"
         :label="t.emailLabel"
         type="email"
-        required
+        required 
+        data-cy="register-email"
       ></v-text-field>
 
       <v-text-field
@@ -29,12 +32,14 @@
         required
         placeholder="YYYYMMDD-XXXX"
         :rules="[personNumberRule]"
+        data-cy="register-personnumber"
       ></v-text-field>
 
       <v-text-field
         v-model="state.username"
         :label="t.usernameLabel"
         required
+        data-cy="register-username"
       ></v-text-field>
 
       <v-text-field
@@ -45,21 +50,22 @@
       :prepend-inner-icon="mdiLock"
       @click:append-inner="visible = !visible"
       required
+      data-cy="register-password"
     ></v-text-field>
 
-      <v-alert v-if="error" type="error" class="mt-4" dense>
+      <v-alert v-if="error" type="error" class="mt-4" dense data-cy="register-error">
         {{ error }}
       </v-alert>
 
-      <v-alert v-if="success" type="success" class="mt-4" dense>
+      <v-alert v-if="success" type="success" class="mt-4" dense data-cy="register-success">
         {{ success }}
       </v-alert>
 
-      <v-btn class="mt-6 mb-4" color="blue" block @click="handleRegister">
+      <v-btn class="mt-6 mb-4" color="blue" block @click="handleRegister" data-cy="register-button">
         {{t.registerButtonLabel}}
       </v-btn>
 
-      <v-btn class="mt-6 mb-4" variant="tonal" block @click="goToLogin">
+      <v-btn class="mt-6 mb-4" variant="tonal" block @click="goToLogin" data-cy="register-back">
         {{t.backToLogin}}
       </v-btn>
 
@@ -68,6 +74,12 @@
 </template>
 
 <script lang="ts">
+/**
+ * This component renders the registration form for new users. 
+ * It includes fields for first name, last name, email, personal number, username, and password. 
+ * The component handles form validation, displays error messages, and shows a success message upon successful registration.
+ * It also provides a button to navigate back to the login page.
+ */
 import { defineComponent, ref, reactive } from "vue";
 import { useRegisterStore } from "@/stores/registerStore";
 import { inject } from 'vue' //for dictionary
@@ -120,19 +132,37 @@ export default defineComponent({
           error.value = t.value?.allFieldsRequired;
           return;
           }
+      
+      if (!/^[a-zA-Z]+$/.test(state.firstName) || !/^[a-zA-Z]+$/.test(state.lastName)) {
+          error.value = t.value?.invalidName || "First and last name must contain only letters.";
+        return;
+        }
 
       if (state.password.length < 8) {
           error.value = t.value?.passwordTooShort || "Password must be at least 8 characters.";
           return;
           }
 
-      if (!state.email.includes("@")) {
-        error.value = t.value?.invalidEmail || "Email must contain @.";
+      if (!state.email.includes("@") || !state.email.includes(".")) {
+        error.value = t.value?.invalidEmail || "Invalid email format.";
         return;
       }
 
       try {
-        await registerStore.register(state.firstName, state.lastName, state.email, state.personNumber, state.username, state.password); // implement a register action in your store
+
+        const formattedPersonNumber = formatPersonNumber(state.personNumber);
+        if (!formattedPersonNumber) {
+          error.value = t.value?.invalidPersonalNumberFormat;
+          return;
+        }
+        await registerStore.register(
+          state.firstName,
+          state.lastName,
+          state.email,
+          state.personNumber,
+          state.username,
+          state.password
+        );
         error.value = null;
         success.value = t.value?.registrationSuccess;
         setTimeout(() => router.push("/login"), 2000);

@@ -1,5 +1,5 @@
 export default {
-  loginButtonLabel: "Log in",
+  loginButtonLabel: "Login",
   logoutButtonLabel: "Log out",
   passwordFieldPlaceholder: "Enter your password",
   loginBoxTitle: "Account",
@@ -23,7 +23,8 @@ export default {
   upgradeButtonLabel: "Request upgrade",
   loginError: "Error when attempting to log in. Please try again.",
   passwordTooShort : "Password must be at least 8 characters.",
-  invalidEmail: "Email must contain @.",
+  invalidEmail: "Invalid email format.",
+  invalidName: "First and last name must contain only letters.",
   registrationSuccess: "Registration successful! Please log in.",
   emailRegistered: "Email already registered",
   pnrRegistered: "Personal number already registered",
@@ -81,5 +82,13 @@ export default {
   successMessage: "The profile has been saved!",
   profileError: "Profile could not be saved",
   applicationInfo: "Application Information",
-  
+  editLabel: "EDIT",
+  resubmitLabel: "RESUBMIT",
+  successMessagePI:"Information Changed successfully!",
+  numberCheck:"Must be a positive number",
+  fetchUserInfoError: "We couldn't load your profile information.",
+  submitApplicationError: "There was a problem submitting your application. Please try again.",
+  submitPersonalInfoError: "We couldn't update your personal information.",
+  fetchApplicationError: "No previous application could be found",
+  availabilityDifferentDates:"Start and end date must be different"
 };

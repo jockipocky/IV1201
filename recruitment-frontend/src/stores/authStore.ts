@@ -13,6 +13,7 @@
 import { defineStore } from "pinia";
 import { login, fetchUser,logout } from "@/api/authApi";
 import { router } from "@/router";
+import { useApplicationStore } from "./profileStore";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
@@ -57,6 +58,9 @@ export const useAuthStore = defineStore("auth", {
         console.error("Logout failed:", e);
       }
       // frontend cleanup
+      const applicationState = useApplicationStore()
+      applicationState.$reset()
+
       this.user = null;
       localStorage.removeItem("token");
 

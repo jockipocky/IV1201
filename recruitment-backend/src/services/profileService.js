@@ -1,5 +1,5 @@
 const db = require("../db/db")
-const { submitApplication, updateHandlingStatus,  updateApplication, getApplication } = require("../repository/applicationQuery")
+const { submitApplication, updateHandlingStatus,  updateApplication, getApplication } = require("../repository/profileQuery")
 
 
 const applicationStat = {
@@ -34,20 +34,6 @@ class Application{
 
     }
 
-    /**
-     * sätter hanldingStat till accepterad
-     */
-    accept(){
-        this.handlingState=applicationStat.ACCEPTED
-    }
-
-
-    /**
-     * sätter handlingStat till rejected
-     */
-    reject(){
-        this.handlingState = applicationStat.REJECTED
-    }
 
     /**
      * denna funktion mappar competenceType så som vi har det i databasen
@@ -55,11 +41,18 @@ class Application{
      * @returns ett siffer id som motsvarar competenceType
      */
     mapCompetenceToId(type){
-        const id = COMPETENCE_TYPE_MAP[type.toLowerCase()]
-        if(!id) throw new Error(`Invalid competence type: ${type}`)
+    if (!type || typeof type !== "string") {
+        throw new Error("INVALID_COMPETENCE_TYPE")
+    }
 
-            return id
-        }
+    const id = COMPETENCE_TYPE_MAP[type.toLowerCase()]
+
+    if (!id) {
+        throw new Error("INVALID_COMPETENCE_TYPE")
+    }
+
+    return id
+    }
 
 
     /**
@@ -120,8 +113,6 @@ class Application{
                 competenceProfile: mappedCompetences
             }
 
-
-            
             return await submitApplication(updateDTO)
             }catch (error){
                 return{
@@ -130,38 +121,7 @@ class Application{
                 }
             }
         }   
-/**
- * denna funktion ändrar handlingstatus i databasen till ACCEPTED
- * @param {*} applicationDTO information från användare
- * @returns ifall uppdateringen lyckades samt person_id
- */
-    async acceptApplication(applicationDTO){
-        try{
-            this.accept()
-            return await updateHandlingStatus(this.handlingState, applicationDTO)
-        }catch(error){
-            return {
-                success: false,
-                error: error.message
-            }
-        }
 
-    }
-/**
- * denna funktion ändrar handlingstatus i databasen till REJECTED
- * @param {*} applicationDTO information från användare
- * @returns ifall vi uppdateringen lyckades samt person_id
- */
-    async rejectApplication(applicationDTO){
-        try{
-            return await updateHandlingStatus(applicationStat.REJECTED, applicationDTO)
-        } catch(error){
-            return{
-                success: false,
-                error: error.message
-            }
-        }
-    }
 
     /**
      * denna funktion säger till repository att fråga
@@ -171,7 +131,8 @@ class Application{
      */
     async getApplication(applicationDTO){
         try{
-            const res = await getApplication(applicationDTO)
+            console.log("applicationDTO.person_id: ", applicationDTO.person_id)
+            const res = await getApplication(applicationDTO.person_id)
             if(!res.success) return res
 
             if(!res.competenceProfile || !res.availability){
