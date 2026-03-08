@@ -133,7 +133,7 @@ export default defineComponent({
           return;
           }
       
-      if (/^[a-zA-ZåäöÅÄÖ]+$/.test(state.firstName) || !/^[a-zA-Z]+$/.test(state.lastName)) {
+      if (!/^[a-zA-Z]+$/.test(state.firstName) || !/^[a-zA-Z]+$/.test(state.lastName)) {
           error.value = t.value?.invalidName || "First and last name must contain only letters.";
         return;
         }
