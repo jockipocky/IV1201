@@ -24,7 +24,6 @@ async function submitApplication(applicationDTO){
     const client = await db.connect()
 
     try{
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAA:", applicationDTO);
         assertApplicationDTO(applicationDTO);
         await client.query("begin")
         const hasApplied = await checkForApplication(client, applicationDTO.person_id)

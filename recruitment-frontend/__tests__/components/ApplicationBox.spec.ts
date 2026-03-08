@@ -14,7 +14,7 @@
  * @module components
  */
 
-
+import { ref } from 'vue'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
@@ -43,7 +43,7 @@ vi.mock('@/stores/profileStore', () => ({
   useApplicationStore: vi.fn(() => mockApplicationStore),
 }))
 
-const tMock = {
+const tMock = ref({
   competenceProfile: 'Competence Profile',
   availabilityRange: 'Availability',
   apply: 'Apply',
@@ -53,11 +53,10 @@ const tMock = {
   yearsOfExperienceLabel: 'Years of Experience',
   allFieldsRequired: 'Required',
   numberCheck: 'Invalid number',
-
   ticketSalesLabel: 'Ticket Sales',
   rollerCoasterOperatorLabel: 'Roller Coaster Operator',
   lotteriesLabel: 'Lotteries',
-}
+})
 
 
 
@@ -105,7 +104,10 @@ const cardStub = createSimpleStub('v-card')
 const formStub = createFormStub()
 const selectStub = createModelStub('v-select', 'Ticket Sales')
 const textFieldStub = createModelStub('v-text-field', '2')
-const datePickerStub = createModelStub('v-date-picker', ['2026-01-01', '2026-02-01'])
+const datePickerStub = createModelStub('v-date-picker', [
+  new Date('2026-01-01'),
+  new Date('2026-02-01')
+])
 const buttonStub = createClickStub('v-btn')
 const iconStub = createSimpleStub('v-icon', 'span')
 
@@ -179,7 +181,10 @@ describe('ApplicationBox.vue', () => {
     mockApplicationStore.availability = [
       { from: '2026-01-01', to: '2026-02-01' },
     ]
-    mockApplicationStore.getAvailabilityRange.mockReturnValue(['2026-01-01', '2026-02-01'])
+    mockApplicationStore.getAvailabilityRange.mockReturnValue([
+      new Date('2026-01-01'),
+      new Date('2026-02-01')
+    ])
 
     mockApplicationStore.submitApplicationForm.mockResolvedValueOnce(true)
     mockApplicationStore.fetchApplication.mockResolvedValueOnce(true)
@@ -205,7 +210,10 @@ describe('ApplicationBox.vue', () => {
     mockApplicationStore.availability = [
       { from: '2026-01-01', to: '2026-02-01' },
     ]
-    mockApplicationStore.getAvailabilityRange.mockReturnValue(['2026-01-01', '2026-02-01'])
+    mockApplicationStore.getAvailabilityRange.mockReturnValue([
+      new Date('2026-01-01'),
+      new Date('2026-02-01')
+    ])
 
     mockApplicationStore.submitApplicationForm.mockRejectedValueOnce(new Error('Failed'))
 
@@ -335,8 +343,8 @@ it('updates availability range from date picker event', async () => {
   await wrapper.find('.v-date-picker').trigger('click')
 
   expect(mockApplicationStore.setAvailabilityRange).toHaveBeenCalledWith(0, [
-    '2026-01-01',
-    '2026-02-01',
+    new Date('2026-01-01'),
+    new Date('2026-02-01'),
   ])
 })
 })

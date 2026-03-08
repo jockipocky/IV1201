@@ -41,6 +41,7 @@
       
       <div v-for="(availability, index) in applicationStore.availability" :key="index" class="mb-4">
         <v-date-picker
+          data-cy="availability-picker"
           multiple="range"
           :model-value="applicationStore.getAvailabilityRange(index)"
           @update:model-value="applicationStore.setAvailabilityRange(index, $event)"

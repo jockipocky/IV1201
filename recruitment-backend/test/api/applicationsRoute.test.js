@@ -112,7 +112,7 @@ describe("POST /applications", () => {
     const res = await request(app)
       .post("/applications")
       .set("Cookie", `auth=${applicantToken}`)
-      .send({ person_id: 2, competenceProfile: [{ competence_id: 1 }], availability: [{ from_date: "2024-01-01" }] });
+      .send({ person_id: 2, competenceProfile: [{ competenceType: "Lotteries", competenceTime: 5 }], availability: [{ from: "2024-01-01", to: "2024-01-02" }] });
     expect(res.status).toBe(200);
   });
 });

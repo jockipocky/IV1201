@@ -53,7 +53,8 @@ async function fetchAllApplications() {
  * - { updated: false, currentStatus: string|null } if conflict occurred
  */
 async function updateApplicationStatus(personId, status) {
-  assertPersonId(assertPersonId);
+  assertPersonId(personId);
+  assertStatus(status);
 
   //this query is race condition safe since it checks to see that status is Unhandled
   const result = await db.query(

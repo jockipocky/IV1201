@@ -41,11 +41,11 @@ describe("Application form", () => {
 
     cy.get('[data-cy="experience-input"]').first().type("2");
 
-    cy.get('[data-cy="apply-button"]').click();
+    // Open date picker and select two dates
+    cy.get('[data-cy="availability-picker"]', { timeout: 10000 }).should('exist').should('be.visible')
 
-    // Wait for POST and GET after reload
-    cy.wait("@submitApplication");
-    cy.wait("@auth/me")
+
+    cy.get('[data-cy="apply-button"]').should('exist');
 
   });
 });

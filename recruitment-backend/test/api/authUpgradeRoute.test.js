@@ -40,7 +40,7 @@ describe("POST /auth/upgrade", () => {
         personalNumber: "199001011234",
         upgradeCode: "WRONG",
         username: "newuser",
-        password: "pass123"
+        password: "pass1234567890"
       });
 
     expect(res.status).toBe(401);
@@ -64,7 +64,7 @@ describe("POST /auth/upgrade", () => {
         personalNumber: "199001011234",
         upgradeCode: "VALID",
         username: "newuser",
-        password: "pass123"
+        password: "pass1234567890"
       });
 
     expect(res.status).toBe(200);

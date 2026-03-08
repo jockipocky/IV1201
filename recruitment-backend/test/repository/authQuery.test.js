@@ -61,7 +61,7 @@ describe("authQuery repository (pg-mem)", () => {
         firstName: "John",
         lastName: "Doe",
         email: "john@test.com",
-        personalNumber: "1234567890",
+        personalNumber: "9509289999",
       };
 
       const result = await authQuery.registerAccount(userDto);
@@ -79,7 +79,7 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, password, name, surname, email, pnr, role_id)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [1, "dupuser", "hashedpass", "John", "Doe", "dup@test.com", "1234567890", 2]
+        [1, "dupuser", "hashedpass", "John", "Doe", "dup@test.com", "9509289999", 2]
       );
 
       const userDto = {
@@ -125,7 +125,7 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, name, surname, email, role_id, pnr, password)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-        [10, "john", "John", "Doe", "john@test.com", 2, "123", "hashed"]
+        [10, "john", "John", "Doe", "john@test.com", 2, "9509289999", "hashed"]
       );
 
       const result = await authQuery.searchForUser("john");
@@ -147,7 +147,7 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, name, surname, email, role_id, pnr, password)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-        [5, "alice", "Alice", "Smith", "alice@test.com", 2, "999", "pw"]
+        [5, "alice", "Alice", "Smith", "alice@test.com", 2, "9509289999", "pw"]
       );
 
       const result = await authQuery.findUserById(5);
@@ -164,17 +164,17 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, password, name, surname, email, pnr, role_id)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-        [1, null, null, "Test", "User", "test@test.com", "123456", 2]
+        [1, null, null, "Test", "User", "test@test.com", "9509289999", 2]
       );
 
-      const result = await authQuery.findPersonForUpgrade("test@test.com", "123456");
+      const result = await authQuery.findPersonForUpgrade("test@test.com", "9509289999");
 
       expect(result).not.toBeNull();
       expect(result.person_id).toBe(1);
     });
 
     test("returns undefined when not found", async () => {
-      const result = await authQuery.findPersonForUpgrade("notfound@test.com", "999");
+      const result = await authQuery.findPersonForUpgrade("notfound@test.com", "9999999999");
       expect(result).toBeUndefined();
     });
   });
@@ -208,7 +208,7 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, password, email, pnr, role_id)
          VALUES ($1,$2,$3,$4,$5,$6)`,
-        [1, null, null, "legacy@test.com", "111", 2]
+        [1, null, null, "legacy@test.com", "9509289999", 2]
       );
 
       await authQuery.upgradePersonAccount(1, "newuser", "hashed");
@@ -225,14 +225,14 @@ describe("authQuery repository (pg-mem)", () => {
       await db.query(
         `INSERT INTO person(person_id, username, password, name, surname, email, pnr, role_id)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
-        [1, "testuser", "pass", "Test", "User", "test@test.com", "123", 2]
+        [1, "testuser", "pass", "Test", "User", "test@test.com", "9509289999", 2]
       );
 
       const userDTO = {
         person_id: 1,
         firstName: "Updated",
         lastName: "Name",
-        personalNumber: "999999",
+        personalNumber: "9999999999",
         email: "updated@test.com",
       };
 
@@ -246,7 +246,7 @@ describe("authQuery repository (pg-mem)", () => {
       );
       expect(check.rows[0].name).toBe("Updated");
       expect(check.rows[0].surname).toBe("Name");
-      expect(check.rows[0].pnr).toBe("999999");
+      expect(check.rows[0].pnr).toBe("9999999999");
       expect(check.rows[0].email).toBe("updated@test.com");
     });
 
@@ -268,7 +268,7 @@ describe("authQuery repository (pg-mem)", () => {
           person_id: 1,
           firstName: "A",
           lastName: "B",
-          personalNumber: "1",
+          personalNumber: "9509289999",
           email: "a@test.com",
         })
       ).rejects.toThrow("Update failed");

@@ -14,11 +14,11 @@ function validateLogin(req, res, next) {
   const { username, password } = req.body;
 
   if (!username || typeof username !== "string") {
-    return res.status(400).json({ error: "Invalid username" });
+    return res.status(400).json({ ok: false, error: "Invalid username" });
   }
 
   if (!password || typeof password !== "string") {
-    return res.status(400).json({ error: "Invalid password" });
+    return res.status(400).json({ ok: false, error: "Invalid password" });
   }
 
   next();
@@ -39,22 +39,22 @@ function validateRegister(req, res, next) {
   } = req.body;
 
   if (!isValidName(firstName))
-    return res.status(400).json({ error: "Invalid first name" });
+    return res.status(400).json({ ok: false, error: "Invalid first name" });
 
   if (!isValidName(lastName))
-    return res.status(400).json({ error: "Invalid last name" });
+    return res.status(400).json({ ok: false, error: "Invalid last name" });
 
   if (!isValidEmail(email))
-    return res.status(400).json({ error: "Invalid email" });
+    return res.status(400).json({ ok: false, error: "Invalid email" });
 
   if (!isValidPersonalNumber(personalNumber))
-    return res.status(400).json({ error: "Invalid personal number" });
+    return res.status(400).json({ ok: false, error: "Invalid personal number" });
 
   if (!isValidUsername(username))
-    return res.status(400).json({ error: "Invalid username" });
+    return res.status(400).json({ ok: false, error: "Invalid username" });
 
   if (!isValidPassword(password))
-    return res.status(400).json({ error: "Invalid password" });
+    return res.status(400).json({ ok: false, error: "Invalid password" });
 
   next();
 }
@@ -67,19 +67,19 @@ function validateUpgrade(req, res, next) {
   const { email, personalNumber, upgradeCode, username, password } = req.body;
 
   if (!isValidEmail(email))
-    return res.status(400).json({ error: "Invalid email" });
+    return res.status(400).json({ ok: false, error: "Invalid email" });
 
   if (!isValidPersonalNumber(personalNumber))
-    return res.status(400).json({ error: "Invalid personal number" });
+    return res.status(400).json({ ok: false, error: "Invalid personal number" });
 
   if (!upgradeCode || typeof upgradeCode !== "string")
-    return res.status(400).json({ error: "Invalid upgrade code" });
+    return res.status(400).json({ ok: false, error: "Invalid upgrade code" });
 
   if (!isValidUsername(username))
-    return res.status(400).json({ error: "Invalid username" });
+    return res.status(400).json({ ok: false, error: "Invalid username" });
 
   if (!isValidPassword(password))
-    return res.status(400).json({ error: "Invalid password" });
+    return res.status(400).json({ ok: false, error: "Invalid password" });
 
   next();
 }

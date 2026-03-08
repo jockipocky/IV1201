@@ -81,7 +81,7 @@ afterAll(async () => {
     test("returns success when application is submitted (new)", async () => {
       const dto = {
         person_id: 1,
-        competenceProfile: [{ competenceType: "ticket sales", competenceTime: 2 }],
+        competenceProfile: [{ competence_id: 1, years_of_experience: 2 }],
         availability: [{ from: "2024-01-01", to: "2024-01-31" }],
       };
 
@@ -127,7 +127,7 @@ afterAll(async () => {
 
       const dto = {
         person_id: 1,
-        competenceProfile: [{ competenceType: "ticket sales", competenceTime: 2 }],
+        competenceProfile: [{ competence_id: 1, years_of_experience: 2 }],
         availability: [{ from: "2024-01-01", to: "2024-01-31" }],
       };
 
@@ -171,8 +171,7 @@ await db.query(`DROP TABLE availability;`);
         [1, "UNHANDLED"]
       );
 
-      const dto = { person_id: 1 };
-      const result = await updateHandlingStatus("ACCEPTED", dto);
+      const result = await updateHandlingStatus("ACCEPTED", { person_id: 1 });
 
       expect(result.success).toBe(true);
       expect(result.person_id).toBe(1);
@@ -211,8 +210,7 @@ await db.query(`DROP TABLE availability;`);
       [1, 1, 2.0]
     );
 
-    const dto = { person_id: 1 };
-    const result = await getApplication(dto);
+    const result = await getApplication(1);
 
     expect(result.success).toBe(true);
     expect(result.person_id).toBe(1);
@@ -222,8 +220,7 @@ await db.query(`DROP TABLE availability;`);
   });
 
     test("returns empty when no application exists", async () => {
-      const dto = { person_id: 1 };
-      const result = await getApplication(dto);
+      const result = await getApplication(1);
 
       expect(result.success).toBe(false);
       expect(result.availability ?? []).toEqual([]);
@@ -233,8 +230,7 @@ await db.query(`DROP TABLE availability;`);
     test("returns failure when database error occurs", async () => {
       await db.query(`DROP TABLE person_application_status;`);
 
-      const dto = { person_id: 1 };
-      const result = await getApplication(dto);
+      const result = await getApplication(1);
 
       expect(result.success).toBe(false);
     });
