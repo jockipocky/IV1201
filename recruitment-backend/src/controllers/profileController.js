@@ -77,7 +77,7 @@ async function fetchApplication(req, res){
         }
         const application = new Application({})
         const result = await application.getApplication({person_id})
-        console.log("THIS IS RESULT:", result);
+        
         if(!result.success){
             return res.status(404).json({
                 success: false,

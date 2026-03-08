@@ -25,7 +25,7 @@ router.post("/login", validateLogin, async function (req, res) {
     }
 
     res.cookie(result.cookie.name, result.cookie.value, result.cookie.options);
-    console.log("result: ", result);
+    
     return res.status(200).json({ ok: true, user: result.user });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
@@ -75,7 +75,7 @@ router.get("/me", async function (req, res) {
   }
 })
 router.post("/register", validateRegister, async (req, res) => {
-  console.log("ROUTE HIT");
+  
     const result = await registerAccount(req.body);
 
     if (!result.ok) {

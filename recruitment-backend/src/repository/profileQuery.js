@@ -244,7 +244,7 @@ async function updateHandlingStatus(status, applicationDTO){
         assertPersonId(Number(person_id));
 
         const client = await db.connect()
-        console.log("här: ", person_id);
+        
         try{
             const hasApplied = await checkForApplication(client, Number(person_id))
 

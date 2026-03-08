@@ -55,8 +55,6 @@ async function findPersonForUpgrade(email, personalNumber) {
      WHERE email = $1 AND pnr = $2`,
     [email, personalNumber]
   );
-  console.log("UPGRADE LOOKUP:", { email, personalNumber });
-
 
   return res.rows[0];
 }
