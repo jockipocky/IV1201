@@ -133,10 +133,10 @@ export default defineComponent({
           return;
           }
       
-      if (!/^[a-zA-Z]+$/.test(state.firstName) || !/^[a-zA-Z]+$/.test(state.lastName)) {
-          error.value = t.value?.invalidName || "First and last name must contain only letters.";
+      if (!/^[a-zA-ZåäöÅÄÖ]+$/.test(state.firstName) || !/^[a-zA-ZåäöÅÄÖ]+$/.test(state.lastName)) {
+        error.value = t.value?.invalidName || "First and last name must contain only letters.";
         return;
-        }
+      }
 
       if (state.password.length < 8) {
           error.value = t.value?.passwordTooShort || "Password must be at least 8 characters.";
