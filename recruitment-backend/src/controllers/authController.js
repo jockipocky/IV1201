@@ -31,6 +31,7 @@ async function login(username, password) {
     person_id: userRow.person_id,
     personalNumber: userRow.pnr,
   });
+
   return {
     ok: true,
     status: 200,
@@ -38,9 +39,9 @@ async function login(username, password) {
       name: "auth",
       value: result.token, 
       options: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        httpOnly: true, 
+        secure: true, // https only, set to false if testing on localhost without httpss
+        sameSite:"none",
         maxAge: 60 * 60 * 1000, // 1 hour
       },
     },

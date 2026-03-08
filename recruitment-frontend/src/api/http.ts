@@ -25,7 +25,7 @@ import axios from "axios";
  * @property withCredentials - Enables sending cookies for authenticated requests.
  */
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: "/api", // Proxy setup in Vite will forward this to the backend
   headers: {
     "Content-Type": "application/json",
   },
