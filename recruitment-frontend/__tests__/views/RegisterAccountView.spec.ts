@@ -7,8 +7,6 @@
  *
  * Test scenarios:
  * - renders registration form
- * - validates form fields
- * - submits registration data
  *
  * @module views
  */
