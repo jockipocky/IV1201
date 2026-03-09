@@ -1,10 +1,22 @@
 /**
- * repositoryGuards.js
+ * @file repositoryGuards.js
+ * @description Defensive validation utilities for the repository layer.
  *
- * Defensive validation for repository layer.
- * Ensures that invalid data never reaches our SQL queries.
+ * These guards ensure invalid or malformed data never reaches database queries.
+ * Each assertion throws a {@link RepositoryValidationError} when validation fails.
+ *
+ * Used primarily by repository methods before executing SQL statements.
  */
 
+
+/**
+ * Error thrown when repository input validation fails.
+ *
+ * This prevents invalid data from reaching SQL queries and helps
+ * distinguish validation errors from database errors.
+ *
+ * @extends Error
+ */
 class RepositoryValidationError extends Error {
   constructor(message) {
     super(message);
@@ -16,14 +28,24 @@ class RepositoryValidationError extends Error {
 /* BASIC FIELD GUARDS */
 /* ------------------------------------------------ */
 
-//check person id is a number and not null
+/**
+ * Assert that a valid person ID is provided.
+ *
+ * @param {number|string} person_id - Person identifier
+ * @throws {RepositoryValidationError} If the value is missing or not numeric
+ */
 function assertPersonId(person_id) {
   if (!person_id || isNaN(person_id)) {
     throw new RepositoryValidationError("Invalid person_id");
   }
 }
 
-//check status update is unhandled, accepted or rejected
+/**
+ * Assert that an application status value is valid.
+ *
+ * @param {string} status - Application status value
+ * @throws {RepositoryValidationError} If the status is not allowed
+ */
 function assertStatus(status) {
   const allowed = ["UNHANDLED", "ACCEPTED", "REJECTED", "unhandled", "accepted", "rejected"];
 
@@ -31,7 +53,17 @@ function assertStatus(status) {
     throw new RepositoryValidationError("Invalid application status");
   }
 }
-//is valid name ffs
+
+
+/**
+ * Assert that a valid name is provided.
+ *
+ * Accepts letters (including Nordic characters), spaces,
+ * hyphens, and apostrophes.
+ *
+ * @param {string} name - Name value
+ * @throws {RepositoryValidationError} If the name format is invalid
+ */
 function assertName(name) {
   const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
   if (!name || typeof name !== "string" || !nameRegex.test(name)) {
@@ -39,7 +71,12 @@ function assertName(name) {
   }
 }
 
-//check username is not null and is a string
+/**
+ * Assert that a valid username is provided.
+ *
+ * @param {string} username - Username value
+ * @throws {RepositoryValidationError} If the username is invalid
+ */
 function assertUsername(username) {
   if (!username || typeof username !== "string") {
     throw new RepositoryValidationError("Invalid username");
@@ -55,7 +92,12 @@ function assertUsername(username) {
   }
 }
 
-//check password is not null and is a string
+/**
+ * Assert that a valid password is provided.
+ *
+ * @param {string} password - Password value
+ * @throws {RepositoryValidationError} If the password is invalid
+ */
 function assertPassword(password) {
   if (!password || typeof password !== "string") {
     throw new RepositoryValidationError("Invalid password");
@@ -65,14 +107,24 @@ function assertPassword(password) {
   }
 }
 
-//check email is not null and is a string
+/**
+ * Assert that a valid email value is provided.
+ *
+ * @param {string} email - Email address
+ * @throws {RepositoryValidationError} If the email is invalid
+ */
 function assertEmail(email) {
   if (!email || typeof email !== "string") {
     throw new RepositoryValidationError("Invalid email");
   }
 }
 
-//check pnr is not null.. and you guessed it.. a string
+/**
+ * Assert that a Swedish personal identity number is valid.
+ *
+ * @param {string} pnr - Personal number
+ * @throws {RepositoryValidationError} If the format is invalid
+ */
 function assertPersonalNumber(pnr) {
     const personalNumberRegex = /^\d{6,8}-?\d{4}$/;
   if (!pnr || typeof pnr !== "string" || !personalNumberRegex.test(pnr)) {
@@ -80,18 +132,27 @@ function assertPersonalNumber(pnr) {
   }
 }
 
-//check that code is not null and is a string
+/**
+ * Assert that a valid upgrade code is provided.
+ *
+ * @param {string} code - Upgrade code
+ * @throws {RepositoryValidationError} If the value is invalid
+ */
 function assertUpgradeCode(code) {
   if (!code || typeof code !== "string") {
     throw new RepositoryValidationError("Invalid upgrade code");
   }
 }
 
-/* ------------------------------------------------ */
-/* USER DTO GUARD */
-/* ------------------------------------------------ */
-
-//check that userdto has valid parameters
+/**
+ * Validate a user data transfer object before repository operations.
+ *
+ * The DTO may contain optional fields but must follow the expected
+ * structure and value types.
+ *
+ * @param {Object} dto - User data transfer object
+ * @throws {RepositoryValidationError} If the DTO contains invalid fields
+ */
 function assertUserDTO(dto) {
   if (!dto || typeof dto !== "object") {
     throw new RepositoryValidationError("Invalid user DTO");
@@ -135,11 +196,15 @@ function assertUserDTO(dto) {
   }
 }
 
-/* ------------------------------------------------ */
-/* APPLICATION DTO GUARD */
-/* ------------------------------------------------ */
-
-//check that the application dto has proper params
+/**
+ * Validate an application data transfer object.
+ *
+ * Ensures the structure of competence profiles and availability
+ * entries is valid before inserting into the database.
+ *
+ * @param {Object} dto - Application data transfer object
+ * @throws {RepositoryValidationError} If the DTO structure or values are invalid
+ */
 function assertApplicationDTO(dto) {
   if (!dto || typeof dto !== "object") {
     throw new RepositoryValidationError("Invalid application DTO");

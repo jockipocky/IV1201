@@ -1,6 +1,12 @@
 /**
- * Recvies the request and sends it to the correct file.
- * Sends response to the request.
+ * @file auth.js
+ * @description Express routes for authentication and account management.
+ *
+ * Provides endpoints for:
+ * - User login and logout
+ * - Account registration
+ * - Account upgrade
+ * - Retrieving the currently authenticated user
  */
 
 var express = require("express");
@@ -14,7 +20,14 @@ const {
   validateUpgrade
 } = require("../middleware/validateAuthInputData.js");
 
-
+/**
+ * @route POST /auth/login
+ * @description Authenticate a user and set an authentication cookie.
+ * @body {string} username - User's username
+ * @body {string} password - User's password
+ * @access Public
+ * @middleware validateLogin
+ */
 router.post("/login", validateLogin, async function (req, res) {
   try {
     const body = req.body ?? {};
@@ -33,6 +46,12 @@ router.post("/login", validateLogin, async function (req, res) {
   }
 });
 
+
+/**
+ * @route POST /auth/logout
+ * @description Log out the current user by clearing the authentication cookie.
+ * @access Authenticated
+ */
 router.post("/logout", (req, res) => {
   res.clearCookie("auth", {
     httpOnly: true,
@@ -44,6 +63,14 @@ router.post("/logout", (req, res) => {
   return res.status(200).json({ ok: true });
 });
 
+
+/**
+ * @route POST /auth/upgrade
+ * @description Upgrade an existing applicant account using an upgrade code.
+ * @body {object} upgradeData - Account upgrade information
+ * @access Public
+ * @middleware validateUpgrade
+ */
 router.post("/upgrade", validateUpgrade, async function (req, res) {
   try {
     const result = await upgradeAccount(req.body);
@@ -60,6 +87,12 @@ router.post("/upgrade", validateUpgrade, async function (req, res) {
   }
 })
 
+
+/**
+ * @route GET /auth/me
+ * @description Retrieve the currently authenticated user based on the auth cookie.
+ * @access Authenticated
+ */
 router.get("/me", async function (req, res) {
   try {
     const result = await me(req);
@@ -74,6 +107,14 @@ router.get("/me", async function (req, res) {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 })
+
+/**
+ * @route POST /auth/register
+ * @description Register a new user account.
+ * @body {object} userData - Registration information
+ * @access Public
+ * @middleware validateRegister
+ */
 router.post("/register", validateRegister, async (req, res) => {
   
     const result = await registerAccount(req.body);

@@ -34,7 +34,7 @@
           class="px-0"
         >
 
-          {{ competence.name }}
+          {{ competenceLabelMap[competence.name] || competence.name }}
           <span class="text-medium-emphasis">
             – {{ competence.yearsOfExperience }} {{ t.yearsUnit }}
           </span>
@@ -71,7 +71,11 @@ const t = inject<any>("t");
 const isEditing = ref(false); // Controls the view toggle
 const application = computed(() => applicationStore.application)
 
-
+const competenceLabelMap = computed<Record<string, string>>(() => ({
+  "ticket sales": (t as any).value?.ticketSalesLabel ?? (t as any).ticketSalesLabel,
+  "roller coaster operator": (t as any).value?.rollerCoasterOperatorLabel ?? (t as any).rollerCoasterOperatorLabel,
+  "lotteries": (t as any).value?.lotteriesLabel ?? (t as any).lotteriesLabel,
+}));
 
 
 

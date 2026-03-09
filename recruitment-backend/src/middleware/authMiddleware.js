@@ -1,13 +1,30 @@
+/**
+ * @file authMiddleware.js
+ * @description Authentication and authorization middleware for protected routes.
+ *
+ * - "authenticate" verifies a JWT stored in an HTTP-only cookie.
+ * - "authorizeRoles" ensures the authenticated user has one of the required roles.
+ */
+
 const jwt = require("jsonwebtoken");
 const authSearch = require("../repository/authQuery"); // adjust path if needed
+
+
+
+
 /**
- * Authenticates a request using a JWT token stored in an HTTP-only cookie.
- * If the token is valid, the corresponding user is fetched from the database and attached to the request object.
- * If the token is missing, invalid, or if the user no longer exists, an appropriate error response is sent.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @returns 
+ * Authenticate requests using a JWT stored in the "auth" cookie.
+ *
+ * The middleware verifies the token, retrieves the corresponding user
+ * from the database, and attaches the user object to `req.user`.
+ *
+ * If the token is missing, invalid, or the user no longer exists,
+ * the request is rejected with a 401 response.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next middleware function
+ * @returns {Promise<void>}
  */
 async function authenticate(req, res, next) {
   const token = req.cookies?.auth;
@@ -42,10 +59,18 @@ async function authenticate(req, res, next) {
 
   next();
 }
+
+
 /**
- * 
- * @param  {...any} allowedRoles  - A list of allowed role IDs that can access the route. The user's role ID will be checked against this list.
- * @returns  - A middleware function that checks if the authenticated user's role ID is included in the allowedRoles list. If the user is not authenticated or does not have the required role, an appropriate error response is sent.
+ * Authorize access to a route based on the authenticated user's role.
+ *
+ * Returns middleware that checks whether `req.user.role_id`
+ * is included in the provided list of allowed roles.
+ *
+ * Should be used after the `authenticate` middleware.
+ *
+ * @param {...number} allowedRoles - Role IDs permitted to access the route
+ * @returns {Promise<void>}
  */
 function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {

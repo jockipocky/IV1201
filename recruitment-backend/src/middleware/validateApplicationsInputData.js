@@ -1,3 +1,14 @@
+/**
+ * @file validateApplicationsInputData.js
+ * @description Middleware for validating application-related request payloads.
+ *
+ * Ensures correct data format for:
+ * - Personal information updates
+ * - Application submissions
+ * - Application status updates
+ * - Person ID route parameters
+ */
+
 const {
   isValidName,
   isValidEmail,
@@ -6,8 +17,16 @@ const {
 
 
 /**
- PERSONAL INFO UPDATE
-*/
+ * Validate personal information submitted by an applicant.
+ *
+ * Ensures first name, last name, email, personal number, and person_id
+ * are present and correctly formatted.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next middleware function
+ * @returns {void}
+ */
 function validatePersonalInfo(req, res, next) {
   console.log("Validating the supplied data for new personal info...");
   const { firstName, lastName, email, personalNumber, person_id } = req.body;
@@ -32,7 +51,14 @@ function validatePersonalInfo(req, res, next) {
 
 
 /**
- * For status update sent by recruiter
+ * Validate application status update sent by a recruiter.
+ *
+ * Only allows predefined status values.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next middleware function
+ * @returns {void}
  */
 function validateStatusUpdate(req, res, next) {
   console.log("Validating the supplied data for status update..");
@@ -48,9 +74,18 @@ function validateStatusUpdate(req, res, next) {
   console.log("Status update payload is OK!");
   next();
 }
+
+
 /**
- * 
-For person id verification since we are accessing endpoint /person_id, needs to be a number
+ * Validate the person ID route parameter.
+ *
+ * Ensures the `personId` or `person_id` parameter exists
+ * and represents a valid numeric identifier.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next middleware function
+ * @returns {void}
  */
 function validatePersonIdParam(req,res,next){
   console.log("Validating the personal id parameter...");
@@ -64,9 +99,23 @@ function validatePersonIdParam(req,res,next){
   console.log("Personal id endpoint is OK!")
   next();
 }
+
+
 /**
- APPLICATION SUBMISSION
-*/
+ * Validate a full application submission.
+ *
+ * Ensures:
+ * - person_id is valid
+ * - competenceProfile is an array (max 3 entries)
+ * - availability is an array (max 10 entries)
+ * - competence entries contain valid type and time values
+ * - availability entries contain valid date ranges
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ * @param next - Express next middleware function
+ * @returns {void}
+ */
 function validateApplicationSubmission(req, res, next) {
   console.log("Validating application data...")
   const { competenceProfile, availability, person_id } = req.body;

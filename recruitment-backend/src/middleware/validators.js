@@ -1,4 +1,15 @@
-// middleware/validators.js
+/**
+ * @file validators.js
+ * @description Utility validation functions used by middleware to validate
+ * authentication and application input data.
+ *
+ * Includes validation for:
+ * - Names
+ * - Usernames
+ * - Email addresses
+ * - Swedish personal numbers
+ * - Password length requirements
+ */
 
 // names allow letters, spaces, hyphen, apostrophe
 const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/;
