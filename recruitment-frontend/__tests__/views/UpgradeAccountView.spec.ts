@@ -2,13 +2,10 @@
  * @file UpgradeAccountView.spec.ts
  * @description Unit tests for the UpgradeAccountView page.
  *
- * This file tests the account upgrade page used to request
- * higher privileges.
+ * This file tests the account upgrade page
  *
  * Test scenarios:
  * - renders upgrade form
- * - submits upgrade request
- * - handles upgrade errors
  *
  * @module views
  */
