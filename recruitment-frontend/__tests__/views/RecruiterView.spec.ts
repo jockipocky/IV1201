@@ -7,8 +7,6 @@
  *
  * Test scenarios:
  * - displays list of applications
- * - allows viewing application details
- * - handles empty results
  *
  * @module views
  */
