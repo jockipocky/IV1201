@@ -11,7 +11,10 @@ const applicationStat = {
 const COMPETENCE_TYPE_MAP ={
     "ticket sales": 1,
     "lotteries": 2,
-    "roller coaster operator": 3
+    "roller coaster operator": 3,
+    "biljett försäljare":  1,
+    "attraktionsvärd" : 3,
+    "lotteri försäljare": 2
 }
 
 const ID_TO_COMPETENCE_MAP = {
@@ -131,7 +134,7 @@ class Application{
      */
     async getApplication(applicationDTO){
         try{
-            
+            console.log("HÄR:", applicationDTO);
             const res = await getApplication(applicationDTO.person_id)
             if(!res.success) return res
 

@@ -117,7 +117,7 @@ function validatePersonIdParam(req,res,next){
  * @returns {void}
  */
 function validateApplicationSubmission(req, res, next) {
-  console.log("Validating application data...")
+  console.log("Validating application data... FOR: ", req.body);
   const { competenceProfile, availability, person_id } = req.body;
 
   if (!person_id || isNaN(person_id)) {
