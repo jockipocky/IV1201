@@ -38,7 +38,7 @@ import { ApplicationStatus } from "@/model/ApplicationDTO";
  * - fetchAllApplications()
  * - handleApplication()
  */
-export const useApplicationsStore = defineStore("register", {
+export const useApplicationsStore = defineStore("applications", {
   state: () => ({ //actual initial state of the values in our store (MODEL)
     applicationsResult: null as ApplicationDTO[] | null,
     error: null as string | null,
